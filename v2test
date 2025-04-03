@@ -678,20 +678,17 @@ WeAreLoop(function()
 			if humanoid then
 				for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
 					if track.Animation.AnimationId == "rbxassetid://134146970600575" then
-						pcall(function()
-							wait(0.3)
-							local reelGui = _PlayerGui:FindFirstChild("reel")
+						task.delay(0.5, function()
+							local reelGui = _PlayerGui:FindFirstChild("reel"):Destroy()
 							if reelGui then
 								reelGui:Destroy()
 							end
-							if Rod_In then
-								Reel:FireServer(100, true)
-								Rod_In.events.reset:FireServer()
-								Rod_In.Parent = _Backpack
-								Service.VirtualUser:Button1Down(Vector2.new(1, 1))
-								Service.VirtualUser:Button1Up(Vector2.new(1, 1))
-							end
 						end)
+						Reel:FireServer(100, true)
+						Rod_In.events.reset:FireServer()
+						Service.VirtualUser:Button1Down(Vector2.new(1, 1))
+						Service.VirtualUser:Button1Up(Vector2.new(1, 1))
+						Rod_In.Parent = _Backpack
 					end
 				end
 			end
