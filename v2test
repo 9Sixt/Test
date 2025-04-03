@@ -7,10 +7,14 @@ _G.Configs = {
 	TrackEvents = false,
 	EventsList = {"Forsaken Veil - Scylla", "Whales Pool"},
 	EquipRod = true,
-	PercentCast = 100,
 	Cast = true,
 	Shake = true,
 	SizeReel = true,
+	Oxygen = true,
+	Radar = true,
+	Fishing_In_Water = true,
+	RemoveNotifyAndFishModel = false,
+	SellAll = false,
 }
 do	
 	Service = {
@@ -28,7 +32,6 @@ do
 		TeleportService = game:GetService("TeleportService");
 		Players = game:GetService("Players");
 	};
-	_Game = "Fisch";
 	_id = game.PlaceId;
 	_jobid = game.JobId;
 	_allplayers = Service.Players.NumPlayers;
@@ -42,7 +45,7 @@ do
 	_rendersteped = Service.RunService.RenderStepped;
 	_LocalPlayer = Service.Players.LocalPlayer;
 	Character = _LocalPlayer.Character or _LocalPlayer.CharacterAdded:Wait();
-	_Folder = "Fetching'Script/Config" .. "/" .. _LocalPlayer.Name .. "/" .. _Game .. ".json"
+	_Folder = "Fetching'Script/Config" .. "/" .. _LocalPlayer.Name .. "/" .. _id .. ".json"
 	_PlayerGui = _LocalPlayer.PlayerGui;
 	_Backpack = _LocalPlayer.Backpack;
 	nilinstances = getnilinstances()
@@ -323,13 +326,14 @@ tp = function(new)
 		end
 	end)
 end;
-spin = function(new)
+spin = function(targetCFrame)
 	pcall(function()
-		if Character:FindFirstChild("HumanoidRootPart") then
-			Character.HumanoidRootPart.Rotation = new
+		local Root = Character:FindFirstChild("HumanoidRootPart")
+		if Root then
+			Root.CFrame = CFrame.new(Root.Position) * targetCFrame.Rotation
 		end
 	end)
-end;
+end
 gametp = function(id)
 	Service.TeleportService:Teleport(id,_LocalPlayer)
 end;
@@ -448,9 +452,9 @@ LoadSettings()
 Window = Fetching:Window({Logo = 128185233852701,Size = UDim2.new(0, 500,0, 375)})
 Tabs = {
 	['General'] = Window:CreateTab({Title = _translate("General", "ทั่วไป"),Icon = 97459673019824});
-	['Auto'] = Window:CreateTab({Title = _translate("Automatic", "อัตโนมติ"),Icon = _Icons.automatic});
+	['Auto'] = Window:CreateTab({Title = _translate("Automatic", "อัตโนมติ"),Icon = 89895957638788});
 	['Teleport'] = Window:CreateTab({Title = _translate("Teleport", "เทเลพอร์ค"),Icon = _Icons.location});
-	['Misc'] = Window:CreateTab({Title = _translate("Miscellaneous", "เพิ่มเติม"),Icon = _Icons.misc});
+	['Misc'] = Window:CreateTab({Title = _translate("Miscellaneous", "เพิ่มเติม"),Icon = 112798812841371});
 }
 General = {
 	Advertisement = Tabs.General:CreateSection({
@@ -577,6 +581,46 @@ General.General:CreateDropdown({
 		SaveSettings()
 	end})
 
+WeAreLoop(function()
+	if _G.Configs.TrackEvents then
+		if _G.Configs.Fishing then
+			pcall(function()
+				for _, v in pairs(workspace.zones.fishing:GetChildren()) do
+					if table.find(_G.Configs.EventsLists, v.Name) then 
+						if v.Name == "Forsaken Veil - Scylla" then
+							tp(CFrame.new(-2172, -11218, 7060))
+							spin(Vector3.new(180, 81.55699920654297, 180))
+						elseif v.Name == "Whales Pool" then
+							tp(CFrame.new(GetY(v)) * CFrame.new(0,5,0))
+							if Character:FindFirstChild("HumanoidRootPart") then
+								Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.pi, 0)
+							end
+						elseif v.Name == "Orcas Pool" then
+							tp(CFrame.new(GetY(v)) * CFrame.new(0,3,50))
+							if Character:FindFirstChild("HumanoidRootPart") then
+								Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.pi, 0)
+							end
+						elseif v.Name == "The Kraken Pool" then
+							tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+						elseif v.Name == "Great White Shark" then
+							tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+						elseif v.Name == "Megalodon Default" then
+							tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+						elseif v.Name == "Great Hammerhead Shark" then
+							tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+						elseif v.Name == "Whale Shark" then
+							tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+						else
+							continue
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+
 General.Config:CreateToggle({Title = _translate("Equip","ออโต้ถือเบ็ด"),Value = _G.Configs.EquipRod,CallBack = function(v)
 	_G.Configs.EquipRod = v
 	SaveSettings()
@@ -591,18 +635,6 @@ WeAreLoop(function()
 end)
 
 
-General.Config:CreateSlider({
-	Title = _translate("Percent Cast", "เปอร์เซ็นในการโยนเบ็ด"),
-	Desc = "Description Slider",
-	Min = 1,
-	Max = 100,
-	Value = _G.Configs.PercentCast,
-	Rounding = 2,
-	Callback = function(value)
-		_G.Configs.PercentCast = value
-		SaveSettings()
-	end
-})
 General.Config:CreateToggle({Title = _translate("Cast","ออโต้โยนเบ็ด"),Value = _G.Configs.Cast,CallBack = function(v)
 	_G.Configs.Cast = v
 	SaveSettings()
@@ -611,7 +643,7 @@ WeAreLoop(function()
 	if _G.Configs.Cast and _G.Configs.Fishing then
 		local Rod_In = Character:FindFirstChild(tostring(IsRod()))
 		if Rod_In and not Rod_In:FindFirstChild("bobber", true) then
-			Rod_In.events.cast:FireServer(_G.Configs.PercentCast, 1)
+			Rod_In.events.cast:FireServer(100, 1)
 		end
 	end
 end)
@@ -643,7 +675,7 @@ WeAreLoop(function()
 end)
 
 General.Config:CreateSelect({
-	Title = _translate("Reeling Mode", "โหมดดึงปลา"),
+	Title = _translate("Reeling", "โหมดดึงปลา"),
 	Desc = _translate("Select Reeling Mode", "เลือกโหมดดึงปลา"),
 	List = {"Beta - Cancle Animation", "Instant","Disable"},
 	Value = _G.Configs.Mode,
@@ -698,6 +730,115 @@ WeAreLoop(function()
 		Character.HumanoidRootPart.reeling:Destroy()
 	end)
 end)
+
+General.Sell:CreateToggle({Title = _translate("Automatic Selling All Fish","ขายปลาทั้งหมดอัตโนมัติ"),Value = _G.Configs.SellAll,CallBack = function(v)
+	_G.Configs.SellAll = v
+	SaveSettings()
+end})
+General.Sell:Line()
+General.Sell:CreateButton({Title = _translate("Sell Holding Fish", "ขายปลาที่ถืออยู่"),CallBack = function()
+	Service.ReplicatedStorage.events.Sell:InvokeServer()
+end})
+General.Sell:Line()
+General.Sell:CreateButton({Title = _translate("Sell All Fish", "ขายปลาทั้งหมด"),CallBack = function()
+	Service.ReplicatedStorage.events.SellAll:InvokeServer()
+end})
+task.spawn(function()
+	while task.wait(10) do
+		if _G.Configs.SellAll then
+			Service.ReplicatedStorage.events.SellAll:InvokeServer()
+		end
+	end
+end)
+
+General.More:CreateToggle({Title = _translate("Remove Notify & Fish Model","ลบการแจ้งเตือนและโมเดลปลา"),Value = _G.Configs.RemoveNotifyAndFishModel,CallBack = function(v)
+	_G.Configs.RemoveNotifyAndFishModel = v
+	SaveSettings()
+end})
+General.More:CreateToggle({Title = _translate("Walk On Water","เดินบนน้ำ"),Value = _G.Configs.Fishing_In_Water,CallBack = function(v)
+	_G.Configs.Fishing_In_Water = v
+	SaveSettings()
+end})
+General.More:CreateToggle({Title = _translate("Enable Radar","เปิดใช้งานเรดาร์"),Value = _G.Configs.Radar,CallBack = function(v)
+	_G.Configs.Radar = v
+	SaveSettings()
+end})
+General.More:CreateToggle({Title = _translate("Infinite Oxygen","เปิดใช้งานการหายใจใต้น้ำ"),Value = _G.Configs.Oxygen,CallBack = function(v)
+	_G.Configs.Oxygen = v
+	SaveSettings()
+end})
+WeAreLoop(function()
+	pcall(function()
+		if _G.Configs.RemoveNotifyAndFishModel then
+			for _, v in pairs(workspace.active:GetChildren()) do
+				if v:IsA("Model") and v.Name ~= "OceanPOI's" then
+					if v:FindFirstChild("Hitbox", true) then
+						v:Destroy()
+					end
+				end
+			end
+			for	_, v in pairs(_PlayerGui.hud.safezone.announcements:GetChildren()) do
+				if v.Name == "catch" then
+					v:Destroy()
+				end
+			end
+		end
+	end)
+end)
+WeAreLoop(function()
+	pcall(function()
+		if _G.Configs.Fishing_In_Water then
+			for _, v in pairs(workspace.zones.fishing:GetChildren()) do
+				if v:IsA("Part") then
+					v.CanCollide = true
+				end
+			end
+		else
+			for _, v in pairs(workspace.zones.fishing:GetChildren()) do
+				if v:IsA("Part") then
+					v.CanCollide = false
+				end
+			end
+		end
+		if _G.Configs.Radar then
+			for _, v1 in pairs(game:GetService("CollectionService"):GetTagged("radarTag")) do
+				if v1:IsA("BillboardGui") or v1:IsA("SurfaceGui") then
+					v1.Enabled = true
+				end
+			end
+		else
+			for _, v1 in pairs(game:GetService("CollectionService"):GetTagged("radarTag")) do
+				if v1:IsA("BillboardGui") or v1:IsA("SurfaceGui") then
+					v1.Enabled = false
+				end
+			end
+		end
+		if _G.Configs.Oxygen then
+			Character.Resources.oxygen.Disabled = true
+		else
+			Character.Resources.oxygen.Disabled = false
+		end
+	end)
+end)
+_G.Item = "nil"
+General.Item:CreateDropdown({
+	Title = _translate("Nearby Item", "ไอเท็มรอบตัว"),
+	List = toList(workspace.world.interactables),
+	Value = _G.Item,
+	Multi = false,
+	Callback = function(value)
+		_G.Item = value
+		SaveSettings()
+	end})
+General.Item:CreateButton({Title = _translate("Teleport", "เทเลพอร์ต"),CallBack = function()
+	if _G.Item ~= "nil" and workspace.world.interactables:FindFirstChild(_G.Item, true) then
+		local item = workspace.world.interactables:FindFirstChild(_G.Item, true)
+		tp(item:GetPivot())
+	else
+		warn("ไอเท็มที่เลือกไม่มีอยู่!")
+	end
+end})
+General.Item:Line()
 
 _indexBodyClip = {
 	'Fishing'
