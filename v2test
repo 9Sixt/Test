@@ -3,7 +3,7 @@ if not game:IsLoaded() then game.Loaded:Wait()end;repeat task.wait() until game:
 getgenv().isRunning = true]]
 _G.Configs = {
 	Fishing = false,
-	Mode = "Normal",
+	Mode = "Instant",
 	TrackEvents = false,
 	EventsList = {"Forsaken Veil - Scylla", "Whales Pool"},
 	EquipRod = true,
@@ -642,20 +642,36 @@ WeAreLoop(function()
 	end
 end)
 
-General.Config:CreateDropdown({Title = _translate("Reel Mode", "เลือกโหมดดึงปลา"),List = {"Normal", "Instant","Disable"},Value = _G.Configs.Mode,Multi = false,Callback = function(value)
-	_G.Configs.Mode = value
-	SaveSettings()
-end})
-
+General.Config:CreateSelect({
+	Title = _translate("Reeling Mode", "โหมดดึงปลา"),
+	Desc = _translate("Select Reeling Mode", "เลือกโหมดดึงปลา"),
+	List = {"Cancle Animation [ Bata ]", "Instant","Disable"},
+	Value = _G.Configs.Mode,
+	Callback = function(value)
+		_G.Configs.Mode = value
+		SaveSettings()
+	end,
+})
+local screenCenter = Vector2.new(workspace.CurrentCamera.ViewportSize.X/2, workspace.CurrentCamera.ViewportSize.Y/2)
+task.spawn(function()
+	while task.wait(1) do
+		if _G.Configs.Mode == "Cancle Animation [ Bata ]" then
+			if _G.Configs.Fishing then
+				Service.VirtualUser:Button1Down(screenCenter)
+				Service.VirtualUser:Button1Up(screenCenter)
+			end
+		end
+	end
+end)
 WeAreLoop(function()
-	if _G.Configs.Mode == "Normal" and _G.Configs.Fishing then
+	if _G.Configs.Mode == "Instant" and _G.Configs.Fishing then
 		if _PlayerGui:FindFirstChild("reel") then
 			Reel:FireServer(100, true)
 			Service.VirtualUser:Button1Down(Vector2.new(1, 1))
 			Service.VirtualUser:Button1Up(Vector2.new(1, 1))
 		end
 	end
-	if _G.Configs.Mode == "Instant" and _G.Configs.Fishing then
+	if _G.Configs.Mode == "Cancle Animation [ Bata ]" and _G.Configs.Fishing then
 		if Character then
 			local Rod_In = Character:FindFirstChild(tostring(IsRod()))
 			local humanoid = Character:FindFirstChildOfClass("Humanoid")
