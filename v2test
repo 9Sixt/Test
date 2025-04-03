@@ -645,7 +645,7 @@ end)
 General.Config:CreateSelect({
 	Title = _translate("Reeling Mode", "โหมดดึงปลา"),
 	Desc = _translate("Select Reeling Mode", "เลือกโหมดดึงปลา"),
-	List = {"Cancle Animation [ Bata ]", "Instant","Disable"},
+	List = {"Beta - Cancle Animation", "Instant","Disable"},
 	Value = _G.Configs.Mode,
 	Callback = function(value)
 		_G.Configs.Mode = value
@@ -655,7 +655,7 @@ General.Config:CreateSelect({
 local screenCenter = Vector2.new(workspace.CurrentCamera.ViewportSize.X/2, workspace.CurrentCamera.ViewportSize.Y/2)
 task.spawn(function()
 	while task.wait(1) do
-		if _G.Configs.Mode == "Cancle Animation [ Bata ]" then
+		if _G.Configs.Mode == "Beta - Cancle Animation" then
 			if _G.Configs.Fishing then
 				Service.VirtualUser:Button1Down(screenCenter)
 				Service.VirtualUser:Button1Up(screenCenter)
@@ -671,23 +671,21 @@ WeAreLoop(function()
 			Service.VirtualUser:Button1Up(Vector2.new(1, 1))
 		end
 	end
-	if _G.Configs.Mode == "Cancle Animation [ Bata ]" and _G.Configs.Fishing then
+	if _G.Configs.Mode == "Beta - Cancle Animation" and _G.Configs.Fishing then
 		if Character then
 			local Rod_In = Character:FindFirstChild(tostring(IsRod()))
 			local humanoid = Character:FindFirstChildOfClass("Humanoid")
 			if humanoid then
 				for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
 					if track.Animation.AnimationId == "rbxassetid://134146970600575" then
-						task.delay(0.5, function()
-							local reelGui = _PlayerGui:FindFirstChild("reel"):Destroy()
-							if reelGui then
-								reelGui:Destroy()
-							end
+						task.spawn(function()
+							pcall(function()
+								_PlayerGui.reel:Destroy()
+							end)
+							task.wait(0.5)
 						end)
 						Reel:FireServer(100, true)
 						Rod_In.events.reset:FireServer()
-						Service.VirtualUser:Button1Down(Vector2.new(1, 1))
-						Service.VirtualUser:Button1Up(Vector2.new(1, 1))
 						Rod_In.Parent = _Backpack
 					end
 				end
