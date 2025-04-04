@@ -15,6 +15,13 @@ _G.Configs = {
 	Fishing_In_Water = true,
 	RemoveNotifyAndFishModel = false,
 	SellAll = false,
+	PositionMode = "Automatic",
+	PositionX = 0,
+	PositionY = 0,
+	PositionZ = 0,
+	RotationX = 0,
+	RotationY = 0,
+	RotationZ = 0,
 }
 do	
 	Service = {
@@ -36,8 +43,6 @@ do
 	_jobid = game.JobId;
 	_allplayers = Service.Players.NumPlayers;
 	_SetAttribute = game.SetAttribute;
-	_executor = identifyexecutor();
-	_levelexec = printidentity()
 	_mouse = Service.Players.LocalPlayer:GetMouse();
 	_camera = workspace.CurrentCamera;
 	_heartbeat = Service.RunService.Heartbeat;
@@ -48,18 +53,17 @@ do
 	_Folder = "Fetching'Script/Config" .. "/" .. _LocalPlayer.Name .. "/" .. _id .. ".json"
 	_PlayerGui = _LocalPlayer.PlayerGui;
 	_Backpack = _LocalPlayer.Backpack;
-	nilinstances = getnilinstances()
-	request = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request;
-	getconnections = getconnections or get_signal_cons;
-	setfpscap = (syn and syn.setfpscap);
-	cloneref = (syn and syn.cloneref);
-	readfile = (syn and syn.readfile);
-	writefile = (syn and syn.writefile);
-	isfile = (syn and syn.isfile);
-	isfolder = (syn and syn.isfolder);
-	makefolder = (syn and syn.makefolder);
-	delfile = (syn and syn.delfile);
-	setclipboard = (syn and syn.setclipboard);
+	request = request;
+	getconnections = getconnections;
+	setfpscap = setfpscap;
+	cloneref = cloneref;
+	readfile = readfile;
+	writefile = writefile;
+	isfile = isfile;
+	isfolder = isfolder;
+	makefolder = makefolder;
+	delfile = delfile;
+	setclipboard = setclipboard;
 	_Icons = {
 		general = 81707063924327,jigsaw = 112798812841371,
 		eye = 127654928705257,special = 89895957638788,
@@ -75,7 +79,7 @@ do
 		download = 94548929927000,display = 116121048695649,
 		night = 105855852945791,day = 83758878478130,
 		cloud = 107927309418429,bookmark = 96315518803478,
-		location = 122781330909345, generalcolor = 17233391579,
+		location = 983985609976125, generalcolor = 17233391579,
 		automatic = 17113787043, shop = 137810459172585
 	};
 end;
@@ -98,11 +102,12 @@ task.spawn(function()
 		end)
 	end
 end);
+getgenv = getgenv
 _copy = function(str)setclipboard(str)end;
 _LocalPlayer.CharacterAdded:Connect(function(newCharacter)Character=newCharacter;end);
 _loadstr = function(raw)loadstring(game:HttpGet(raw))()return;end;
 _translate=function(en,th)if _G.Thailand or getgenv().Thai or _G.Thai then return tostring(th)else return tostring(en)end end;
-_queueteleport = (syn and syn.queue_on_teleport) or queue_on_teleport or (fluxus and fluxus.queue_on_teleport);
+queue_on_teleport = queue_on_teleport
 _NotPlayers = function(Inc)return Service.Players:GetPlayerFromCharacter(Inc)end;
 _IsRootPart = function()return Character and Character:FindFirstChild("HumanoidRootPart") ~= nil;end;
 _checktable = function(config,_table)for _,v in pairs(_table)do if config[v] == true then return true end end return false end;
@@ -148,6 +153,9 @@ DeleteSettings = function()
 		delfile(_Folder)
 	end
 end;
+RbxtoNumber = function(rbx)
+	return tonumber(string.match(rbx, "%d+"))
+end
 NumtoRbx = function(i)
 	if type(i) == 'string' and not i:find('rbxassetid://') then
 		return "rbxassetid://".. i
@@ -156,15 +164,6 @@ NumtoRbx = function(i)
 	else
 		return i
 	end
-end;
-toList = function(Inc)
-	local value = {}
-	for i, v in next, Inc:GetChildren() do
-		if not table.find(value, v.Name) then
-			table.insert(value, v.Name)
-		end
-	end
-	return value
 end;
 HopServer = function()
 	pcall(function()
@@ -190,125 +189,6 @@ html = function(text, color)
 	return text
 end
 Isnil = html("N/A", Color3.fromRGB(255, 255, 0))
-DistanceFromCharacter = function(instance)
-	if Character then
-		return _LocalPlayer:DistanceFromCharacter(instance)
-	else
-		return nil
-	end
-end;
-sendwebhook = function(url, data)
-	local success, newdata = pcall(function()
-		return Service.HttpService:JSONEncode(data)
-	end)
-	if not success then
-		print("Error encoding data to JSON:", newdata)
-		return
-	end
-	local headers = {
-		["Content-Type"] = "application/json"
-	}
-	local success, response = pcall(function()
-		return request({
-			Url = url,
-			Body = newdata,
-			Method = "POST",
-			Headers = headers
-		})
-	end)
-	return success
-end;
-get = function(position)
-	if _IsRootPart() then
-		return math.floor((Character.HumanoidRootPart.Position - position).Magnitude)
-	end
-	return 0
-end;
-esp = function(instance, Color)
-	if not instance:FindFirstChild("HighlightEffect") then
-		local highlight = Instance.new("Highlight")
-		highlight.Name = "HighlightEffect"
-		highlight.Adornee = instance
-		highlight.FillColor = Color
-		highlight.OutlineColor = Color3.fromRGB(0, 0, 0)
-		highlight.FillTransparency = 0.4
-		highlight.OutlineTransparency = 0
-		highlight.Parent = instance
-	end
-	if not instance:FindFirstChild("ESP") then
-		local BillboardGui = Instance.new("BillboardGui")
-		local TextLabel = Instance.new("TextLabel")
-		BillboardGui.Adornee = instance
-		BillboardGui.Name = "ESP"
-		BillboardGui.Parent = instance
-		BillboardGui.Size = UDim2.new(0, 100, 0, 150)
-		BillboardGui.StudsOffset = Vector3.new(0, 2, 0)
-		BillboardGui.AlwaysOnTop = true
-		TextLabel.Parent = BillboardGui
-		TextLabel.BackgroundTransparency = 1
-		TextLabel.Position = UDim2.new(0, 0, 0, -50)
-		TextLabel.Size = UDim2.new(0, 100, 0, 100)
-		TextLabel.Font = Enum.Font.SourceSansSemibold
-		TextLabel.TextSize = 20
-		TextLabel.TextColor3 = Color
-		TextLabel.TextStrokeTransparency = 0
-		TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-		TextLabel.ZIndex = 10
-		task.spawn(function()
-			while task.wait(0.1) do
-				local distance
-				if instance:IsA("BasePart") then
-					distance = get(instance.Position)
-				elseif instance:IsA("Model") then
-					distance = get(instance:GetPivot().Position)
-				end
-				TextLabel.Text = instance.Name .. " | " .. tostring(distance) .. "m"
-			end
-		end)
-	end
-end
-espPlayers = function(instance, Color)
-	if instance:IsA("BasePart") or instance:IsA("Model") then
-		if not instance:FindFirstChild("HighlightEffect") then
-			local highlight = Instance.new("Highlight")
-			highlight.Name = "HighlightEffect"
-			highlight.Adornee = instance
-			highlight.FillColor = Color
-			highlight.OutlineColor = Color3.fromRGB(0, 0, 0)
-			highlight.FillTransparency = 0.4
-			highlight.OutlineTransparency = 0
-			highlight.Parent = instance
-		end
-		if not instance:FindFirstChild("ESP") then
-			local BillboardGui = Instance.new("BillboardGui")
-			local TextLabel = Instance.new("TextLabel")
-			BillboardGui.Adornee = instance
-			BillboardGui.Name = "ESP"
-			BillboardGui.Parent = instance
-			BillboardGui.Size = UDim2.new(0, 100, 0, 150)
-			BillboardGui.StudsOffset = Vector3.new(0, 2, 0)
-			BillboardGui.AlwaysOnTop = true
-			TextLabel.Parent = BillboardGui
-			TextLabel.BackgroundTransparency = 1
-			TextLabel.Position = UDim2.new(0, 0, 0, -50)
-			TextLabel.Size = UDim2.new(0, 100, 0, 100)
-			TextLabel.Font = Enum.Font.SourceSansSemibold
-			TextLabel.TextSize = 20
-			TextLabel.TextColor3 = Color
-			TextLabel.TextStrokeTransparency = 0
-			TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-			TextLabel.ZIndex = 10
-			task.spawn(function()
-				while task.wait(0.1) do
-					if instance:IsA("Model") then
-						local distance = get(instance:GetPivot().Position)
-						TextLabel.Text = instance.Name .. " | " .. tostring(distance) .. "m"
-					end
-				end
-			end)
-		end
-	end
-end;
 GetY = function(part)
 	local head = part.Position + Vector3.new(0, part.Size.Y / 2, 0)
 	return head
@@ -402,44 +282,6 @@ noclip = function()
 	end
 	Noclip = _stepped:Connect(Nocl)
 end
-Tween = function(p)
-	local hrp = Character.HumanoidRootPart
-	local Distance = (p.Position - hrp.Position).Magnitude
-	workspace.Gravity = 0
-	if Distance < 300 then
-		hrp.CFrame = p
-		return
-	end
-	if Distance > 300 then
-		p = CFrame.new(p.Position.X, 150, p.Position.Z)
-	elseif p.Position.Y >= 160 then
-		p = CFrame.new(p.Position.X, p.Position.Y + 150, p.Position.Z)
-	end
-	if not Character:FindFirstChild("PartTele") then
-		local partTele = Instance.new("Part", Character)
-		partTele.Size = Vector3.new(10,1,10)
-		partTele.Name = "PartTele"
-		partTele.Anchored = true
-		partTele.Transparency = 1
-		partTele.CanCollide = false
-		partTele.CFrame = hrp.CFrame
-		partTele:GetPropertyChangedSignal("CFrame"):Connect(function()
-			task.wait(0.01)
-			hrp.CFrame = partTele.CFrame
-		end)
-	end
-	local partTele = Character.PartTele
-	local tw = Service.TweenService:Create(partTele, TweenInfo.new(Distance / 320, Enum.EasingStyle.Linear), {CFrame = p})
-	tw:Play()
-	function StopTween()
-		if tw then
-			tw:Cancel()
-		end
-		if Character:FindFirstChild("PartTele") then
-			Character:FindFirstChild("PartTele"):Destroy()
-		end
-	end
-end
 WeAreLoop = function(C)
 	task.spawn(function()
 		while task.wait() do
@@ -453,7 +295,7 @@ Window = Fetching:Window({Logo = 128185233852701,Size = UDim2.new(0, 500,0, 375)
 Tabs = {
 	['General'] = Window:CreateTab({Title = _translate("General", "ทั่วไป"),Icon = 97459673019824});
 	['Auto'] = Window:CreateTab({Title = _translate("Automatic", "อัตโนมติ"),Icon = 89895957638788});
-	['Teleport'] = Window:CreateTab({Title = _translate("Teleport", "เทเลพอร์ค"),Icon = _Icons.location});
+	['Teleport'] = Window:CreateTab({Title = _translate("Teleport", "เทเลพอร์ค"),Icon = 98398560997612});
 	['Misc'] = Window:CreateTab({Title = _translate("Miscellaneous", "เพิ่มเติม"),Icon = 112798812841371});
 }
 General = {
@@ -544,6 +386,7 @@ function IsRod()
 	return workspace.PlayerStats[_LocalPlayer.Name].T[_LocalPlayer.Name].Stats.rod.Value
 end
 Rod = IsRod()
+Rod_In = Character:FindFirstChild(tostring(IsRod()))
 Reel = Service.ReplicatedStorage.events["reelfinished "]
 RodLabel = General.General:Paragarp({
 	Title = _translate(html("Rod", Color3.fromRGB(85, 170, 255)) .. " : " .. Isnil, html("เบ็ด", Color3.fromRGB(85, 170, 255)) .. " : " .. Isnil)
@@ -564,6 +407,19 @@ General.General:CreateToggle({
 		SaveSettings()
 	end})
 General.General:Line()
+SavePos = General.General:CreateButton({Title = _translate("Save Position", "บันทึกตำแหน่ง"),Callback = function()
+	if _IsRootPart() then
+		local Root = Character:FindFirstChild("HumanoidRootPart")
+		_G.Configs.PositionX = Root.Position.X
+		_G.Configs.PositionY = Root.Position.Y
+		_G.Configs.PositionZ = Root.Position.Z
+		_G.Configs.RotationX = Root.Rotation.X
+		_G.Configs.RotationY = Root.Rotation.Y
+		_G.Configs.RotationZ = Root.Rotation.Z
+	end
+	SaveSettings()
+end})
+Line = General.General:Line()
 General.General:CreateToggle({
 	Title = _translate("Enable Track Events","เปิดใช้งานการแทรกอีเว้นท์"),
 	Value = _G.Configs.TrackEvents,
@@ -582,14 +438,18 @@ General.General:CreateDropdown({
 	end})
 
 WeAreLoop(function()
-	if _G.Configs.TrackEvents then
-		if _G.Configs.Fishing then
+	if _G.Configs.Fishing then
+		if _G.Configs.TrackEvents then
 			pcall(function()
 				for _, v in pairs(workspace.zones.fishing:GetChildren()) do
 					if table.find(_G.Configs.EventsLists, v.Name) then 
 						if v.Name == "Forsaken Veil - Scylla" then
 							tp(CFrame.new(-2172, -11218, 7060))
-							spin(Vector3.new(180, 81.55699920654297, 180))
+							spin(CFrame.Angles(
+								math.rad(180),
+								math.rad(81),
+								math.rad(180)
+								))
 						elseif v.Name == "Whales Pool" then
 							tp(CFrame.new(GetY(v)) * CFrame.new(0,5,0))
 							if Character:FindFirstChild("HumanoidRootPart") then
@@ -611,11 +471,35 @@ WeAreLoop(function()
 						elseif v.Name == "Whale Shark" then
 							tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
 						else
-							continue
+							if _G.Configs.PositionMode == "Save Position" then
+								tp(CFrame.new(
+									_G.Configs.PositionX,
+									_G.Configs.PositionY,
+									_G.Configs.PositionZ
+									))
+								spin(CFrame.Angles(
+									math.rad(_G.Configs.RotationX),
+									math.rad(_G.Configs.RotationY),
+									math.rad(_G.Configs.RotationZ)
+									))
+							end
 						end
 					end
 				end
 			end)
+		else
+			if _G.Configs.PositionMode == "Save Position" then
+				tp(CFrame.new(
+					_G.Configs.PositionX,
+					_G.Configs.PositionY,
+					_G.Configs.PositionZ
+					))
+				spin(CFrame.Angles(
+					math.rad(_G.Configs.RotationX),
+					math.rad(_G.Configs.RotationY),
+					math.rad(_G.Configs.RotationZ)
+					))
+			end
 		end
 	end
 end)
@@ -626,10 +510,12 @@ General.Config:CreateToggle({Title = _translate("Equip","ออโต้ถื�
 	SaveSettings()
 end})
 WeAreLoop(function()
-	if _G.Configs.EquipRod and _G.Configs.Fishing then
-		local Rod_InB = _Backpack:FindFirstChild(tostring(IsRod()))
-		if Rod_InB and not Character:FindFirstChild(tostring(IsRod())) then
-			Character.Humanoid:EquipTool(Rod_InB)
+	if _G.Configs.EquipRod then
+		if _G.Configs.Fishing or _Scylla or _WhaleShark or _WhiteShark or _Kraken or _Orca or _Megalodon or _BlueWhale or _HammerShark then
+			local Rod_InB = _Backpack:FindFirstChild(tostring(IsRod()))
+			if Rod_InB then
+				Character.Humanoid:EquipTool(Rod_InB)
+			end
 		end
 	end
 end)
@@ -640,10 +526,12 @@ General.Config:CreateToggle({Title = _translate("Cast","ออโต้โยน
 	SaveSettings()
 end})
 WeAreLoop(function()
-	if _G.Configs.Cast and _G.Configs.Fishing then
-		local Rod_In = Character:FindFirstChild(tostring(IsRod()))
-		if Rod_In and not Rod_In:FindFirstChild("bobber", true) then
-			Rod_In.events.cast:FireServer(100, 1)
+	if _G.Configs.Cast then
+		if _G.Configs.Fishing or _Scylla or _WhaleShark or _WhiteShark or _Kraken or _Orca or _Megalodon or _BlueWhale or _HammerShark then
+			Rod_In = Character:FindFirstChild(tostring(IsRod()))
+			if Rod_In and not Rod_In:FindFirstChild("bobber", true) then
+				Rod_In.events.cast:FireServer(1, 1)
+			end
 		end
 	end
 end)
@@ -653,12 +541,14 @@ General.Config:CreateToggle({Title = _translate("Shake","ออโต้กด�
 	SaveSettings()
 end})
 WeAreLoop(function()
-	if _G.Configs.Shake and _G.Configs.Fishing then
-		pcall(function()
-			_PlayerGui:FindFirstChild("shakeui").safezone:FindFirstChild("button").Size = UDim2.new(1001, 0, 1001, 0)
-			Service.VirtualUser:Button1Down(Vector2.new(1, 1))
-			Service.VirtualUser:Button1Up(Vector2.new(1, 1))
-		end)
+	if _G.Configs.Shake then
+		if _G.Configs.Fishing or _Scylla or _WhaleShark or _WhiteShark or _Kraken or _Orca or _Megalodon or _BlueWhale or _HammerShark then
+			pcall(function()
+				_PlayerGui:FindFirstChild("shakeui").safezone:FindFirstChild("button").Size = UDim2.new(1001, 0, 1001, 0)
+				Service.VirtualUser:Button1Down(Vector2.new(1, 1))
+				Service.VirtualUser:Button1Up(Vector2.new(1, 1))
+			end)
+		end
 	end
 end)
 
@@ -674,60 +564,80 @@ WeAreLoop(function()
 	end
 end)
 
+
+ModeParagarp = General.Config:CreateImage({
+	Title = _translate(html("Warning", Color3.fromRGB(255, 56, 59)), html("คำเตือน", Color3.fromRGB(255, 56, 59))),
+	Desc = _translate("Using Cancel Animation Mode has a High Chance to Losing Caught Fish.n\Required : Save Position Mode","การใช้โหมดยกเลิกอนิเมชั่นมีโอกาสสูงที่จะสูญเสียปลาn\ต้องการ : Save Position Mode"),
+	Icon = NumtoRbx(137463329282571)
+})
+General.Config:CreateSelect({
+	Title = _translate("Mode Position", "โหมดการเลือกตำแหน่ง"),
+	List = {"Save Position", "Automatic"},
+	Value = _G.Configs.PositionMode,
+	Callback = function(value)
+		_G.Configs.PositionMode = value
+		if value == "Save Position" then
+			SavePos:SetVisible(true)
+			Line:SetVisible(true)
+		else
+			SavePos:SetVisible(false)
+			Line:SetVisible(false)
+		end
+		SaveSettings()
+	end,
+})
 General.Config:CreateSelect({
 	Title = _translate("Reeling", "โหมดดึงปลา"),
-	Desc = _translate("Select Reeling Mode", "เลือกโหมดดึงปลา"),
 	List = {"Beta - Cancle Animation", "Instant","Disable"},
 	Value = _G.Configs.Mode,
 	Callback = function(value)
 		_G.Configs.Mode = value
+		if value == "Beta - Cancle Animation" then
+			ModeParagarp:SetVisible(true)
+		else
+			ModeParagarp:SetVisible(false)
+		end
 		SaveSettings()
 	end,
 })
-local screenCenter = Vector2.new(workspace.CurrentCamera.ViewportSize.X/2, workspace.CurrentCamera.ViewportSize.Y/2)
-task.spawn(function()
-	while task.wait(1) do
-		if _G.Configs.Mode == "Beta - Cancle Animation" then
-			if _G.Configs.Fishing then
-				Service.VirtualUser:Button1Down(screenCenter)
-				Service.VirtualUser:Button1Up(screenCenter)
+WeAreLoop(function()
+	if _G.Configs.Mode == "Instant" then
+		if _G.Configs.Fishing or _Scylla or _WhaleShark or _WhiteShark or _Kraken or _Orca or _Megalodon or _BlueWhale or _HammerShark then
+			if _PlayerGui:FindFirstChild("reel") then
+				Reel:FireServer(100, true)
 			end
 		end
 	end
-end)
-WeAreLoop(function()
-	if _G.Configs.Mode == "Instant" and _G.Configs.Fishing then
-		if _PlayerGui:FindFirstChild("reel") then
-			Reel:FireServer(100, true)
-			Service.VirtualUser:Button1Down(Vector2.new(1, 1))
-			Service.VirtualUser:Button1Up(Vector2.new(1, 1))
-		end
-	end
-	if _G.Configs.Mode == "Beta - Cancle Animation" and _G.Configs.Fishing then
-		if Character then
-			local Rod_In = Character:FindFirstChild(tostring(IsRod()))
-			local humanoid = Character:FindFirstChildOfClass("Humanoid")
-			if humanoid then
-				for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
-					if track.Animation.AnimationId == "rbxassetid://134146970600575" then
-						task.spawn(function()
-							pcall(function()
-								_PlayerGui.reel:Destroy()
-							end)
-							task.wait(0.5)
-						end)
+	if _G.Configs.Mode == "Beta - Cancle Animation" then
+		if _G.Configs.Fishing or _Scylla or _WhaleShark or _WhiteShark or _Kraken or _Orca or _Megalodon or _BlueWhale or _HammerShark then
+			Rod_In = Character:FindFirstChild(tostring(IsRod()))
+			if _PlayerGui:FindFirstChild("reel") then
+				task.spawn(function()
+					pcall(function()
+						task.wait(0.8)
+						Reel:FireServer(100, true)
+						_PlayerGui.reel:Destroy()
 						Reel:FireServer(100, true)
 						Rod_In.events.reset:FireServer()
 						Rod_In.Parent = _Backpack
-					end
-				end
+					end)
+				end)
 			end
 		end
 	end
-end)
-WeAreLoop(function()
-	pcall(function()
-		Character.HumanoidRootPart.reeling:Destroy()
+	
+	task.spawn(function()
+		if _IsRootPart() then
+			if Character.Head:FindFirstChild("dialogline") then
+				Character.Head:FindFirstChild("dialogline"):Destroy()
+				Rod_In.Parent = _Backpack
+			end
+		end
+	end)
+	task.spawn(function()
+		pcall(function()
+			Character.HumanoidRootPart.reeling:Destroy()
+		end)
 	end)
 end)
 
@@ -782,6 +692,17 @@ WeAreLoop(function()
 					v:Destroy()
 				end
 			end
+			task.spawn(function()
+				pcall(function()
+					if _IsRootPart() then
+						for _, v in pairs(Character.HumanoidRootPart:GetChildren()) do
+							if v.Name == "xpGain" or v.Name == "powerfeedback" or v:IsA("ParticleEmitter") then
+								v:Destroy()
+							end
+						end
+					end
+				end)
+			end)
 		end
 	end)
 end)
@@ -820,34 +741,342 @@ WeAreLoop(function()
 		end
 	end)
 end)
-_G.Item = "nil"
-General.Item:CreateDropdown({
-	Title = _translate("Nearby Item", "ไอเท็มรอบตัว"),
-	List = toList(workspace.world.interactables),
-	Value = _G.Item,
-	Multi = false,
-	Callback = function(value)
-		_G.Item = value
-		SaveSettings()
-	end})
-General.Item:CreateButton({Title = _translate("Teleport", "เทเลพอร์ต"),CallBack = function()
-	if _G.Item ~= "nil" and workspace.world.interactables:FindFirstChild(_G.Item, true) then
-		local item = workspace.world.interactables:FindFirstChild(_G.Item, true)
-		tp(item:GetPivot())
-	else
-		warn("ไอเท็มที่เลือกไม่มีอยู่!")
+function Dropdown_Teleport_Refresh(info)
+	local Place = info.Place or General.General
+	local Name = unpack(info.Name)
+	local Path = info.Path or workspace
+	local List = {}
+	local Value = info.Value or "nil"
+	for _, v in pairs(Path:GetChildren()) do
+		table.insert(List, v.Name)
 	end
-end})
-General.Item:Line()
+	local Dropdown = Place:CreateDropdown({
+		Title = _translate(Name),
+		List = List,
+		Value = Value,
+		Multi = false,
+		Callback = function(value)
+			Value = value
+		end})
+	Place:CreateButton({Title = _translate("Teleport", "เทเลพอร์ต"),Callback = function()
+		if Value == "nil" then
+			return warn("Nil")
+		else
+			local thePlace = Path:FindFirstChild(Value)
+			if thePlace then
+				if thePlace:IsA("Model") then
+					tp(thePlace:GetPivot())
+				else
+					tp(thePlace.CFrame)
+				end
+			end
+		end
+	end})
+	Place:CreateButton({Title = _translate("Refresh", "รีเฟรช"),Callback = function()
+		List = {}
+		Dropdown:Clear()
+		for _, v in pairs(Path:GetChildren()) do  
+			if not table.find(List, v.Name) then
+				Dropdown:AddList(v.Name)
+			end
+		end
+	end})
+	Place:Line()
+end
 
-_indexBodyClip = {
-	'Fishing'
-}
+Dropdown_Teleport_Refresh({
+	Place = General.Item,
+	Name = {"Nearby Items", "ไอเท็มรอบๆ"},
+	Path = workspace.world.interactables,
+})
+Time = Auto.Events:Icon({
+	Title = _translate(html("Cycle", Color3.fromRGB(0, 255, 127)) .. " : " .. _PlayerGui.hud.safezone.worldstatuses["3_cycle"].label.Text, html("เวลา", Color3.fromRGB(0, 255, 127)) .. " : " .. _PlayerGui.hud.safezone.worldstatuses["3_cycle"].label.Text),
+	Image = RbxtoNumber(_PlayerGui.hud.safezone.worldstatuses["3_cycle"].Image)
+})
+Weather = Auto.Events:Icon({
+	Title = _translate(html("Weather", Color3.fromRGB(103, 144, 255)) .. " : " .. _PlayerGui.hud.safezone.worldstatuses["2_weather"].label.Text, html("สภาพอากาศ", Color3.fromRGB(103, 144, 255)) .. " : " .. _PlayerGui.hud.safezone.worldstatuses["2_weather"].label.Text),
+	Image = RbxtoNumber(_PlayerGui.hud.safezone.worldstatuses["2_weather"].Image)
+})
+Season = Auto.Events:Icon({
+	Title = _translate(html("Season", Color3.fromRGB(255, 255, 127)) .. " : " .. _PlayerGui.hud.safezone.worldstatuses["4_season"].label.Text, html("ฤดูกาล", Color3.fromRGB(255, 255, 127)) .. " : " .. _PlayerGui.hud.safezone.worldstatuses["4_season"].label.Text),
+	Image = RbxtoNumber(_PlayerGui.hud.safezone.worldstatuses["4_season"].Image)
+})
+WeAreLoop(function()
+	pcall(function()
+		Time:SetTitle(_translate(html("Cycle", Color3.fromRGB(0, 255, 127)) .. " : " .. _PlayerGui.hud.safezone.worldstatuses["3_cycle"].label.Text, html("เวลา", Color3.fromRGB(0, 255, 127)) .. " : " .. _PlayerGui.hud.safezone.worldstatuses["3_cycle"].label.Text))
+		Weather:SetTitle(_translate(html("Weather", Color3.fromRGB(103, 144, 255)) .. " : " .. _PlayerGui.hud.safezone.worldstatuses["2_weather"].label.Text, html("สภาพอากาศ", Color3.fromRGB(103, 144, 255)) .. " : " .. _PlayerGui.hud.safezone.worldstatuses["2_weather"].label.Text))
+		Season:SetTitle(_translate(html("Season", Color3.fromRGB(255, 255, 127)) .. " : " .. _PlayerGui.hud.safezone.worldstatuses["4_season"].label.Text, html("ฤดูกาล", Color3.fromRGB(255, 255, 127)) .. " : " .. _PlayerGui.hud.safezone.worldstatuses["4_season"].label.Text))
+
+		Time:SetImage(RbxtoNumber(_PlayerGui.hud.safezone.worldstatuses["3_cycle"].Image))
+		Season:SetImage(RbxtoNumber(_PlayerGui.hud.safezone.worldstatuses["4_season"].Image))
+		Weather:SetImage(RbxtoNumber(_PlayerGui.hud.safezone.worldstatuses["2_weather"].Image))
+	end)
+end)
+
+Line2 = Auto.Events:Line()
+
+Scylla = Auto.Events:CreateSpawn({
+	Title = _translate("Scylla", "ฮายดร้า"),
+	Color = Color3.fromRGB(62, 255, 62),
+})
+BlueWhale = Auto.Events:CreateSpawn({
+	Title = _translate("Blue Whale", "วาฬน้ำเงิน"),
+	Color = Color3.fromRGB(0, 85, 255),
+})
+Orca = Auto.Events:CreateSpawn({
+	Title = _translate("Orca", "วาฬเพชรฆาตร"),
+	Color = Color3.fromRGB(255, 255, 255),
+})
+Megalodon = Auto.Events:CreateSpawn({
+	Title = _translate("Megalodon", "เมกาโลดอน"),
+	Color = Color3.fromRGB(255, 0, 0),
+})
+Kraken = Auto.Events:CreateSpawn({
+	Title = _translate("Kraken", "คราเค่น"),
+	Color = Color3.fromRGB(85, 170, 127),
+})
+WhaleShark = Auto.Events:CreateSpawn({
+	Title = _translate("Whale Shark", "ฉลามวาฬ"),
+	Color = Color3.fromRGB(255, 0, 127),
+})
+HammerShark = Auto.Events:CreateSpawn({
+	Title = _translate("Greate Hammer Shark", "ฉลามหัวค้อน"),
+	Color = Color3.fromRGB(85, 85, 255),
+})
+WhiteShark = Auto.Events:CreateSpawn({
+	Title = _translate("Great White Shark", "ฉลามขาว"),
+	Color = Color3.fromRGB(85, 255, 255),
+})
+Mercant = Auto.Events:CreateSpawn({
+	Title = _translate("Travelling Mercant", "พ่อค้าเร่ร่อน"),
+	Color = Color3.fromRGB(85, 255, 255),
+})
+
+_Scylla = false
+_BlueWhale = false
+_Orca = false
+_Megalodon = false
+_Kraken = false
+_WhaleShark = false
+_HammerShark = false
+_WhiteShark = false
+--Toggle and button
+Scylla_Toggle = Auto.Automatic:CreateToggle({
+	Title = _translate("Caught Scylla", "ตกฮายดร้า"),
+	Value = _Scylla,
+	CallBack = function(v)
+		_Scylla = v
+	end
+})
+BlueWhale_Toggle = Auto.Automatic:CreateToggle({
+	Title = _translate("Caught Blue Whale", "ตกวาฬน้ำเงิน"),
+	Value = _BlueWhale,
+	CallBack = function(v)
+		_BlueWhale = v
+	end
+})
+Orca_Toggle = Auto.Automatic:CreateToggle({
+	Title = _translate("Caught Orca", "ตกวาฬเพชรฆาตร"),
+	Value = _Orca,
+	CallBack = function(v)
+		_Orca = v
+	end
+})
+Megalodon_Toggle = Auto.Automatic:CreateToggle({
+	Title = _translate("Caught Megalodon", "ตกเมกาโลดอน"),
+	Value = _Megalodon,
+	CallBack = function(v)
+		_Megalodon = v
+	end
+})
+Kraken_Toggle = Auto.Automatic:CreateToggle({
+	Title = _translate("Caught Kraken", "ตกคราเค่น"),
+	Value = _Kraken,
+	CallBack = function(v)
+		_Kraken = v
+	end
+})
+WhaleShark_Toggle = Auto.Automatic:CreateToggle({
+	Title = _translate("Caught Whale Shark", "ตกฉลามวาฬ"),
+	Value = _WhaleShark,
+	CallBack = function(v)
+		_WhaleShark = v
+	end
+})
+HammerShark_Toggle = Auto.Automatic:CreateToggle({
+	Title = _translate("Caught Greate Hammer Shark", "ตกฉลามหัวค้อน"),
+	Value = _HammerShark,
+	CallBack = function(v)
+		_HammerShark = v
+	end
+})
+WhiteShark_Toggle = Auto.Automatic:CreateToggle({
+	Title = _translate("Caught Great White Shark", "ตกฉลามขาว"),
+	Value = _WhiteShark,
+	CallBack = function(v)
+		_WhiteShark = v
+	end
+})
+Traveler_Button = Auto.Automatic:CreateButton({
+	Title = _translate("Teleport to Travelling Mercant", "เทเลพอร์ตไปที่พ่อค้าเร่ร่อน"),
+	Callback = function()
+		task.spawn(function()
+			pcall(function()
+				tp(workspace:FindFirstChild("Travelling Merchant", true):GetPivot())
+			end)
+		end)
+	end
+})
+WeAreLoop(function()
+	pcall(function()
+		for _, v in pairs(workspace.zones.fishing:GetChildren()) do
+			if v.Name == "Forsaken Veil - Scylla" then
+				if _Scylla then
+					tp(CFrame.new(-2172, -11218, 7060))
+					spin(CFrame.Angles(
+						math.rad(180),
+						math.rad(81),
+						math.rad(180)
+						))
+				else
+					_Scylla = false
+					continue
+				end
+			elseif v.Name == "Megalodon Default" then
+				if _Megalodon then
+					tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+				else
+					_Megalodon = false
+					continue
+				end
+			elseif v.Name == "Whales Pool" then
+				if _BlueWhale then
+					tp(CFrame.new(GetY(v)) * CFrame.new(0, 3, 0)) lookAt(v)
+				else
+					_BlueWhale = false
+					continue
+				end
+			elseif v.Name == "Orcas Pool" then
+				if _Orca then
+					tp(CFrame.new(GetY(v)) * CFrame.new(0,3,50))
+					if Character:FindFirstChild("HumanoidRootPart") then
+						Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.pi, 0)
+					end
+				else
+					_Orca = false
+					continue
+				end
+			elseif v.Name == "The Kraken Pool" then
+				if _Kraken then
+					tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+				else
+					_Kraken = false
+					continue
+				end
+			elseif v.Name == "Great Hammerhead Shark" then
+				if _HammerShark then
+					tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+				else
+					_HammerShark = false
+				end
+			elseif v.Name == "Great White Shark" then
+				if _WhiteShark then
+					tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+				else
+					_WhiteShark = false
+				end
+			elseif v.Name == "Whale Shark" then
+				if _WhaleShark then
+					tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+				else
+					_WhaleShark = false
+				end
+			end
+		end
+	end)
+end)
+function VisibleEvents(info)
+	local Toggle = info.Toggle
+	local _Spawn = info.Spawn
+	local Inc = info.Inc
+	local _string = info.string
+	local Deep = info.Deep or false
+	WeAreLoop(function()
+		pcall(function()
+			if Inc:FindFirstChild(_string, Deep) then
+				Toggle:SetVisible(true)
+				_Spawn:SetVisible(true)
+				Line2:SetVisible(true)
+			else
+				Toggle:SetVisible(false)
+				_Spawn:SetVisible(false)
+				Line2:SetVisible(false)
+			end
+		end)
+	end)
+end
+task.spawn(function()
+	VisibleEvents({
+		Toggle = Scylla_Toggle,
+		Spawn = Scylla,
+		Inc = workspace.zones.fishing,
+		string = "Forsaken Veil - Scylla"
+	})
+	VisibleEvents({
+		Toggle = BlueWhale_Toggle,
+		Spawn = BlueWhale,
+		Inc = workspace.zones.fishing,
+		string = "Whales Pool"
+	})
+	VisibleEvents({
+		Toggle = Megalodon_Toggle,
+		Spawn = Megalodon,
+		Inc = workspace.zones.fishing,
+		string = "Megalodon Default"
+	})
+	VisibleEvents({
+		Toggle = Orca_Toggle,
+		Spawn = Orca,
+		Inc = workspace.zones.fishing,
+		string = "Orcas Pool"
+	})
+	VisibleEvents({
+		Toggle = WhaleShark_Toggle,
+		Spawn = WhaleShark,
+		Inc = workspace.zones.fishing,
+		string = "Whale Shark"
+	})
+	VisibleEvents({
+		Toggle = WhiteShark_Toggle,
+		Spawn = WhiteShark,
+		Inc = workspace.zones.fishing,
+		string = "Great White Shark"
+	})
+	VisibleEvents({
+		Toggle = Kraken_Toggle,
+		Spawn = Kraken,
+		Inc = workspace.zones.fishing,
+		string = "The Kraken Pool"
+	})
+	VisibleEvents({
+		Toggle = HammerShark_Toggle,
+		Spawn = HammerShark,
+		Inc = workspace.zones.fishing,
+		string = "Great Hammerhead Shark"
+	})
+	VisibleEvents({
+		Toggle = Traveler_Button,
+		Spawn = Mercant,
+		Inc = workspace,
+		string = "Forsaken Veil - Scylla",
+		Deep = true
+	})
+end)
 
 task.spawn(function()
 	while task.wait() do
 		pcall(function()
-			if _checktable(_G.Configs, _indexBodyClip) then
+			if _G.Configs.Fishing or _Scylla or _WhaleShark or _WhiteShark or _Kraken or _Orca or _Megalodon or _BlueWhale or _HammerShark  then
 				if _IsRootPart() then
 					if not Character.HumanoidRootPart:FindFirstChild("BodyVelocity1") then
 						if Character.Humanoid.Sit == true then
@@ -863,7 +1092,6 @@ task.spawn(function()
 				end
 			else
 				Character.HumanoidRootPart:FindFirstChild("BodyVelocity1"):Destroy()
-				pcall(StopTween)
 			end
 		end)
 	end
