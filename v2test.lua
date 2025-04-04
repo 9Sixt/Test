@@ -615,11 +615,12 @@ WeAreLoop(function()
 				task.spawn(function()
 					pcall(function()
 						Reel:FireServer(100, true)
-						task.wait(1)
+						task.wait(0.75)
 						_PlayerGui.reel:Destroy()
 						Reel:FireServer(100, true)
 						Rod_In.events.reset:FireServer()
 						Rod_In.Parent = _Backpack
+						task.wait(0.75)
 					end)
 				end)
 			end
