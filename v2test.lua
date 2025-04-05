@@ -1,3 +1,4 @@
+getgenv().Start = tick()
 if not game:IsLoaded() then game.Loaded:Wait()end;repeat task.wait() until game:IsLoaded() and game:GetService("Players") and game:GetService("Players").LocalPlayer and game:GetService("Players").LocalPlayer.Character and game:GetService("Players").LocalPlayer.PlayerGui and game:GetService("Players").LocalPlayer.Backpack
 --[[if getgenv().isRunning then return end
 getgenv().isRunning = true]]
@@ -5,7 +6,7 @@ _G.Configs = {
 	Fishing = false,
 	Mode = "Instant",
 	TrackEvents = false,
-	EventsList = {"Forsaken Veil - Scylla", "Whales Pool"},
+	EventsLists = {"N/A", "N/A"},
 	EquipRod = true,
 	Cast = true,
 	Shake = true,
@@ -22,6 +23,8 @@ _G.Configs = {
 	RotationX = 0,
 	RotationY = 0,
 	RotationZ = 0,
+	FPS = 999,
+	White = false
 }
 do	
 	Service = {
@@ -85,6 +88,11 @@ do
 end;
 if Service.CoreGui:FindFirstChild("Fetching") then Service.CoreGui:FindFirstChild("Fetching"):Destroy()end;
 if Service.UserInputService.TouchEnabled and not Service.UserInputService.KeyboardEnabled then Mobile = true else PC = true end;
+if _id == 72907489978215 then
+	_G.W2 = true
+else
+	_G.W1 = true
+end
 task.spawn(function()
 	if getconnections then
 		for _,v in pairs(getconnections(_LocalPlayer.Idled)) do
@@ -294,7 +302,8 @@ LoadSettings()
 Window = Fetching:Window({Logo = 128185233852701,Size = UDim2.new(0, 500,0, 375)})
 Tabs = {
 	['General'] = Window:CreateTab({Title = _translate("General", "ทั่วไป"),Icon = 97459673019824});
-	['Auto'] = Window:CreateTab({Title = _translate("Automatic", "อัตโนมติ"),Icon = 89895957638788});
+	['Auto'] = Window:CreateTab({Title = _translate("Events", "อีเว้นท์"),Icon = _Icons.star});
+	['Item'] = Window:CreateTab({Title = _translate("Automatic", "อัตโนมติ"),Icon = 89895957638788});
 	['Teleport'] = Window:CreateTab({Title = _translate("Teleport", "เทเลพอร์ค"),Icon = 98398560997612});
 	['Misc'] = Window:CreateTab({Title = _translate("Miscellaneous", "เพิ่มเติม"),Icon = 112798812841371});
 }
@@ -335,6 +344,10 @@ Auto = {
 	});
 }
 Teleport = {
+	Sea = Tabs.Teleport:CreateSection({
+		Title = _translate("Sea", "ทะเล"),
+		Side = "l"
+	});
 	Island = Tabs.Teleport:CreateSection({
 		Title = _translate("Island", "เกาะ"),
 		Side = "l"
@@ -349,6 +362,14 @@ Teleport = {
 	});
 	Boat = Tabs.Teleport:CreateSection({
 		Title = _translate("Boat", "เรือ"),
+		Side = "r"
+	});
+	NPC = Tabs.Teleport:CreateSection({
+		Title = _translate("NPC", "ผู้คน [ NPC ]"),
+		Side = "r"
+	});
+	Place = Tabs.Teleport:CreateSection({
+		Title = _translate("Place", "สถานที่"),
 		Side = "r"
 	});
 }
@@ -393,17 +414,36 @@ RodLabel = General.General:Paragarp({
 })
 WeAreLoop(function()
 	pcall(function()
-		task.wait(1)
 		Rod = IsRod()
 		RodLabel:Set(_translate(html("Rod", Color3.fromRGB(85, 170, 255)) .. " : " .. tostring(Rod), html("เบ็ด", Color3.fromRGB(85, 170, 255)) .. " : " .. tostring(Rod)))
 	end)
 end)
+_G.AutoPosition = {
+	X = 0,
+	Y = 0,
+	Z = 0,
+}
+function AutoPosition()
+	if _IsRootPart() then
+		local Root = Character:FindFirstChild("HumanoidRootPart")
+		_G.AutoPosition.X = Root.Position.X
+		_G.AutoPosition.Y = Root.Position.Y
+		_G.AutoPosition.Z = Root.Position.Z
+	end
+end
 General.General:Line()
 General.General:CreateToggle({
 	Title = _translate("Automatic Fishing","ตกปลาอัตโนมัติ"),
 	Value = _G.Configs.Fishing,
 	CallBack = function(v)
 		_G.Configs.Fishing = v
+		if v then
+			if _G.Configs.PositionMode ~= "Save Position" then
+				AutoPosition()
+			end
+		else
+			setfpscap(999)
+		end
 		SaveSettings()
 	end})
 General.General:Line()
@@ -430,19 +470,21 @@ General.General:CreateToggle({
 General.General:CreateDropdown({
 	Title = _translate("Select Events", "เลือกอีเว้นท์"),
 	List = EventsList(),
-	Value = _G.Configs.EventsList,
+	Value = _G.Configs.EventsLists,
 	Multi = true,
 	Callback = function(value)
-		_G.Configs.EventsList = value
+		_G.Configs.EventsLists = value
 		SaveSettings()
 	end})
 
 WeAreLoop(function()
 	if _G.Configs.Fishing then
 		if _G.Configs.TrackEvents then
-			pcall(function()
-				for _, v in pairs(workspace.zones.fishing:GetChildren()) do
-					if table.find(_G.Configs.EventsLists, v.Name) then 
+			for _, v in pairs(workspace.zones.fishing:GetChildren()) do
+				if table.find(_G.Configs.EventsLists, v.Name) then 
+					if _G.W2 then
+						print("LUY")
+					else
 						if v.Name == "Forsaken Veil - Scylla" then
 							tp(CFrame.new(-2172, -11218, 7060))
 							spin(CFrame.Angles(
@@ -452,9 +494,6 @@ WeAreLoop(function()
 								))
 						elseif v.Name == "Whales Pool" then
 							tp(CFrame.new(GetY(v)) * CFrame.new(0,5,0))
-							if Character:FindFirstChild("HumanoidRootPart") then
-								Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.pi, 0)
-							end
 						elseif v.Name == "Orcas Pool" then
 							tp(CFrame.new(GetY(v)) * CFrame.new(0,3,50))
 							if Character:FindFirstChild("HumanoidRootPart") then
@@ -482,11 +521,13 @@ WeAreLoop(function()
 									math.rad(_G.Configs.RotationY),
 									math.rad(_G.Configs.RotationZ)
 									))
+							else
+								tp(CFrame.new(_G.AutoPosition.X, _G.AutoPosition.Y, _G.AutoPosition.Z))
 							end
 						end
 					end
 				end
-			end)
+			end
 		else
 			if _G.Configs.PositionMode == "Save Position" then
 				tp(CFrame.new(
@@ -499,11 +540,31 @@ WeAreLoop(function()
 					math.rad(_G.Configs.RotationY),
 					math.rad(_G.Configs.RotationZ)
 					))
+			else
+				tp(CFrame.new(_G.AutoPosition.X, _G.AutoPosition.Y, _G.AutoPosition.Z))
 			end
 		end
 	end
 end)
 
+task.spawn(function()
+	if _G.W2 then
+		_G.Events = {
+			_SeaLeviathan = false
+		}
+	else
+		_G.Events = {
+			_Scylla = false,
+			_BlueWhale = false,
+			_Orca = false,
+			_Megalodon = false,
+			_Kraken = false,
+			_WhaleShark = false,
+			_HammerShark = false,
+			_WhiteShark = false
+		}
+	end
+end)
 
 General.Config:CreateToggle({Title = _translate("Equip","ออโต้ถือเบ็ด"),Value = _G.Configs.EquipRod,CallBack = function(v)
 	_G.Configs.EquipRod = v
@@ -511,7 +572,7 @@ General.Config:CreateToggle({Title = _translate("Equip","ออโต้ถื�
 end})
 WeAreLoop(function()
 	if _G.Configs.EquipRod then
-		if _G.Configs.Fishing or _Scylla or _WhaleShark or _WhiteShark or _Kraken or _Orca or _Megalodon or _BlueWhale or _HammerShark then
+		if _G.Configs.Fishing or _G.Events._Scylla or _G.Events._WhaleShark or _G.Events._WhiteShark or _G.Events._Kraken or _G.Events._Orca or _G.Events._Megalodon or _G.Events._BlueWhale or _G.Events._HammerShark then
 			local Rod_InB = _Backpack:FindFirstChild(tostring(IsRod()))
 			if Rod_InB then
 				Character.Humanoid:EquipTool(Rod_InB)
@@ -527,7 +588,7 @@ General.Config:CreateToggle({Title = _translate("Cast","ออโต้โยน
 end})
 WeAreLoop(function()
 	if _G.Configs.Cast then
-		if _G.Configs.Fishing or _Scylla or _WhaleShark or _WhiteShark or _Kraken or _Orca or _Megalodon or _BlueWhale or _HammerShark then
+		if _G.Configs.Fishing or _G.Events._Scylla or _G.Events._WhaleShark or _G.Events._WhiteShark or _G.Events._Kraken or _G.Events._Orca or _G.Events._Megalodon or _G.Events._BlueWhale or _G.Events._HammerShark then
 			Rod_In = Character:FindFirstChild(tostring(IsRod()))
 			if Rod_In and not Rod_In:FindFirstChild("bobber", true) then
 				Rod_In.events.cast:FireServer(1, 1)
@@ -542,7 +603,7 @@ General.Config:CreateToggle({Title = _translate("Shake","ออโต้กด�
 end})
 WeAreLoop(function()
 	if _G.Configs.Shake then
-		if _G.Configs.Fishing or _Scylla or _WhaleShark or _WhiteShark or _Kraken or _Orca or _Megalodon or _BlueWhale or _HammerShark then
+		if _G.Configs.Fishing or _G.Events._Scylla or _G.Events._WhaleShark or _G.Events._WhiteShark or _G.Events._Kraken or _G.Events._Orca or _G.Events._Megalodon or _G.Events._BlueWhale or _G.Events._HammerShark then
 			pcall(function()
 				_PlayerGui:FindFirstChild("shakeui").safezone:FindFirstChild("button").Size = UDim2.new(1001, 0, 1001, 0)
 				Service.VirtualUser:Button1Down(Vector2.new(1, 1))
@@ -567,7 +628,7 @@ end)
 
 ModeParagarp = General.Config:CreateImage({
 	Title = _translate(html("Warning", Color3.fromRGB(255, 56, 59)), html("คำเตือน", Color3.fromRGB(255, 56, 59))),
-	Desc = _translate("Using Cancel Animation Mode has a High Chance to Losing Caught Fish.n\Required : Save Position Mode","การใช้โหมดยกเลิกอนิเมชั่นมีโอกาสสูงที่จะสูญเสียปลาn\ต้องการ : Save Position Mode"),
+	Desc = _translate("Using Cancel Animation Mode has a High Chance of Losing caught Fish.\nIf Use This Mode,\nYou won't be able to use Instant Mode.\nRecommend : Use with rods that have Lure Speed Less than 95%\nRequired : Save Position Mode.", "การใช้โหมดยกเลิกแอนิเมชันมีโอกาสสูงที่ปลาจะหลุด\nถ้าเปิดโหมดนี้จะไม่สามารถใช้โหมด Instant อีกเลย(ต้องออกเข้าใหม่เท่านั้น)\nแนะนำ : ใช้กับเบ็ดที่มีความเร็วในการล่อน้อยกว่า 95% \nต้องเปิดคู่กับ: โหมดบันทึกตำแหน่ง (Save Position Mode)"),
 	Icon = NumtoRbx(137463329282571)
 })
 General.Config:CreateSelect({
@@ -601,15 +662,30 @@ General.Config:CreateSelect({
 	end,
 })
 WeAreLoop(function()
+	pcall(function()
+		if _G.Configs.Fishing or _G.Events._Scylla or _G.Events._WhaleShark or _G.Events._WhiteShark or _G.Events._Kraken or _G.Events._Orca or _G.Events._Megalodon or _G.Events._BlueWhale or _G.Events._HammerShark then
+			local humanoid = Character:FindFirstChildOfClass("Humanoid")
+			for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+				if track.Animation.AnimationId == "rbxassetid://113972107465696" or
+					track.Animation.AnimationId == "rbxassetid://76859144349008" or
+					track.Animation.AnimationId == "rbxassetid://121544683887361" or
+					track.Animation.AnimationId == "rbxassetid://134146970600575" then
+					track:Destroy()
+				end
+			end
+		end
+	end)
+end)
+WeAreLoop(function()
 	if _G.Configs.Mode == "Instant" then
-		if _G.Configs.Fishing or _Scylla or _WhaleShark or _WhiteShark or _Kraken or _Orca or _Megalodon or _BlueWhale or _HammerShark then
+		if _G.Configs.Fishing or _G.Events._Scylla or _G.Events._WhaleShark or _G.Events._WhiteShark or _G.Events._Kraken or _G.Events._Orca or _G.Events._Megalodon or _G.Events._BlueWhale or _G.Events._HammerShark then
 			if _PlayerGui:FindFirstChild("reel") then
 				Reel:FireServer(100, true)
 			end
 		end
 	end
 	if _G.Configs.Mode == "Beta - Cancle Animation" then
-		if _G.Configs.Fishing or _Scylla or _WhaleShark or _WhiteShark or _Kraken or _Orca or _Megalodon or _BlueWhale or _HammerShark then
+		if _G.Configs.Fishing or _G.Events._Scylla or _G.Events._WhaleShark or _G.Events._WhiteShark or _G.Events._Kraken or _G.Events._Orca or _G.Events._Megalodon or _G.Events._BlueWhale or _G.Events._HammerShark then
 			Rod_In = Character:FindFirstChild(tostring(IsRod()))
 			if _PlayerGui:FindFirstChild("reel") then
 				task.spawn(function()
@@ -620,13 +696,11 @@ WeAreLoop(function()
 						Reel:FireServer(100, true)
 						Rod_In.events.reset:FireServer()
 						Rod_In.Parent = _Backpack
-						task.wait(0.75)
 					end)
 				end)
 			end
 		end
 	end
-	
 	task.spawn(function()
 		if _IsRootPart() then
 			if Character.Head:FindFirstChild("dialogline") then
@@ -647,11 +721,11 @@ General.Sell:CreateToggle({Title = _translate("Automatic Selling All Fish","ข�
 	SaveSettings()
 end})
 General.Sell:Line()
-General.Sell:CreateButton({Title = _translate("Sell Holding Fish", "ขายปลาที่ถืออยู่"),CallBack = function()
+General.Sell:CreateButton({Title = _translate("Sell Holding Fish", "ขายปลาที่ถืออยู่"),Callback = function()
 	Service.ReplicatedStorage.events.Sell:InvokeServer()
 end})
 General.Sell:Line()
-General.Sell:CreateButton({Title = _translate("Sell All Fish", "ขายปลาทั้งหมด"),CallBack = function()
+General.Sell:CreateButton({Title = _translate("Sell All Fish", "ขายปลาทั้งหมด"),Callback = function()
 	Service.ReplicatedStorage.events.SellAll:InvokeServer()
 end})
 task.spawn(function()
@@ -744,15 +818,31 @@ WeAreLoop(function()
 end)
 function Dropdown_Teleport_Refresh(info)
 	local Place = info.Place or General.General
-	local Name = unpack(info.Name)
+	local Name = info.Name
+	local Name2 = info.Name2
 	local Path = info.Path or workspace
+	local CheckList = {}
 	local List = {}
-	local Value = info.Value or "nil"
+	local Value = info.Value or "N/A"
+	local PlayerIs = info.py or false
 	for _, v in pairs(Path:GetChildren()) do
-		table.insert(List, v.Name)
+		if PlayerIs then
+			if not CheckList[v.Name] then
+				if v ~= _LocalPlayer then
+					table.insert(List, v.Name)
+					CheckList[v.Name] = true
+				end
+			end
+		else
+			if not CheckList[v.Name] then
+				table.insert(List, v.Name)
+				CheckList[v.Name] = true
+
+			end
+		end
 	end
 	local Dropdown = Place:CreateDropdown({
-		Title = _translate(Name),
+		Title = _translate(Name, Name2),
 		List = List,
 		Value = Value,
 		Multi = false,
@@ -760,34 +850,57 @@ function Dropdown_Teleport_Refresh(info)
 			Value = value
 		end})
 	Place:CreateButton({Title = _translate("Teleport", "เทเลพอร์ต"),Callback = function()
-		if Value == "nil" then
+		if Value == "N/A" then
 			return warn("Nil")
 		else
-			local thePlace = Path:FindFirstChild(Value)
-			if thePlace then
-				if thePlace:IsA("Model") then
-					tp(thePlace:GetPivot())
-				else
-					tp(thePlace.CFrame)
+			if PlayerIs then
+				local P = Service.Players:FindFirstChild(Value)
+				if P then
+					if P.Character then
+						local humanoidRootPart = P.Character:FindFirstChild("HumanoidRootPart")  -- ค้นหา HumanoidRootPart
+						if humanoidRootPart then
+							tp(humanoidRootPart.CFrame)
+						end
+					end
+				end
+			else
+				local thePlace = Path:FindFirstChild(Value)
+				if thePlace then
+					if thePlace:IsA("Model") then
+						tp(thePlace:GetPivot())
+					else
+						tp(thePlace.CFrame)
+					end
 				end
 			end
 		end
 	end})
 	Place:CreateButton({Title = _translate("Refresh", "รีเฟรช"),Callback = function()
+		CheckList = {}
 		List = {}
 		Dropdown:Clear()
-		for _, v in pairs(Path:GetChildren()) do  
-			if not table.find(List, v.Name) then
-				Dropdown:AddList(v.Name)
+		for _, v in pairs(Path:GetChildren()) do
+			if PlayerIs then
+				if not CheckList[v.Name] then
+					if v ~= _LocalPlayer then
+						Dropdown:AddList(v.Name)
+						CheckList[v.Name] = true
+					end
+				end
+			else
+				if not CheckList[v.Name] then
+					Dropdown:AddList(v.Name)
+					CheckList[v.Name] = true
+				end
 			end
 		end
 	end})
-	Place:Line()
 end
 
 Dropdown_Teleport_Refresh({
 	Place = General.Item,
-	Name = {"Nearby Items", "ไอเท็มรอบๆ"},
+	Name = "Nearby Items",
+	Name2 = "ไอเท็มรอบๆ",
 	Path = workspace.world.interactables,
 })
 Time = Auto.Events:Icon({
@@ -815,187 +928,7 @@ WeAreLoop(function()
 end)
 
 Line2 = Auto.Events:Line()
-
-Scylla = Auto.Events:CreateSpawn({
-	Title = _translate("Scylla", "ฮายดร้า"),
-	Color = Color3.fromRGB(62, 255, 62),
-})
-BlueWhale = Auto.Events:CreateSpawn({
-	Title = _translate("Blue Whale", "วาฬน้ำเงิน"),
-	Color = Color3.fromRGB(0, 85, 255),
-})
-Orca = Auto.Events:CreateSpawn({
-	Title = _translate("Orca", "วาฬเพชรฆาตร"),
-	Color = Color3.fromRGB(255, 255, 255),
-})
-Megalodon = Auto.Events:CreateSpawn({
-	Title = _translate("Megalodon", "เมกาโลดอน"),
-	Color = Color3.fromRGB(255, 0, 0),
-})
-Kraken = Auto.Events:CreateSpawn({
-	Title = _translate("Kraken", "คราเค่น"),
-	Color = Color3.fromRGB(85, 170, 127),
-})
-WhaleShark = Auto.Events:CreateSpawn({
-	Title = _translate("Whale Shark", "ฉลามวาฬ"),
-	Color = Color3.fromRGB(255, 0, 127),
-})
-HammerShark = Auto.Events:CreateSpawn({
-	Title = _translate("Greate Hammer Shark", "ฉลามหัวค้อน"),
-	Color = Color3.fromRGB(85, 85, 255),
-})
-WhiteShark = Auto.Events:CreateSpawn({
-	Title = _translate("Great White Shark", "ฉลามขาว"),
-	Color = Color3.fromRGB(85, 255, 255),
-})
-Mercant = Auto.Events:CreateSpawn({
-	Title = _translate("Travelling Mercant", "พ่อค้าเร่ร่อน"),
-	Color = Color3.fromRGB(85, 255, 255),
-})
-
-_Scylla = false
-_BlueWhale = false
-_Orca = false
-_Megalodon = false
-_Kraken = false
-_WhaleShark = false
-_HammerShark = false
-_WhiteShark = false
---Toggle and button
-Scylla_Toggle = Auto.Automatic:CreateToggle({
-	Title = _translate("Caught Scylla", "ตกฮายดร้า"),
-	Value = _Scylla,
-	CallBack = function(v)
-		_Scylla = v
-	end
-})
-BlueWhale_Toggle = Auto.Automatic:CreateToggle({
-	Title = _translate("Caught Blue Whale", "ตกวาฬน้ำเงิน"),
-	Value = _BlueWhale,
-	CallBack = function(v)
-		_BlueWhale = v
-	end
-})
-Orca_Toggle = Auto.Automatic:CreateToggle({
-	Title = _translate("Caught Orca", "ตกวาฬเพชรฆาตร"),
-	Value = _Orca,
-	CallBack = function(v)
-		_Orca = v
-	end
-})
-Megalodon_Toggle = Auto.Automatic:CreateToggle({
-	Title = _translate("Caught Megalodon", "ตกเมกาโลดอน"),
-	Value = _Megalodon,
-	CallBack = function(v)
-		_Megalodon = v
-	end
-})
-Kraken_Toggle = Auto.Automatic:CreateToggle({
-	Title = _translate("Caught Kraken", "ตกคราเค่น"),
-	Value = _Kraken,
-	CallBack = function(v)
-		_Kraken = v
-	end
-})
-WhaleShark_Toggle = Auto.Automatic:CreateToggle({
-	Title = _translate("Caught Whale Shark", "ตกฉลามวาฬ"),
-	Value = _WhaleShark,
-	CallBack = function(v)
-		_WhaleShark = v
-	end
-})
-HammerShark_Toggle = Auto.Automatic:CreateToggle({
-	Title = _translate("Caught Greate Hammer Shark", "ตกฉลามหัวค้อน"),
-	Value = _HammerShark,
-	CallBack = function(v)
-		_HammerShark = v
-	end
-})
-WhiteShark_Toggle = Auto.Automatic:CreateToggle({
-	Title = _translate("Caught Great White Shark", "ตกฉลามขาว"),
-	Value = _WhiteShark,
-	CallBack = function(v)
-		_WhiteShark = v
-	end
-})
-Traveler_Button = Auto.Automatic:CreateButton({
-	Title = _translate("Teleport to Travelling Mercant", "เทเลพอร์ตไปที่พ่อค้าเร่ร่อน"),
-	Callback = function()
-		task.spawn(function()
-			pcall(function()
-				tp(workspace:FindFirstChild("Travelling Merchant", true):GetPivot())
-			end)
-		end)
-	end
-})
-WeAreLoop(function()
-	pcall(function()
-		for _, v in pairs(workspace.zones.fishing:GetChildren()) do
-			if v.Name == "Forsaken Veil - Scylla" then
-				if _Scylla then
-					tp(CFrame.new(-2172, -11218, 7060))
-					spin(CFrame.Angles(
-						math.rad(180),
-						math.rad(81),
-						math.rad(180)
-						))
-				else
-					_Scylla = false
-					continue
-				end
-			elseif v.Name == "Megalodon Default" then
-				if _Megalodon then
-					tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
-				else
-					_Megalodon = false
-					continue
-				end
-			elseif v.Name == "Whales Pool" then
-				if _BlueWhale then
-					tp(CFrame.new(GetY(v)) * CFrame.new(0, 3, 0)) lookAt(v)
-				else
-					_BlueWhale = false
-					continue
-				end
-			elseif v.Name == "Orcas Pool" then
-				if _Orca then
-					tp(CFrame.new(GetY(v)) * CFrame.new(0,3,50))
-					if Character:FindFirstChild("HumanoidRootPart") then
-						Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.pi, 0)
-					end
-				else
-					_Orca = false
-					continue
-				end
-			elseif v.Name == "The Kraken Pool" then
-				if _Kraken then
-					tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
-				else
-					_Kraken = false
-					continue
-				end
-			elseif v.Name == "Great Hammerhead Shark" then
-				if _HammerShark then
-					tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
-				else
-					_HammerShark = false
-				end
-			elseif v.Name == "Great White Shark" then
-				if _WhiteShark then
-					tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
-				else
-					_WhiteShark = false
-				end
-			elseif v.Name == "Whale Shark" then
-				if _WhaleShark then
-					tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
-				else
-					_WhaleShark = false
-				end
-			end
-		end
-	end)
-end)
+NotEvents = Auto.Automatic:Notfound({Title = _translate("Empty Events", "อีเว้นท์ว่างปล่าว")})
 function VisibleEvents(info)
 	local Toggle = info.Toggle
 	local _Spawn = info.Spawn
@@ -1003,7 +936,6 @@ function VisibleEvents(info)
 	local _string = info.string
 	local Deep = info.Deep or false
 	WeAreLoop(function()
-		pcall(function()
 			if Inc:FindFirstChild(_string, Deep) then
 				Toggle:SetVisible(true)
 				_Spawn:SetVisible(true)
@@ -1013,71 +945,373 @@ function VisibleEvents(info)
 				_Spawn:SetVisible(false)
 				Line2:SetVisible(false)
 			end
+	end)
+end
+if _G.W2 then
+	SeaLeviathan = Auto.Events:CreateSpawn({
+		Title = _translate("Sea Leviathan", "เลเวียธาน"),
+		Color = Color3.fromRGB(0, 170, 255),
+	})
+
+else
+	Scylla = Auto.Events:CreateSpawn({
+		Title = _translate("Scylla", "ฮายดร้า"),
+		Color = Color3.fromRGB(62, 255, 62),
+	})
+	BlueWhale = Auto.Events:CreateSpawn({
+		Title = _translate("Blue Whale", "วาฬน้ำเงิน"),
+		Color = Color3.fromRGB(15, 79, 255),
+	})
+	Orca = Auto.Events:CreateSpawn({
+		Title = _translate("Orca", "วาฬเพชรฆาตร"),
+		Color = Color3.fromRGB(255, 255, 255),
+	})
+	Megalodon = Auto.Events:CreateSpawn({
+		Title = _translate("Megalodon", "เมกาโลดอน"),
+		Color = Color3.fromRGB(255, 0, 0),
+	})
+	Kraken = Auto.Events:CreateSpawn({
+		Title = _translate("Kraken", "คราเค่น"),
+		Color = Color3.fromRGB(85, 170, 127),
+	})
+	WhaleShark = Auto.Events:CreateSpawn({
+		Title = _translate("Whale Shark", "ฉลามวาฬ"),
+		Color = Color3.fromRGB(255, 0, 127),
+	})
+	HammerShark = Auto.Events:CreateSpawn({
+		Title = _translate("Greate Hammer Shark", "ฉลามหัวค้อน"),
+		Color = Color3.fromRGB(171, 171, 255),
+	})
+	WhiteShark = Auto.Events:CreateSpawn({
+		Title = _translate("Great White Shark", "ฉลามขาว"),
+		Color = Color3.fromRGB(85, 255, 255),
+	})
+	Mercant = Auto.Events:CreateSpawn({
+		Title = _translate("Travelling Mercant", "พ่อค้าเร่ร่อน"),
+		Color = Color3.fromRGB(85, 255, 255),
+	})
+	Meteor = Auto.Events:CreateSpawn({
+		Title = _translate("Meteor", "อุกกาบาต"),
+		Color = Color3.fromRGB(255, 85, 0),
+	})
+
+	--Toggle and button
+	Scylla_Toggle = Auto.Automatic:CreateToggle({
+		Title = _translate("Caught Scylla", "ตกฮายดร้า"),
+		Value = _G.Events._Scylla,
+		CallBack = function(v)
+			_G.Events._Scylla = v
+		end
+	})
+	BlueWhale_Toggle = Auto.Automatic:CreateToggle({
+		Title = _translate("Caught Blue Whale", "ตกวาฬน้ำเงิน"),
+		Value = _G.Events._BlueWhale,
+		CallBack = function(v)
+			_G.Events._BlueWhale = v
+		end
+	})
+	Orca_Toggle = Auto.Automatic:CreateToggle({
+		Title = _translate("Caught Orca", "ตกวาฬเพชรฆาตร"),
+		Value = _G.Events._Orca,
+		CallBack = function(v)
+			_G.Events._Orca = v
+		end
+	})
+	Megalodon_Toggle = Auto.Automatic:CreateToggle({
+		Title = _translate("Caught Megalodon", "ตกเมกาโลดอน"),
+		Value = _G.Events._Megalodon,
+		CallBack = function(v)
+			_G.Events._Megalodon = v
+		end
+	})
+	Kraken_Toggle = Auto.Automatic:CreateToggle({
+		Title = _translate("Caught Kraken", "ตกคราเค่น"),
+		Value = _G.Events._Kraken,
+		CallBack = function(v)
+			_G.Events._Kraken = v
+		end
+	})
+	WhaleShark_Toggle = Auto.Automatic:CreateToggle({
+		Title = _translate("Caught Whale Shark", "ตกฉลามวาฬ"),
+		Value = _G.Events._WhaleShark,
+		CallBack = function(v)
+			_G.Events._WhaleShark = v
+		end
+	})
+	HammerShark_Toggle = Auto.Automatic:CreateToggle({
+		Title = _translate("Caught Greate Hammer Shark", "ตกฉลามหัวค้อน"),
+		Value = _G.Events._HammerShark,
+		CallBack = function(v)
+			_G.Events._HammerShark = v
+		end
+	})
+	WhiteShark_Toggle = Auto.Automatic:CreateToggle({
+		Title = _translate("Caught Great White Shark", "ตกฉลามขาว"),
+		Value = _G.Events._WhiteShark,
+		CallBack = function(v)
+			_G.Events._WhiteShark = v
+		end
+	})
+	Traveler_Button = Auto.Automatic:CreateButton({
+		Title = _translate("Teleport to Travelling Mercant", "เทเลพอร์ตไปที่พ่อค้าเร่ร่อน"),
+		Callback = function()
+			task.spawn(function()
+				pcall(function()
+					tp(workspace:FindFirstChild("Travelling Merchant", true):GetPivot())
+				end)
+			end)
+		end
+	})
+	Meteor_Button = Auto.Automatic:CreateButton({
+		Title = _translate("Teleport to Metheor", "เทเลพอร์ตไปที่อุกกาบาต"),
+		Callback = function()
+			task.spawn(function()
+				pcall(function()
+					tp(workspace.active.meteorItems:FindFirstChildOfClass("Model"):GetPivot())
+				end)
+			end)
+		end
+	})
+	task.spawn(function()
+		VisibleEvents({
+			Toggle = Scylla_Toggle,
+			Spawn = Scylla,
+			Inc = workspace.zones.fishing,
+			string = "Forsaken Veil - Scylla"
+		})
+		VisibleEvents({
+			Toggle = BlueWhale_Toggle,
+			Spawn = BlueWhale,
+			Inc = workspace.zones.fishing,
+			string = "Whales Pool"
+		})
+		VisibleEvents({
+			Toggle = Megalodon_Toggle,
+			Spawn = Megalodon,
+			Inc = workspace.zones.fishing,
+			string = "Megalodon Default"
+		})
+		VisibleEvents({
+			Toggle = Orca_Toggle,
+			Spawn = Orca,
+			Inc = workspace.zones.fishing,
+			string = "Orcas Pool"
+		})
+		VisibleEvents({
+			Toggle = WhaleShark_Toggle,
+			Spawn = WhaleShark,
+			Inc = workspace.zones.fishing,
+			string = "Whale Shark"
+		})
+		VisibleEvents({
+			Toggle = WhiteShark_Toggle,
+			Spawn = WhiteShark,
+			Inc = workspace.zones.fishing,
+			string = "Great White Shark"
+		})
+		VisibleEvents({
+			Toggle = Kraken_Toggle,
+			Spawn = Kraken,
+			Inc = workspace.zones.fishing,
+			string = "The Kraken Pool"
+		})
+		VisibleEvents({
+			Toggle = HammerShark_Toggle,
+			Spawn = HammerShark,
+			Inc = workspace.zones.fishing,
+			string = "Great Hammerhead Shark"
+		})
+		VisibleEvents({
+			Toggle = Traveler_Button,
+			Spawn = Mercant,
+			Inc = workspace,
+			string = "Travelling Merchant",
+			Deep = true
+		})
+		task.spawn(function()
+			while task.wait() do
+				if _G.W1 then
+					if workspace.active.meteorItems:FindFirstChildOfClass("Model") then
+						Meteor:SetVisible(true)
+						Meteor_Button:SetVisible(true)
+						Line2:SetVisible(true)
+					else
+						Meteor:SetVisible(false)
+						Meteor_Button:SetVisible(false)
+						Line2:SetVisible(false)
+					end
+				else
+					if workspace.world.MeteorItems:FindFirstChildOfClass("Model") then
+						Meteor:SetVisible(true)
+						Meteor_Button:SetVisible(true)
+						Line2:SetVisible(true)
+					else
+						Meteor:SetVisible(false)
+						Meteor_Button:SetVisible(false)
+						Line2:SetVisible(false)
+					end
+				end
+			end
 		end)
 	end)
 end
+
+Dropdown_Teleport_Refresh({
+	Place = Teleport.Players,
+	Name = "Players",
+	Name2 = "ผู้เล่น",
+	Path = Service.Players,
+	py = true
+})
+Dropdown_Teleport_Refresh({
+	Place = Teleport.Boat,
+	Name = "Boats",
+	Name2 = "เรือ",
+	Path = workspace.active.boats
+})
+Dropdown_Teleport_Refresh({
+	Place = Teleport.Zone,
+	Name = "Zone",
+	Name2 = "โซน",
+	Path = workspace.zones.fishing,
+})
+Dropdown_Teleport_Refresh({
+	Place = Teleport.Island,
+	Name = "Island",
+	Name2 = "เกาะ",
+	Path = workspace.active["OceanPOI's"],
+})
+Dropdown_Teleport_Refresh({
+	Place = Teleport.NPC,
+	Name = "NPC",
+	Name2 = "ผู้คน - NPC",
+	Path = workspace.world.npcs,
+})
 task.spawn(function()
-	VisibleEvents({
-		Toggle = Scylla_Toggle,
-		Spawn = Scylla,
-		Inc = workspace.zones.fishing,
-		string = "Forsaken Veil - Scylla"
-	})
-	VisibleEvents({
-		Toggle = BlueWhale_Toggle,
-		Spawn = BlueWhale,
-		Inc = workspace.zones.fishing,
-		string = "Whales Pool"
-	})
-	VisibleEvents({
-		Toggle = Megalodon_Toggle,
-		Spawn = Megalodon,
-		Inc = workspace.zones.fishing,
-		string = "Megalodon Default"
-	})
-	VisibleEvents({
-		Toggle = Orca_Toggle,
-		Spawn = Orca,
-		Inc = workspace.zones.fishing,
-		string = "Orcas Pool"
-	})
-	VisibleEvents({
-		Toggle = WhaleShark_Toggle,
-		Spawn = WhaleShark,
-		Inc = workspace.zones.fishing,
-		string = "Whale Shark"
-	})
-	VisibleEvents({
-		Toggle = WhiteShark_Toggle,
-		Spawn = WhiteShark,
-		Inc = workspace.zones.fishing,
-		string = "Great White Shark"
-	})
-	VisibleEvents({
-		Toggle = Kraken_Toggle,
-		Spawn = Kraken,
-		Inc = workspace.zones.fishing,
-		string = "The Kraken Pool"
-	})
-	VisibleEvents({
-		Toggle = HammerShark_Toggle,
-		Spawn = HammerShark,
-		Inc = workspace.zones.fishing,
-		string = "Great Hammerhead Shark"
-	})
-	VisibleEvents({
-		Toggle = Traveler_Button,
-		Spawn = Mercant,
-		Inc = workspace,
-		string = "Forsaken Veil - Scylla",
-		Deep = true
-	})
+	if _G.W1 then
+		Dropdown_Teleport_Refresh({
+			Place = Teleport.Place,
+			Name = "Place",
+			Name2 = "สถานที่",
+			Path = workspace.world.spawns.TpSpots,
+		})
+	end
 end)
+Teleport.Sea:CreateButton({
+	Title = _translate("Teleport", "เทเลพอร์ด"),
+	Callback = function()
+		if workspace.PlayerStats[_LocalPlayer.Name].T[_LocalPlayer.Name].Cache.CurrentWorld.Value == "Sea 2" then
+			task.spawn(function()
+				pcall(function()
+					tp(CFrame.new(451, 84, 797))
+					task.wait(2)
+					workspace.world.npcs["Sea Traveler"].seatraveler.teleport:InvokeServer()
+				end)
+			end)
+		else
+			task.spawn(function()
+				pcall(function()
+					tp(CFrame.new(140, 150, 2020))
+					task.wait(2)
+					workspace.world.npcs["Sea Traveler"].seatraveler.teleport:InvokeServer()
+				end)
+			end)
+		end
+	end,
+})
+Misc.Performant:CreateToggle({
+	Title = _translate("White Screen", "จอขาว"),
+	Value = _G.Configs.White,
+	CallBack = function(v)
+		_G.Configs.White = v
+		if v then
+			game:GetService("RunService"):Set3dRenderingEnabled(false)
+		else
+			game:GetService("RunService"):Set3dRenderingEnabled(true)
+		end
+		SaveSettings()
+	end
+})
+Misc.Performant:Line()
+
+WeAreLoop(function()
+	pcall(function()
+		for _, v in pairs(workspace.zones.fishing:GetChildren()) do
+			if _G.W2 then
+
+			else
+				if v.Name == "Forsaken Veil - Scylla" then
+					if _G.Events._Scylla then
+						tp(CFrame.new(-2172, -11218, 7060))
+						spin(CFrame.Angles(
+							math.rad(180),
+							math.rad(81),
+							math.rad(180)
+							))
+					else
+						_G.Events._Scylla = false
+						continue
+					end
+				elseif v.Name == "Megalodon Default" then
+					if _G.Events._Megalodon then
+						tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+					else
+						_G.Events._Megalodon = false
+						continue
+					end
+				elseif v.Name == "Whales Pool" then
+					if _G.Events._BlueWhale then
+						tp(CFrame.new(GetY(v)) * CFrame.new(0, 3, 0)) lookAt(v)
+					else
+						_G.Events._BlueWhale = false
+						continue
+					end
+				elseif v.Name == "Orcas Pool" then
+					if _G.Events._Orca then
+						tp(CFrame.new(GetY(v)) * CFrame.new(0,3,50))
+						if Character:FindFirstChild("HumanoidRootPart") then
+							Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame * CFrame.Angles(0, math.pi, 0)
+						end
+					else
+						_G.Events._Orca = false
+						continue
+					end
+				elseif v.Name == "The Kraken Pool" then
+					if _G.Events._Kraken then
+						tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+					else
+						_G.Events._Kraken = false
+						continue
+					end
+				elseif v.Name == "Great Hammerhead Shark" then
+					if _G.Events._HammerShark then
+						tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+					else
+						_G.Events._HammerShark = false
+					end
+				elseif v.Name == "Great White Shark" then
+					if _G.Events._WhiteShark then
+						tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+					else
+						_G.Events._WhiteShark = false
+					end
+				elseif v.Name == "Whale Shark" then
+					if _G.Events._WhaleShark then
+						tp(CFrame.new(GetY(v)) * CFrame.new(15,5,0))
+					else
+						_G.Events._WhaleShark = false
+					end
+				end
+			end
+		end
+	end)
+end)
+
 
 task.spawn(function()
 	while task.wait() do
 		pcall(function()
-			if _G.Configs.Fishing or _Scylla or _WhaleShark or _WhiteShark or _Kraken or _Orca or _Megalodon or _BlueWhale or _HammerShark  then
+			if _G.Configs.Fishing or _G.Events._Scylla or _G.Events._WhaleShark or _G.Events._WhiteShark or _G.Events._Kraken or _G.Events._Orca or _G.Events._Megalodon or _G.Events._BlueWhale or _G.Events._HammerShark  then
 				if _IsRootPart() then
 					if not Character.HumanoidRootPart:FindFirstChild("BodyVelocity1") then
 						if Character.Humanoid.Sit == true then
@@ -1097,3 +1331,19 @@ task.spawn(function()
 		end)
 	end
 end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+	Title = "Fetching's Script",
+	Text = _translate("Reset Configs", "รีเซ็ตการตั้งค่า"),
+	Duration = 999,
+	Icon = "rbxassetid://128185233852701",
+	Button1 = _translate("Accept", "ยืนยัน"),
+	Button2 = _translate("Cancel", "ยกเลิก"),
+	Callback = function(button)
+		if button == "ยืนยัน" then
+			DeleteSettings()
+		elseif button == "ยกเลิก" then
+			return
+		end
+	end
+})
+return warn("Auth Success : " .. string.format("%.10f", tostring(getgenv().Start) ) .. " to Load Data " .. tostring(_LocalPlayer.Name) .. " unpack(" .. _Folder .. ")")
