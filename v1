@@ -2605,7 +2605,8 @@ local SeaEvents = Section(_General, translate("Sea Events", "อีเว้น�
 	for _, v in	pairs(workspace.Boats:GetChildren()) do
 		table.insert(AllBoat, v.Name)
 	end
-	DropdownBoat = SeaEvents:CreateDropdown({Title = translate("Select Boat", "เลือกเรือ"),List = AllBoat,Value = C()['Select Boat'],Multi = false,Callback = function(v)
+        SelectBoat = "N/A"
+	DropdownBoat = SeaEvents:CreateDropdown({Title = translate("Select Boat", "เลือกเรือ"),List = AllBoat,Value = SelectBoat,Multi = false,Callback = function(v)
 		C()['Select Boat'] = v
 		Save('Select Boat', v)
 	end})
