@@ -4,97 +4,16 @@ repeat task.wait() until game:IsLoaded() and game:GetService("Players") and game
 
 if game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)") then game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CommF_"):InvokeServer("SetTeam", _G.Team or "Pirates") repeat wait(5) until not game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)")end
 
+getgenv = getgenv
+if getgenv().One_Executions then return end
+getgenv().One_Executions = true
+
+_G.Configs = {}
+
 do
-	getgenv = getgenv
-	--if getgenv().One_Executions then return end
-	--getgenv().One_Executions = true
-	_G.Configs = {
-
-		--['Level']--
-		['Level'] = false,
-		['Farm Nearest'] = false,
-
-		--['Settings']--
-		['Weapon'] = 'Melee',
-		['Set Spawn'] = false,
-		['Notify'] = false,
-		['Double Quest'] = true,
-
-		--['Stats']--
-		['UP_Fruit'] = false,
-		['UP_Gun'] = false,
-		['UP_Sword'] = false,
-		['UP_Health'] = false,
-		['UP_Melee'] = false,
-
-		--['Options']
-		['V4'] = false,
-		['V3'] = false,
-		['Attack Aura'] = false,
-		['Use Skill'] = true,
-		['Random Position Farming'] = false,
-
-		--['Teleport Island']--
-		['Teleport to Island'] = false,
-		['Select Island'] = "N/A",
-		['Teleport to Island C'] = false,
-		['Select Island C'] = "N/A",
-
-		--['Boss']--
-		['Farm Select Boss'] = false,
-		['HOP Boss'] = false,
-		['Farm All Boss'] = false,
-
-		--['Elite']--
-		['Elite'] = false,
-		['HOP Elite'] = false,
-
-		--['Bones']--
-		['Random Bone'] = false,
-		['Auto Bone'] = false,
-
-		--['Cake']--
-		['Spawn Katakuri'] = true,
-		['Auto Katakuri'] = false,
-
-		--['Ectoplasm']
-		['Auto Ectoplasm'] = false,
-
-		--['Sea Events'] --
-		['Auto SeaEvent'] = false,
-		['Auto Drive'] = false,
-		['No Clip Rock'] = false,
-		['Boost Speed Boat'] = false,
-		['Select Boat'] = 'N/A',
-		['Tween to Boat'] = false,
-
-		--['Chest']
-		['Auto Chest'] = false,
-		['Auto Chest HOP'] = false,
-
-		--['Fruits']--
-		['Fruit Find'] = false,
-		['Fruit Random'] = false,
-		['Fruit Stored'] = false,
-
-		--['Auto']--
-		['Factory'] = false,
-		['Castle Raid'] = false,
-
-		--['Mirage']--
-		['To Advanced Fruit Dealer'] = false,
-		['To Mirage'] = false,
-		['To Gear'] = false,
-
-		--['Kitsune']--
-		['To Kisune'] = false,
-		['Azure Ember'] = false,
-
-		['Dino Bone'] = false,
-		['To Prehistoric'] = false,
-		['Kill Aura'] = false,
-	}
+	_index = {};
 	Service = {
+		CollectionService = game:GetService('CollectionService');
 		CoreGui = game:GetService("CoreGui"),
 		ReplicatedStorage = game:GetService("ReplicatedStorage");
 		RunService = game:GetService("RunService");
@@ -119,10 +38,10 @@ do
 	stepped = Service.RunService.Stepped;
 	rendersteped = Service.RunService.RenderStepped;
 	LocalPlayer = Service.Players.LocalPlayer;
-	_Folder = "Fetching'Script/Config/" .. LocalPlayer.Name .. "/" .. id .. ".json"
+	_Folder = "Fetching'Script/Config/" .. LocalPlayer.Name .. "/" .. id .. ".json";
 	PlayerGui = LocalPlayer.PlayerGui;
 	Backpack = LocalPlayer.Backpack;
-	inf = math.huge
+	inf = math.huge;
 	request = request;
 	getconnections = getconnections;
 	setfpscap = setfpscap;
@@ -140,52 +59,69 @@ do
 	sethiddenproperty = sethiddenproperty;
 	islclosure = islclosure;
 	hookfunction = hookfunction;
+	firetouchinterest = firetouchinterest;
+	fireclickdetector = fireclickdetector;
+	getnilinstances = getnilinstances;
 	Service.ReplicatedStorage.Assets.GUI.DamageCounter.Enabled = false;
 end;
 
-function LoadSettings()
-	if readfile and writefile and isfile and isfolder then
-		local playerFolder = "Fetching'Script/Config/" .. LocalPlayer.Name
+if id == 2753915549 then
+	w1 = true
+elseif id == 4442272183 then
+	w2 = true
+elseif id == 7449423635 then
+	w3 = true
+end;
+
+Save = function(a,b)
+	if a ~= nil then
+		_G.Configs[a] = b
+	end
+	if not isfolder("Fetching'Script") then
+		makefolder("Fetching'Script")
+	end
+	writefile(_Folder, Service.HttpService:JSONEncode(_G.Configs))
+end;
+
+Load = function()
+	local s,e = pcall(function()
 		if not isfolder("Fetching'Script") then
 			makefolder("Fetching'Script")
 		end
-		if not isfolder("Fetching'Script/Config") then
-			makefolder("Fetching'Script/Config")
-		end
-		if not isfolder(playerFolder) then
-			makefolder(playerFolder)
-		end
-		if not isfile(_Folder) then
-			writefile(_Folder, Service.HttpService:JSONEncode(_G.Configs))
-		else
-			local decoded = Service.HttpService:JSONDecode(readfile(_Folder))
-			for i, v in pairs(decoded) do
-				_G.Configs[i] = v
+		return Service.HttpService:JSONDecode(readfile(_Folder))
+	end)
+	if s then return e
+	else
+		Save()
+		return Load()
+	end
+end;
+
+Default = function(v, a)
+	if type(v) == "table" then
+		for i, k in pairs(v) do
+			if _G.Configs[i] == nil then
+				_G.Configs[i] = k
 			end
 		end
 	else
-		warn("Executor is Not Supported")
-	end
-end
-
-function SaveSettings()
-	if readfile and writefile and isfile and isfolder then
-		local tablex = {}
-		for i, v in pairs(_G.Configs) do
-			tablex[i] = v
+		if _G.Configs[v] == nil then
+			_G.Configs[v] = a
 		end
-		writefile(_Folder, Service.HttpService:JSONEncode(tablex))
-	else
-		warn("Executor is Not Supported")
 	end
-end
+end;
 
+Default({
+
+})
 
 DeleteSettings = function()
 	if isfile(_Folder) then
 		delfile(_Folder)
 	end
 end;
+
+C = function() return _G.Configs end;
 
 WeAreLoop = function(C)
 	task.spawn(function()
@@ -211,15 +147,7 @@ translate=function(en,th)
 	end 
 end;
 
-NotPlayers = function(Inc)
-	return Service.Players:GetPlayerFromCharacter(Inc)
-end;
-
-IsRootPart = function()
-	return LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-end;
-
-checktable = function(config,_table)
+tablecheck = function(config,_table)
 	for _,v in pairs(_table) do
 		if config[v] == true then
 			return true 
@@ -253,52 +181,6 @@ HopServer = function()
 	end)
 end;
 
-ChooseRegion = "Singapore"
-
-HopLowServer = function(maxPlayers)
-	pcall(function()
-		maxPlayers = maxPlayers or 10
-		local startTime = tick()
-		repeat task.wait() until tick() - startTime >= 1
-		local function Hop()
-			local region = ChooseRegion or "Singapore"
-			PlayerGui.ServerBrowser.Frame.Filters.SearchRegion.TextBox.Text = region
-			for page = 1, 50 do
-				local servers = Service.ReplicatedStorage.Replicate__ServerBrowser:InvokeServer(page)
-				for jobId, info in pairs(servers) do
-					if jobId ~= game.JobId and info["Count"] < maxPlayers then
-						Service.ReplicatedStorage.__ServerBrowser:InvokeServer("teleport", jobId)
-						return
-					end
-				end
-			end
-		end
-		if not _G.Loaded then
-			local function HandleTeleportFail(ui)
-				if ui.Name == "ErrorPrompt" then
-					local function retry()
-						if ui.Visible and ui.TitleFrame.ErrorTitle.Text == "Teleport Failed" then
-							ui.Visible = false
-							HopLowServer(maxPlayers)
-						end
-					end
-					retry()
-					ui:GetPropertyChangedSignal("Visible"):Connect(retry)
-				end
-			end
-			for _, child in pairs(Service.CoreGui.RobloxPromptGui.promptOverlay:GetChildren()) do
-				HandleTeleportFail(child)
-			end
-			Service.CoreGui.RobloxPromptGui.promptOverlay.ChildAdded:Connect(HandleTeleportFail)
-			_G.Loaded = true
-		end
-		while task.wait(1) do
-			Hop()
-		end
-	end)
-end
-
-
 html = function(text, color)
 	if type(text) == "string" and typeof(color) == "Color3" then
 		local r, g, b = math.floor(color.R * 255), math.floor(color.G * 255), math.floor(color.B * 255)
@@ -331,17 +213,8 @@ IsAlive = function(model)
 	return Humanoid and Humanoid.Health > 0
 end
 
-gametp = function(id)
-	Service.TeleportService:Teleport(id,LocalPlayer)
-end;
-
 jobtp = function(job_id)
 	Service.TeleportService:TeleportToPlaceInstance(id,job_id,LocalPlayer)
-end;
-
-click = function()
-	Service.VirtualUser:CaptureController()
-	Service.VirtualUser:Button1Down(Vector2.new(1280, 672))
 end;
 
 Equip = function(ToolSe)
@@ -364,6 +237,13 @@ EquipSelect = function()
 	end
 end
 
+distance = function (a,b,noHeight)
+	if not b then
+		b = LocalPlayer.Character.HumanoidRootPart.Position
+	end
+	return (Vector3.new(a.X,not noHeight and a.Y,a.Z) - Vector3.new(b.X,not noHeight and b.Y,b.Z)).magnitude
+end
+
 task.spawn(function()
 	if getconnections then
 		for _,v in pairs(getconnections(LocalPlayer.Idled)) do
@@ -384,12 +264,11 @@ end);
 
 task.delay(2, function()
 	if hookfunction and not islclosure(hookfunction) then
-		print("|COKKA DEBUG| Remove Effects")
-		hookfunction(require(game:GetService("ReplicatedStorage").Effect.Container.Death), function()
+		hookfunction(require(Service.ReplicatedStorage.Effect.Container.Death), function()
 		end)
-		hookfunction(require(game:GetService("ReplicatedStorage").Effect.Container.Respawn), function()
+		hookfunction(require(Service.ReplicatedStorage.Effect.Container.Respawn), function()
 		end)
-		hookfunction(require(game:GetService("ReplicatedStorage"):WaitForChild("GuideModule")).ChangeDisplayedNPC, function()
+		hookfunction(require(Service.ReplicatedStorage:WaitForChild("GuideModule")).ChangeDisplayedNPC, function()
 			return
 		end)
 		--[[hookfunction(error, function()
@@ -398,14 +277,6 @@ task.delay(2, function()
 		end)]]
 	end
 end)
-
-if id == 2753915549 then
-	w1 = true
-elseif id == 4442272183 then
-	w2 = true
-elseif id == 7449423635 then
-	w3 = true
-end;
 
 if Service.CoreGui:FindFirstChild("Fetching") then
 	Service.CoreGui:FindFirstChild("Fetching"):Destroy()
@@ -417,46 +288,7 @@ else
 	_G.PC = true 
 end;
 
-if w1 then
-	Canteleport = {
-		Vector3.new(3864.6884765625, 5.716391563415527, -1926.214111328125), -- Gate
-		Vector3.new(61163.8515625, 5.650546073913574, 1819.7841796875), -- Under Water
-		Vector3.new(-7894.61767578125, 5545.8349609375, -380.29119873046875), -- Sky 2
-		Vector3.new(-4607.82275, 872.54248+50, -1667.55688) -- Sky 1
-	}
-elseif w2 then
-	Canteleport = {
-		Vector3.new(923.2125244140625, 125.40035247802734, 32852.83203125), -- Ghost Ship
-		Vector3.new(-286.6488037109375, 306.130615234375, 596.5967407226562), -- Mansion
-		Vector3.new(2283.7080078125, 15.277364730834961, 905.8712158203125), -- Swan
-		Vector3.new(-6505.7294921875, 83.31233978271484, -130.24234008789062) -- Out Ghost Ship
-	}
-elseif w3 then
-	Canteleport = {
-		Vector3.new(-12479.416015625, 375.2204284667969, -7566.20751953125), -- Big Mansion 1
-		Vector3.new(-12462.322265625, 375.2204284667969, -7551.25390625), -- Big Mansion 2
-		Vector3.new(-12447.615234375, 375.22039794921875, -7568.06982421875), -- Big Mansion 3
-		Vector3.new(-12464.0859375, 376.9941101074219, -7576.71484375), -- Big Mansion 4
-		Vector3.new(5742.9169921875, 610.7672729492188, -268.2395935058594), -- Hydra 1
-		Vector3.new(5756.26025390625, 610.7301025390625, -283.0395202636719), -- Hydra 2
-		Vector3.new(5742.65771484375, 610.7301635742188, -300.1603088378906), -- Hydra 3
-		Vector3.new(5733.099609375, 612.1041870117188, -283.2297058105469), -- Hydra 4
-		Vector3.new(-5076.99853515625, 314.8587341308594, -3151.824951171875), -- Castle on the sea 1
-		Vector3.new(-5083.52880859375, 314.821533203125, -3131.4833984375), -- Castle on the sea 2
-		Vector3.new(-5102.43017578125, 316.62139892578125, -3144.850830078125), -- Castle on the sea 3
-		Vector3.new(-5106.0595703125, 314.8215026855469, -3180.6748046875), -- Castle on the sea 4
-		Vector3.new(-11993.580078125, 331.8077087402344, -8844.1826171875), -- Canvender Turtle 1
-		Vector3.new(-11972.7275390625, 332.1136474609375, -8833.6376953125), -- Canvender Turtle 2
-		Vector3.new(-12013.34375, 332.1136474609375, -8832.685546875), -- Canvender Turtle 3
-		Vector3.new(5314.45703125, 36.142032623291016, -146.67759704589844), -- Canvender Hydra 2
-		Vector3.new(5314.58203125, 22.53643226623535, -125.94227600097656), -- Canvender Hydra 1
-		Vector3.new(28282.5703125, 14896.8505859375, 105.1042709350586) -- Temple
-	}
-end;
-
-local OldGravity = {
-	Old = workspace.Gravity
-}
+_G.Configs = Load();
 
 tp = function(Position)
 	local hrp = LocalPlayer.Character.HumanoidRootPart
@@ -464,10 +296,9 @@ tp = function(Position)
 	local CanTeleport = false
 	local closestDistance = math.huge
 	local closestV = nil
-	local CanTeleport = false
 
-	if not game.Players.LocalPlayer.Character:FindFirstChild("PartTele") then
-		local partTele = Instance.new("Part", game.Players.LocalPlayer.Character)
+	if not LocalPlayer.Character:FindFirstChild("PartTele") then
+		local partTele = Instance.new("Part", LocalPlayer.Character)
 		partTele.Size = Vector3.new(10,1,10)
 		partTele.Name = "PartTele"
 		partTele.Anchored = true
@@ -482,8 +313,7 @@ tp = function(Position)
 
 	local partTele = LocalPlayer.Character:FindFirstChild("PartTele")
 
-	if Distance > 0 and Distance < 350 then
-		CanTeleport = true
+	if Distance > 0 and Distance < 300 then
 		local tw1 = Service.TweenService:Create(
 			partTele,
 			TweenInfo.new(0, Enum.EasingStyle.Linear),
@@ -494,18 +324,23 @@ tp = function(Position)
 			if tw1 then
 				tw1:Cancel()
 			end
-			if game.Players.LocalPlayer.Character:FindFirstChild("PartTele") then
-				game.Players.LocalPlayer.Character:FindFirstChild("PartTele"):Destroy()
+			if LocalPlayer.Character:FindFirstChild("PartTele") then
+				LocalPlayer.Character:FindFirstChild("PartTele"):Destroy()
 			end
 		end
 		return task.wait(0.1)
 	else
-		CanTeleport = false
-		if not CanTeleport then	
+		if Distance > 300 then
+			if C()['Upper Tween'] then
+				if partTele.Position.Y ~= 150 then
+					partTele.CFrame = CFrame.new(hrp.Position.X, 150, hrp.Position.Z)
+				end
+			end
+
 			local tw = Service.TweenService:Create(
 				partTele,
 				TweenInfo.new(Distance / 300, Enum.EasingStyle.Linear),
-				{CFrame = typeof(Position) == "CFrame" and Position or Position.CFrame}
+				{CFrame = CFrame.new(Position.X, 150, Position.Z)}
 			)
 			tw:Play()
 
@@ -521,44 +356,63 @@ tp = function(Position)
 	end
 end
 
-dist = function (a,b,noHeight)
-	if not b then
-		b = LocalPlayer.Character.HumanoidRootPart.Position
-	end
-	return (Vector3.new(a.X,not noHeight and a.Y,a.Z) - Vector3.new(b.X,not noHeight and b.Y,b.Z)).magnitude
-end
-
 index = {
 	'Level',
-	'Farm Nearest',
-	'Teleport to Island',
-	'Teleport to Island C',
+	'Nearest',
+	'Teleport Island',
 	'Farm Select Boss',
-	'Farm All Boss',
+	'All Boss',
+	'Farm Materail',
 	'Elite',
-	'Auto Bone',
-	'Auto Katakuri',
-	'Auto Ectoplasm',
-	'Auto SeaEvent',
-	'Tween to Boat',
-	'Auto Chest',
+	'Farm Bone',
+	'Cake Prince',
+	'Farm Ectoplasm',
+	'Sea Events',
+	'Teleport to Boat',
+	'Farm Chest',
 	'Castle Raid',
 	'Fruit Find',
+	'Teleport to Mirage',
+	'Teleport to Advanced Dealer',
+	'Teleport to Gear',
+	'Teleport to Kitsune',
+	'Azure Embers',
+	'Teleport Prehistoric',
 	'Factory',
-	'To Advanced Fruit Dealer',
-	'To Mirage',
-	'To Gear',
-	'To Kisune',
-	'Azure Ember',
-	'To Prehistoric',
-	'Dragon Egg',
-	'Dino Bone',
+	'Auto Pole 1',
+	'Auto Saber',
+	'Auto Trident',
+	'Auto Bazooka',
+	'Auto CoolShade',
+	'Auto LongSword',
+	'Auto GravityBlade',
+	'Auto SwanGlasses',
+	'Auto Flail',
+	'Auto DragonTrident',
+	'Auto Rengoku',
+	'Auto Law',
+	'Auto PilotHelmet',
+	'Auto VenomBow',
+	'Auto Lei',
+	'Auto TwinHooks',
+	'Auto Canvender',
+	'Auto BuddySword',
+	'Holy Torch',
+	'Auto Darkbeard',
+	'Auto HallowScythe',
+	'Auto Trial V4',
+	'Teleport to Door',
+	'Auto Evo Race V2',
+	'Find Berry',
+	'Sea 2',
+	'Auto Raid',
+	'Auto Train V4',
 }
 
 WeAreLoop(function()
 	pcall(function()
-		if checktable(_G.Configs, index) then
-			if not _G.Configs['Auto SeaEvent'] then
+		if tablecheck(_G.Configs, index) then
+			if not C()['Sea Events'] then
 				if LocalPlayer.Character:WaitForChild("Humanoid").Sit then
 					LocalPlayer.Character:WaitForChild("Humanoid").Sit = false
 				end
@@ -569,6 +423,15 @@ WeAreLoop(function()
 				BodyVelocity.Parent = LocalPlayer.Character.HumanoidRootPart
 				BodyVelocity.MaxForce = Vector3.new(100000, 100000, 100000)
 				BodyVelocity.Velocity = Vector3.new(0, 0, 0)
+			end
+			if not LocalPlayer.Character:FindFirstChild("IsHighlight") then
+				local HL = Instance.new("Highlight")
+				HL.Name = 'IsHighlight'
+				HL.Parent = LocalPlayer.Character
+				HL.Adornee = LocalPlayer.Character
+				HL.OutlineColor = Color3.fromRGB(0, 0, 0)
+				HL.FillColor = Color3.fromRGB(255, 255, 255)
+				HL.FillTransparency = 0
 			end
 			for i, v in pairs(LocalPlayer.Character:GetChildren()) do
 				if v:IsA("BasePart") then
@@ -581,9 +444,48 @@ WeAreLoop(function()
 			if LocalPlayer.Character.HumanoidRootPart:FindFirstChild("BodyVelocity1") then
 				LocalPlayer.Character.HumanoidRootPart:FindFirstChild("BodyVelocity1"):Destroy()
 			end
+			if LocalPlayer.Character:FindFirstChild("IsHighlight") then
+				LocalPlayer.Character:FindFirstChild("IsHighlight"):Destroy()
+			end
 		end
 	end)
 end)
+
+CheckItem = function(item)
+	for _, v in ipairs(Backpack:GetChildren()) do
+		if v.Name == item then
+			return v
+		end
+	end
+	for _, v in ipairs(LocalPlayer.Character:GetChildren()) do
+		if v.Name == item then
+			return v
+		end
+	end
+	return nil
+end
+
+HaveItem = function(u)
+	for i ,v in pairs(ComF("getInventoryWeapons")) do
+		if v.Name == u then
+			return v
+		end
+	end
+	for i ,v in pairs(Backpack:GetChildren()) do
+		if v:IsA("Tool") then
+			if v.Name == u then
+				return v
+			end
+		end
+	end
+	for i ,v in pairs(LocalPlayer.Character:GetChildren()) do
+		if v:IsA("Tool") then
+			if v.Name == u then
+				return v
+			end
+		end
+	end
+end
 
 Monster = function(Mon)
 	if type(Mon) == "string" then
@@ -634,6 +536,7 @@ Monster = function(Mon)
 end
 
 local MobBlacklist = {}
+
 DetectPartSpawnMob = function(name)
 	local name1
 	if string.find(name,"Lv.") then 
@@ -648,7 +551,17 @@ DetectPartSpawnMob = function(name)
 			return v
 		end
 	end
+	for i, v in pairs(getnilinstances()) do
+		local stringgsub
+		if string.find(v.Name, "Lv.") then
+			stringgsub = v.Name:gsub(" %pLv. %d+%p", "")
+		end
+		if v:IsA("Part") and ((stringgsub and stringgsub == name) or name == v.Name or (name1 and v.Name == name1)) then
+			return v
+		end
+	end
 end
+
 GetPartAllMob = function(name)
 	local results = {}
 	local name1
@@ -664,8 +577,18 @@ GetPartAllMob = function(name)
 			table.insert(results, v)
 		end
 	end
+	for _, v in pairs(getnilinstances()) do
+		local stringgsub
+		if string.find(v.Name, "Lv.") then
+			stringgsub = v.Name:gsub(" %pLv. %d+%p", "")
+		end
+		if v:IsA("Part") and ((stringgsub and stringgsub == name) or name == v.Name or (name1 and v.Name == name1)) then
+			table.insert(results, v)
+		end
+	end
 	return results
 end
+
 WaitMonster = function(Path,u)
 	if typeof(Path) == "table" then
 		if #MobBlacklist >= 4 then
@@ -680,9 +603,7 @@ WaitMonster = function(Path,u)
 					repeat
 						tp(GetPart.CFrame * CFrame.new(0,40,0))
 						wait(.5)
-					until (u and u())
-				else
-					print("Not found Monster 2")
+					until (GetPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 50 or (u and u())
 				end
 			end
 		end
@@ -692,9 +613,7 @@ WaitMonster = function(Path,u)
 				repeat
 					tp(v.CFrame * CFrame.new(0, 40, 0))
 					wait(0.5)
-				until (u and u())
-			else
-				print("Not found GetPart")
+				until (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 50 or (u and u())
 			end
 		end
 	end
@@ -706,17 +625,17 @@ BringMob = function(m)
 			v:FindFirstChild("HumanoidRootPart") and 
 			not v:GetAttribute("IsBoss") and
 			(v.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 270 then
-
+			v.HumanoidRootPart.Rotation = Vector3.new(0,0,0)
 			v.HumanoidRootPart.CFrame = m.HumanoidRootPart.CFrame
 			v.Humanoid.JumpPower = 0
+			v.Humanoid.WalkSpeed = 0
+			v.Humanoid.Sit = true	
+			v.Humanoid.PlatformStand = true			
 			v.Humanoid:ChangeState(14)
-
-			for _, part in ipairs(v:GetDescendants()) do
-				if part:IsA("BasePart") then
-					part.CanCollide = false
-				end
+			if v.Humanoid:FindFirstChild("Animator") then
+				v.Humanoid.Animator:Destroy()
 			end
-
+			v.HumanoidRootPart.CanCollide = false
 			pcall(function()
 				sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
 				setscriptable(LocalPlayer, "SimulationRadius", true)
@@ -724,6 +643,32 @@ BringMob = function(m)
 		end
 	end
 end
+
+WeAreLoop(function()
+	if tablecheck(_G.Configs, index) then
+		pcall(function()
+			for i, v in next, workspace.Enemies:GetChildren() do
+				if v.Humanoid.Health > 0 and v:FindFirstChild("HumanoidRootPart") and (v.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= tonumber(100) then
+					Service.ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/RegisterAttack"):FireServer(0)
+					local args = {
+						[1] = v:FindFirstChild("HumanoidRootPart"),
+						[2] = {}
+					}
+					for _, e in next, workspace:WaitForChild("Enemies"):GetChildren() do
+						if e:FindFirstChild("Humanoid") and e.Humanoid.Health > 0 then
+							table.insert(args[2], {
+								[1] = e,
+								[2] = e:FindFirstChild("HumanoidRootPart") or e:FindFirstChildOfClass("BasePart")
+							})
+						end
+					end
+					Service.ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/RegisterHit"):FireServer(unpack(args))
+				end
+			end
+		end)
+	end
+end)
+
 Attack = function()
 	pcall(function()
 		for i, v in next, workspace.Enemies:GetChildren() do
@@ -747,31 +692,6 @@ Attack = function()
 	end)
 end
 
-function AttackAll()
-	pcall(function()
-		if _G.Configs['Attack Aura'] then
-			for i, v in next, workspace.Enemies:GetChildren() do
-				if v.Humanoid.Health > 0 and v:FindFirstChild("HumanoidRootPart") and (v.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= tonumber(100) then
-					Service.ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/RegisterAttack"):FireServer(0)
-					local args = {
-						[1] = v:FindFirstChild("HumanoidRootPart"),
-						[2] = {}
-					}
-					for _, e in next, workspace:WaitForChild("Enemies"):GetChildren() do
-						if e:FindFirstChild("Humanoid") and e.Humanoid.Health > 0 then
-							table.insert(args[2], {
-								[1] = e,
-								[2] = e:FindFirstChild("HumanoidRootPart") or e:FindFirstChildOfClass("BasePart")
-							})
-						end
-					end
-					Service.ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/RegisterHit"):FireServer(unpack(args))
-				end
-			end
-		end
-	end)
-end
-
 UseSkill = function(target)
 	delay(0, function()
 		local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
@@ -779,14 +699,14 @@ UseSkill = function(target)
 			local distance = (hrp.Position - target.HumanoidRootPart.Position).Magnitude
 			if distance <= 50 then
 				for _, tool in pairs(LocalPlayer.Character:GetChildren()) do
-					if tool:IsA("Tool") and tool.ToolTip == _G.Configs['Weapon'] then
+					if tool:IsA("Tool") and tool.ToolTip == C()['Weapon'] then
 						local charTool = LocalPlayer.Character:FindFirstChild(tool.Name)
 						if charTool and charTool:FindFirstChild("MousePos") then
 							charTool.MousePos.Value = target.HumanoidRootPart.Position
 							local skillKeys = {}
-							if _G.Configs['Weapon'] == 'Melee' then
+							if C()['Weapon'] == 'Melee' then
 								skillKeys = {"Z", "X", "C"}
-							elseif _G.Configs['Weapon'] == 'Sword' then
+							elseif C()['Weapon'] == 'Sword' then
 								skillKeys = {"Z", "X"}
 							end
 							for _, key in ipairs(skillKeys) do
@@ -801,9 +721,9 @@ UseSkill = function(target)
 	end)
 end
 
-function RandomPosition()
+RandomPosition = function()
 	local angle = math.rad(math.random(0, 360))
-	local radius = 25
+	local radius = 20
 	local x = math.cos(angle) * radius
 	local z = math.sin(angle) * radius
 	return CFrame.new(x, 40, z)
@@ -815,14 +735,14 @@ Kill = function(v, u)
 		pcall(EquipSelect)
 		BringMob(v)
 		Attack()
-		if _G.Configs['Random Position Farming'] then
+		if C()['Random Position Farming'] then
 			tp(v:GetPivot() * RandomPosition())
 			Attack()
 		else
 			tp(v:GetPivot() * CFrame.new(0, 40, 0))
 			Attack()
 		end
-		if _G.Configs['Use Skill'] then
+		if C()['Use Skill'] then
 			UseSkill(v)
 		end
 		Attack()
@@ -830,13 +750,13 @@ Kill = function(v, u)
 	until not v:FindFirstChild("Humanoid") or v.Humanoid.Health <= 0 or not v:FindFirstChild("HumanoidRootPart") or (u and u())
 end
 
-function KillBoss(v, u)
+KillBoss = function(v, u)
 	repeat
 		Service.ReplicatedStorage.Remotes.CommE:FireServer("Ken", true)
 		pcall(EquipSelect)
 		BringMob(v)
 		Attack()
-		if _G.Configs['Auto SeaEvent'] then
+		if C()['Sea Events'] then
 			local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
 			if humanoid and humanoid.Health <= humanoid.MaxHealth * 0.25 then
 				tp(v:GetPivot() * CFrame.new(0, 300, 0))
@@ -845,7 +765,7 @@ function KillBoss(v, u)
 			tp(v:GetPivot() * RandomPosition())
 			Attack()
 		end
-		if _G.Configs['Use Skill'] then
+		if C()['Use Skill'] then
 			UseSkill(v)
 		end
 		Attack()
@@ -853,235 +773,166 @@ function KillBoss(v, u)
 	until v.Humanoid.Health <= 0 or not v:FindFirstChild("HumanoidRootPart") or (u and u())
 end
 
-API_Request = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Check%20Quest"))()
-local Level_Quest = API_Request:CheckQuest()[2]
-function AutoLevel()
-	if _G.Configs['Level'] then
-		pcall(function()
-			local Quest = API_Request:CheckQuest()
-			local mon = string.gsub(string.gsub(string.gsub(LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "^Defeat %d+ ", ""), " %(.-%)$", ""), "s$", "")
-			if not LocalPlayer.PlayerGui.Main.Quest.Visible then
-				if (LocalPlayer.Character.HumanoidRootPart.Position - Quest[4].Position).Magnitude <= 20 then
-					wait(1)
-					ComF("StartQuest", Quest[3], Level_Quest)
-					if _G.Configs['Double Quest'] then
-						if Level_Quest == 2 then
-							Level_Quest = 1
-						elseif Level_Quest == 1 and Quest[2] == 2 then
-							Level_Quest = 2
-						else
-							Level_Quest = Quest[2]
+API_Request = loadstr("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Check%20Quest")
+Level_Quest = API_Request:CheckQuest()[2]
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Level']then
+			pcall(function()
+				local Quest = API_Request:CheckQuest()
+				local mon = string.gsub(string.gsub(string.gsub(PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "^Defeat %d+ ", ""), " %(.-%)$", ""), "s$", "")
+				local lv = LocalPlayer.Data.Level.Value
+				if lv >= 10 and lv <= 49 then
+					local monsky = "God's Guard"
+					if Monster(monsky) then
+						Kill(Monster(monsky), function()
+							return not C()['Level']
+						end)
+					else
+						WaitMonster(monsky, function()
+							return Monster(monsky) or not C()['Level']
+						end)
+					end
+				elseif lv >= 50 and lv <= 99 then
+					local monsky = {"God's Guard", "Shanda"}
+					if Monster(monsky) then
+						Kill(Monster(monsky), function()
+							return not C()['Level']
+						end)
+					else
+						WaitMonster(monsky, function()
+							return Monster(monsky) or not C()['Level']
+						end)
+					end
+				elseif lv >= 100 and lv <= 120 then
+					local monsky = {"Royal Squad", "Royal Soldier"}
+					if Monster(monsky) then
+						Kill(Monster(monsky), function()
+							return not C()['Level']
+						end)
+					else
+						WaitMonster(monsky, function()
+							return Monster(monsky) or not C()['Level']
+						end)
+					end
+				elseif not LocalPlayer.PlayerGui.Main.Quest.Visible then
+					if (LocalPlayer.Character.HumanoidRootPart.Position - Quest[4].Position).Magnitude <= 5 then
+						wait(1)
+						ComF("StartQuest", Quest[3], Level_Quest)
+						if C()['Double Quest'] then
+							if Level_Quest == 2 then
+								Level_Quest = 1
+							elseif Level_Quest == 1 and Quest[2] == 2 then
+								Level_Quest = 2
+							else
+								Level_Quest = Quest[2]
+							end
 						end
+					else
+						tp(Quest[4])
 					end
 				else
-					tp(Quest[4])
+					if Monster(mon) then
+						Kill(Monster(mon), function()
+							return not C()['Level'] or not LocalPlayer.PlayerGui.Main.Quest.Visible
+						end)
+					else
+						WaitMonster(mon, function()
+							return Monster(mon) or not C()['Level'] or not LocalPlayer.PlayerGui.Main.Quest.Visible
+						end)
+					end
 				end
-			else
-				if Monster(mon) then
-					Kill(Monster(mon), function()
-						return not _G.Configs['Level'] or not LocalPlayer.PlayerGui.Main.Quest.Visible
-					end)
-				else
-					WaitMonster(mon, function()
-						return Monster(mon) or not _G.Configs['Level'] or not game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible
-					end)
-				end
-			end
-		end)
-	end
-end
-
-function Nearest()
-	if not _G.Configs['Farm Nearest'] then return end
-	pcall(function()
-		local closestEnemy = nil
-		local closestDistance = math.huge
-		for _, enemy in pairs(workspace.Enemies:GetChildren()) do
-			if enemy:IsA("Model") and enemy:FindFirstChild("Humanoid") and enemy:FindFirstChild("HumanoidRootPart") and Monster(enemy.Name) then
-				local dist = (LocalPlayer.Character.HumanoidRootPart.Position - enemy.HumanoidRootPart.Position).Magnitude
-				if dist < closestDistance then
-					closestDistance = dist
-					closestEnemy = enemy
-				end
-			end
-		end
-		if closestEnemy then
-			local monsterName = closestEnemy.Name
-			Kill(Monster(monsterName), function()
-				return not _G.Configs['Farm Nearest']
 			end)
 		end
-	end)
-end
+	end
+end)
 
+task.spawn(function()
+	while task.wait() do
+		if C()['Nearest'] then
+			pcall(function()
+				for _, enemy in pairs(workspace.Enemies:GetChildren()) do
+					if enemy:IsA("Model") and enemy:FindFirstChild("Humanoid") and enemy:FindFirstChild("HumanoidRootPart") and Monster(enemy.Name) then
+						local dist = (LocalPlayer.Character.HumanoidRootPart.Position - enemy.HumanoidRootPart.Position).Magnitude
+						if dist < 500 then
+							Kill(enemy, function()
+								return not C()['Nearest']
+							end)
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
 
+task.spawn(function()
+	while task.wait() do
+		if C()['V4'] then
+			pcall(function()
+				if LocalPlayer.Character:FindFirstChild("RaceEnergy") 
+					and LocalPlayer.Character.RaceEnergy.Value >= 1 
+					and LocalPlayer.Character:FindFirstChild("RaceTransformed") and not LocalPlayer.Character.RaceTransformed.Value then
+					Backpack.Awakening.RemoteFunction:InvokeServer(true)
+					task.wait(5)
+				end
+			end)
+		end
+	end
+end)
 
-function V4()
-	if _G.Configs['V4'] then
-		pcall(function()
-			if LocalPlayer.Character:FindFirstChild("RaceEnergy") 
-				and LocalPlayer.Character.RaceEnergy.Value >= 1 
-				and LocalPlayer.Character:FindFirstChild("RaceTransformed") and not LocalPlayer.Character.RaceTransformed.Value then
-				Backpack.Awakening.RemoteFunction:InvokeServer(true)
+task.spawn(function()
+	while task.wait() do
+		if C()['V3'] then
+			pcall(function()
+				Service.ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommE"):FireServer("ActivateAbility")
+				task.wait(15)
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Set Spawn'] then
+			if LocalPlayer.Character.Humanoid.Health > 0 then
+				ComF:InvokeServer("SetSpawnPoint")
 				task.wait(5)
 			end
-		end)
-	end
-end
-
-function V3()
-	if _G.Configs['V3'] then
-		pcall(function()
-			Service.ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommE"):FireServer("ActivateAbility")
-			task.wait(15)
-		end)
-	end
-end
-
-function Setspawn()
-	if _G.Configs['Set Spawn'] then
-		if LocalPlayer.Character.Humanoid.Health > 0 then
-			ComF:InvokeServer("SetSpawnPoint")
 		end
-		task.wait(5)
 	end
-end
+end)
 
-function UP_Stats()
+WeAreLoop(function()
 	pcall(function()
-		if _G.Configs['UP_Melee'] then
-			ComF("AddPoint", "Melee", 1)
+		if C()['UP_Melee'] then
+			C()("AddPoint", "Melee", 1)
 		elseif _G.Configs['UP_Health'] then
-			ComF("AddPoint", "Defense", 1)
+			C()("AddPoint", "Defense", 1)
 		elseif _G.Configs['UP_Sword'] then
-			ComF("AddPoint", "Sword", 1)
+			C()("AddPoint", "Sword", 1)
 		elseif _G.Configs['UP_Gun'] then
-			ComF("AddPoint", "Gun", 1)
+			C()("AddPoint", "Gun", 1)
 		elseif _G.Configs['UP_Fruit'] then
-			ComF("AddPoint", "Demon Fruit", 1)
+			C()("AddPoint", "Demon Fruit", 1)
 		end
-		task.wait(0.5)
+		task.wait(0.15)
 	end)
-end
+end)
 
-function Teleport_Island()
-	if _G.Configs['Teleport to Island'] then
-		pcall(function()
-			local Island_ = workspace._WorldOrigin.Locations:FindFirstChild(_G.Configs['Select Island'])
-			if Island_ then
-				tp(Island_.CFrame * CFrame.new(0, 25, 0))
-			end
-		end)
-	end
-end
-
-function Teleport_Island_C()
-	if _G.Configs['Teleport to Island C'] then
-		if _G.Configs['Select Island C'] == "WindMill" then
-			tp(CFrame.new(979.79895019531, 16.516613006592, 1429.0466308594))
-		elseif _G.Configs['Select Island C'] == "Marine" then
-			tp(CFrame.new(-2566.4296875, 6.8556680679321, 2045.2561035156))
-		elseif _G.Configs['Select Island C'] == "Middle Town" then
-			tp(CFrame.new(-690.33081054688, 15.09425163269, 1582.2380371094))
-		elseif _G.Configs['Select Island C'] == "Jungle" then
-			tp(CFrame.new(-1612.7957763672, 36.852081298828, 149.12843322754))
-		elseif _G.Configs['Select Island C'] == "Pirate Village" then
-			tp(CFrame.new(-1181.3093261719, 4.7514905929565, 3803.5456542969))
-		elseif _G.Configs['Select Island C'] == "Desert" then
-			tp(CFrame.new(944.15789794922, 20.919729232788, 4373.3002929688))
-		elseif _G.Configs['Select Island C'] == "Snow Island" then
-			tp(CFrame.new(1347.8067626953, 104.66806030273, -1319.7370605469))
-		elseif _G.Configs['Select Island C'] == "MarineFord" then
-			tp(CFrame.new(-4914.8212890625, 50.963626861572, 4281.0278320313))
-		elseif _G.Configs['Select Island C'] == "Colosseum" then
-			tp( CFrame.new(-1427.6203613281, 7.2881078720093, -2792.7722167969))
-		elseif _G.Configs['Select Island C'] == "Sky Island 1" then
-			tp(CFrame.new(-4869.1025390625, 733.46051025391, -2667.0180664063))
-		elseif _G.Configs['Select Island C'] == "Sky Island 2" then
-			tp(CFrame.new(-4607.82275, 872.54248, -1667.55688))
-		elseif _G.Configs['Select Island C'] == "Sky Island 3" then
-			tp(CFrame.new(-7894.6176757813, 5547.1416015625, -380.29119873047))
-		elseif _G.Configs['Select Island C'] == "Prison" then
-			tp( CFrame.new(4875.330078125, 5.6519818305969, 734.85021972656))
-		elseif _G.Configs['Select Island C'] == "Magma Village" then
-			tp(CFrame.new(-5247.7163085938, 12.883934020996, 8504.96875))
-		elseif _G.Configs['Select Island C'] == "Under Water Island" then
-			tp(CFrame.new(61163.8515625, 11.6796875, 1819.7841796875))
-		elseif _G.Configs['Select Island C'] == "Fountain City" then
-			tp(CFrame.new(5127.1284179688, 59.501365661621, 4105.4458007813))
-		elseif _G.Configs['Select Island C'] == "Shank Room" then
-			tp(CFrame.new(-1442.16553, 29.8788261, -28.3547478))
-		elseif _G.Configs['Select Island C'] == "Mob Island" then
-			tp(CFrame.new(-2850.20068, 7.39224768, 5354.99268))
-
-			--W2
-
-		elseif _G.Configs['Select Island C'] == "The Cafe" then
-			tp(CFrame.new(-380.47927856445, 77.220390319824, 255.82550048828))
-		elseif _G.Configs['Select Island C'] == "Frist Spot" then
-			tp(CFrame.new(-11.311455726624, 29.276733398438, 2771.5224609375))
-		elseif _G.Configs['Select Island C'] == "Dark Area" then
-			tp(CFrame.new(3780.0302734375, 22.652164459229, -3498.5859375))
-		elseif _G.Configs['Select Island C'] == "Flamingo Mansion" then
-			tp(CFrame.new(-483.73370361328, 332.0383605957, 595.32708740234))
-		elseif _G.Configs['Select Island C'] == "Flamingo Room" then
-			tp(CFrame.new(2284.4140625, 15.152037620544, 875.72534179688))
-		elseif _G.Configs['Select Island C'] == "Green Zone" then
-			tp( CFrame.new(-2448.5300292969, 73.016105651855, -3210.6306152344))
-		elseif _G.Configs['Select Island C'] == "Factory" then
-			tp(CFrame.new(424.12698364258, 211.16171264648, -427.54049682617))
-		elseif _G.Configs['Select Island C'] == "Colossuim" then
-			tp( CFrame.new(-1503.6224365234, 219.7956237793, 1369.3101806641))
-		elseif _G.Configs['Select Island C'] == "Zombie Island" then
-			tp(CFrame.new(-5622.033203125, 492.19604492188, -781.78552246094))
-		elseif _G.Configs['Select Island C'] == "Two Snow Mountain" then
-			tp(CFrame.new(753.14288330078, 408.23559570313, -5274.6147460938))
-		elseif _G.Configs['Select Island C'] == "Punk Hazard" then
-			tp(CFrame.new(-6127.654296875, 15.951762199402, -5040.2861328125))
-		elseif _G.Configs['Select Island C'] == "Cursed Ship" then
-			tp(CFrame.new(923.40197753906, 125.05712890625, 32885.875))
-		elseif _G.Configs['Select Island C'] == "Ice Castle" then
-			tp(CFrame.new(6148.4116210938, 294.38687133789, -6741.1166992188))
-		elseif _G.Configs['Select Island C'] == "Forgotten Island" then
-			tp(CFrame.new(-3032.7641601563, 317.89672851563, -10075.373046875))
-		elseif _G.Configs['Select Island C'] == "Ussop Island" then
-			tp(CFrame.new(4816.8618164063, 8.4599885940552, 2863.8195800781))
-		elseif _G.Configs['Select Island C'] == "Mini Sky Island" then
-			tp(CFrame.new(-288.74060058594, 49326.31640625, -35248.59375))
-
-			--W3
-
-		elseif _G.Configs['Select Island C'] == "Great Tree" then
-			tp(CFrame.new(2681.2736816406, 1682.8092041016, -7190.9853515625))
-		elseif _G.Configs['Select Island C'] == "Castle On The Sea" then
-			tp(CFrame.new(-5074.45556640625, 314.5155334472656, -2991.054443359375))
-		elseif _G.Configs['Select Island C'] == "MiniSky" then
-			tp(CFrame.new(-260.65557861328, 49325.8046875, -35253.5703125))
-		elseif _G.Configs['Select Island C'] == "Port Town" then
-			tp(CFrame.new(-290.7376708984375, 6.729952812194824, 5343.5537109375))
-		elseif _G.Configs['Select Island C'] == "Hydra Island" then
-			tp(CFrame.new(5228.8842773438, 604.23400878906, 345.0400390625))
-		elseif _G.Configs['Select Island C'] == "Floating Turtle" then
-			tp(CFrame.new(-13274.528320313, 531.82073974609, -7579.22265625))
-		elseif _G.Configs['Select Island C'] == "Mansion" then
-			tp(CFrame.new(-12550, 338, -7498))
-		elseif _G.Configs['Select Island C'] == "Haunted Castle" then
-			tp(CFrame.new(-9515.3720703125, 164.00624084473, 5786.0610351562))
-		elseif _G.Configs['Select Island C'] == "Ice Cream Island" then
-			tp(CFrame.new(-902.56817626953, 79.93204498291, -10988.84765625))
-		elseif _G.Configs['Select Island C'] == "Peanut Island" then
-			tp(CFrame.new(-2062.7475585938, 50.473892211914, -10232.568359375))
-		elseif _G.Configs['Select Island C'] == "Cake Island" then
-			tp(CFrame.new(-1884.7747802734375, 19.327526092529297, -11666.8974609375))
-		elseif _G.Configs['Select Island C'] == "Cocoa Island" then
-			tp(CFrame.new(87.94276428222656, 73.55451202392578, -12319.46484375))
-		elseif _G.Configs['Select Island C'] == "Candy Island" then
-			tp(CFrame.new(-1014.4241943359375, 149.11068725585938, -14555.962890625))
-		elseif _G.Configs['Select Island C'] == "Tiki Outpost" then
-			tp(CFrame.new(-16238, 9, 441))
+task.spawn(function()
+	while task.wait() do
+		if C()['Teleport Island'] then
+			pcall(function()
+				local Island_ = workspace.Map:FindFirstChild(C()['Select Island'])
+				if Island_ then
+					tp(Island_:GetPivot() * CFrame.new(0, 25, 0))
+				end
+			end)
 		end
 	end
-end
+end)
 
 if w1 then
 	TableBoss = {
@@ -1100,6 +951,13 @@ if w1 then
 		"Cyborg",
 		"Saber Expert"
 	}
+	AllMaterial = {
+		"Magma Ore",
+		"Leather",
+		"Scrap Metal",
+		"Angel Wings",
+		"Fish Tail"
+	}
 elseif w2 then
 	TableBoss = {
 		"Diamond",
@@ -1113,6 +971,13 @@ elseif w2 then
 		"Awakened Ice Admiral",
 		"Tide Keeper"
 	}
+	AllMaterial = {
+		"Magma Ore",
+		"Scrap Metal",
+		"Radioactive Material",
+		"Vampire Fang",
+		"Mystic Droplet",
+	}
 elseif w3 then
 	TableBoss = {
 		"Stone",
@@ -1125,433 +990,1402 @@ elseif w3 then
 		"Soul Reaper",
 		"Cake Queen"
 	}
+	AllMaterial = {
+		"Mini Tusk",
+		"Fish Tail",
+		"Scrap Metal",
+		"Dragon Scale",
+		"Conjured Cocoa",
+		"Demonic Wisp",
+		"Gunpowder",
+	}
 end
 
-
-function Farm_All_Boss()
-	if _G.Configs['Farm All Boss'] then
-		pcall(function()
-			if Monster(TableBoss) then
-				KillBoss(Monster(TableBoss), function()
-					return not _G.Configs['Farm All Boss']
-				end)
-			else
-				if _G.Configs['HOP Boss'] then
-					HopServer()
-				else
-					WaitMonster(TableBoss, function()
-						return Monster(TableBoss) or not _G.Configs['Farm All Boss']
+task.spawn(function()
+	while task.wait() do
+		if C()['All Boss'] then
+			pcall(function()
+				if Monster(TableBoss) then
+					KillBoss(Monster(TableBoss), function()
+						return not C()['All Boss']
 					end)
+				else
+					if C()['HOP Boss'] then
+						HopServer()
+					else
+						WaitMonster(TableBoss, function()
+							return Monster(TableBoss) or not C()['All Boss']
+						end)
+					end
 				end
-			end
-		end)
+			end)
+		end
 	end
-end
+end)
 
 SelectBoss = "N/A"
 
-function Farm_Select_Boss()
-	if _G.Configs['Farm Select Boss'] then
-		pcall(function()
-			if Monster(SelectBoss) then
-				KillBoss(Monster(SelectBoss), function()
-					return not _G.Configs['Farm Select Boss']
-				end)
-			else
-				WaitMonster(SelectBoss, function()
-					return not _G.Configs['Farm Select Boss']
-				end)
-			end
-		end)
-	end
-end
-
-function Auto_Elite()
-	if not _G.Configs['Elite'] then return end
-	local QuestTitle = LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text
-	local QuestElite = Vector3.new(-5418.892578125, 313.74130249023, -2826.2260742188)
-	local Ms = {"Diablo", "Deandre", "Urban"}
-	local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-	if not LocalPlayer.PlayerGui.Main.Quest.Visible then
-		tp(CFrame.new(QuestElite))
-		if (QuestElite - hrp.Position).Magnitude > 1000 then
-			ComF("requestEntrance", Vector3.new(-5076.99853515625, 314.8587341308594, -3151.824951171875))
-			wait(2)
-		end
-		if (QuestElite - hrp.Position).Magnitude <= 3 then
-			ComF("EliteHunter")
-		end
-	else
-		for _, name in pairs(Ms) do
-			if string.find(QuestTitle, name) then
-				local target = Monster(name)
-				if target then
-					KillBoss(target, function()
-						return not _G.Configs['Elite']
+task.spawn(function()
+	while task.wait() do
+		if C()['Farm Select Boss'] then
+			pcall(function()
+				if Monster(SelectBoss) then
+					KillBoss(Monster(SelectBoss), function()
+						return not C()['Farm Select Boss']
 					end)
 				else
-					if _G.Configs['HOP Elite'] then
-						HopServer()
-					end
-				end
-				break
-			end
-		end
-	end
-end
-
-
-function Bones()
-	if _G.Configs['Auto Bone'] then
-		local mon = {"Reborn Skeleton","Living Zombie","Demonic Soul","Posessed Mummy"}
-		pcall(function()
-			if Monster(mon) then
-				Kill(Monster(mon), function()
-					return not _G.Configs['Auto Bone']
-				end)
-			else
-				WaitMonster(mon, function()
-					return Monster(mon) or not _G.Configs['Auto Bone']
-				end)
-			end
-		end)
-	end
-	if _G.Configs['Random Bone'] then
-		ComF("Bones", "Buy", 1, 1)
-	end
-end
-
-function Katakuri()
-	if _G.Configs['Auto Katakuri'] then
-		pcall(function()
-			local mon = {"Cookie Crafter","Cake Guard","Baking Staff","Head Baker"}
-			local boss = {"Cake Prince","Dough King"}
-			local IsBossSpawned = false
-			if Monster(boss) then
-				IsBossSpawned = true
-			else
-				IsBossSpawned = false
-			end
-			if IsBossSpawned then
-				if Monster(boss) then
-					KillBoss(Monster(boss), function()
-						return not _G.Config['Auto Katakuri'] or not IsBossSpawned 
+					WaitMonster(SelectBoss, function()
+						return not C()['Farm Select Boss']
 					end)
 				end
-			else
+			end)
+		end
+	end
+end)
+
+MaterialMob = 'N/A'
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Farm Material'] then
+			pcall(function()
+				if w1 then
+					if (C()['SelectMaterial'] == "Magma Ore") then
+						MaterialMob = { "Military Soldier", "Military Spy" };
+					elseif ((C()['SelectMaterial'] == "Leather") or (C()['SelectMaterial'] == "Scrap Metal")) then
+						MaterialMob = { "Brute"};
+					elseif (C()['SelectMaterial'] == "Angel Wings") then
+						MaterialMob = { "God's Guard"};
+					elseif (C()['SelectMaterial'] == "Fish Tail") then
+						MaterialMob = { "Fishman Warrior", "Fishman Commando" };
+					end
+				end
+				if w2 then
+					if (C()['SelectMaterial'] == "Magma Ore") then
+						MaterialMob = { "Magma Ninja" };
+					elseif (C()['SelectMaterial'] == "Scrap Metal") then
+						MaterialMob = { "Swan Pirate" };
+					elseif (C()['SelectMaterial'] == "Radioactive Material") then
+						MaterialMob = { "Factory Staff" };
+					elseif (C()['SelectMaterial'] == "Vampire Fang") then
+						MaterialMob = { "Vampire" };
+					elseif (C()['SelectMaterial'] == "Mystic Droplet") then
+						MaterialMob = { "Water Fighter", "Sea Soldier" };
+					end
+				end
+				if w3 then
+					if (C()['SelectMaterial'] == "Mini Tusk") then
+						MaterialMob = { "Mythological Pirate" };
+					elseif (C()['SelectMaterial'] == "Fish Tail") then
+						MaterialMob = { "Fishman Raider", "Fishman Captain" };
+					elseif (C()['SelectMaterial'] == "Scrap Metal") then
+						MaterialMob = { "Jungle Pirate" };
+					elseif (C()['SelectMaterial'] == "Dragon Scale") then
+						MaterialMob = { "Dragon Crew Archer", "Dragon Crew Warrior" };
+					elseif (C()['SelectMaterial'] == "Conjured Cocoa") then
+						MaterialMob = { "Cocoa Warrior", "Chocolate Bar Battler", "Sweet Thief","Candy Rebel" };
+					elseif (C()['SelectMaterial'] == "Demonic Wisp") then
+						MaterialMob = { "Demonic Soul" };
+					elseif (C()['SelectMaterial'] == "Gunpowder") then
+						MaterialMob = { "Pistol Billionaire" };
+					end
+				end
+
+				if Monster(MaterialMob) then
+					Kill(Monster(MaterialMob), function()
+						return not C()['Farm Material']
+					end)
+				else
+					WaitMonster(MaterialMob, function()
+						return not C()['Farm Material']
+					end)
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Elite'] then
+			pcall(function()
+				local QuestTitle = LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text
+				local QuestElite = Vector3.new(-5418.892578125, 313.74130249023, -2826.2260742188)
+				local Ms = {"Diablo", "Deandre", "Urban"}
+				local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+				if not LocalPlayer.PlayerGui.Main.Quest.Visible then
+					if (QuestElite - hrp.Position).Magnitude > 1000 then
+						ComF("requestEntrance", Vector3.new(-5076.99853515625, 314.8587341308594, -3151.824951171875))
+						wait(2)
+					else
+						tp(CFrame.new(QuestElite))
+					end
+					if (QuestElite - hrp.Position).Magnitude <= 3 then
+						ComF("EliteHunter")
+					end
+				else
+					if Monster(Ms) then
+						KillBoss(Monster(Ms), function()
+							return not C()['Elite']
+						end)
+					else
+						if C()['HOP Elite'] then
+							HopServer()
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Farm Bone'] then
+			local mon = {"Reborn Skeleton","Living Zombie","Demonic Soul","Posessed Mummy"}
+			pcall(function()
 				if Monster(mon) then
 					Kill(Monster(mon), function()
-						return not _G.Config['Auto Katakuri'] or not Monster(boss) or IsBossSpawned 
+						return not C()['Farm Bone']
 					end)
 				else
 					WaitMonster(mon, function()
-						return not _G.Config['Auto Katakuri'] or not Monster(boss) or IsBossSpawned 
+						return Monster(mon) or not C()['Farm Bone']
 					end)
 				end
-			end
-		end)
+			end)
+		end
 	end
-end
+end)
 
-function Auto_Ectoplasm()
-	if _G.Configs['Auto Ectoplasm'] then
-		pcall(function()
-			local EsMonster = {
-				'Cursed Captain',
-				'Ship Steward',
-				'Ship Officer',
-				'Ship Engineer',
-				'Ship Deckhand',
-			}
-			local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-			local targetPos = Vector3.new(928, 125, 32855)
-			local entrancePos = Vector3.new(923.2125244140625, 125.40035247802734, 32852.83203125)
-			if Monster(EsMonster) then
+task.spawn(function()
+	while task.wait() do
+		if C()['Random Bone'] then
+			pcall(function()
+				ComF("Bones", "Buy", 1, 1)
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Cake Prince'] then
+			pcall(function()
+				local mon = {"Cookie Crafter","Cake Guard","Baking Staff","Head Baker"}
+				local boss = {"Cake Prince","Dough King"}
+				if Monster(boss) then
+					KillBoss(Monster(boss), function()
+						return not C()['Cake Prince']
+					end)
+				else
+					if Monster(mon) then
+						Kill(Monster(mon), function()
+							return not C()['Cake Prince'] or not Monster(boss)
+						end)
+					else
+						WaitMonster(mon, function()
+							return not C()['Cake Prince'] or not Monster(boss)
+						end)
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Farm Ectoplasm'] then
+			pcall(function()
+				local EsMonster = {'Cursed Captain','Ship Steward','Ship Officer','Ship Engineer','Ship Deckhand',}
+				local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+				local targetPos = Vector3.new(928, 125, 32855)
+				local entrancePos = Vector3.new(923.2125244140625, 125.40035247802734, 32852.83203125)
 				if (targetPos - hrp.Position).Magnitude > 1500 then
 					ComF("requestEntrance", entrancePos)
+				else
+					if Monster(EsMonster) then
+						Kill(Monster(EsMonster), function()
+							return not C()['Farm Ectoplasm']
+						end)
+					else
+						WaitMonster(EsMonster, function()
+							return not C()['Farm Ectoplasm']
+						end)
+					end
 				end
-				Kill(Monster(EsMonster), function()
-					return not _G.Configs['Auto Ectoplasm']
-				end)
-			else
-				WaitMonster(EsMonster, function()
-					return not _G.Configs['Auto Ectoplasm']
-				end)
-			end
-		end)
+			end)
+		end
 	end
-end
+end)
 
-local enemyList = {"Shark", "Terrorshark", "Piranha", "Fish Crew Member"}
-
-function SeaEvents()
-	if _G.Configs['Auto SeaEvent'] then
-		pcall(function()
+task.spawn(function()
+	while task.wait() do
+		if C()['Sea Events'] then
+			local enemyList = {"Shark", "Terrorshark", "Piranha", "Fish Crew Member"}
 			if Monster(enemyList) then
 				if LocalPlayer.Character.Humanoid.Sit then
 					LocalPlayer.Character.Humanoid.Sit = false
 				end
 				KillBoss(Monster(enemyList), function()
-					return not _G.Configs['Auto SeaEvent']
+					return not C()['Sea Events']
 				end)
 			end
-		end)
-	end
-end
-
-function SailBoat()
-	if _G.Configs['Auto Drive'] then
-		Service.VirtualInputManager:SendKeyEvent(true, "W", false, game)
-	end
-end
-
-function SpeedShip()
-	local vehicleSeats = {}
-	for i, v in pairs(workspace.Boats:GetDescendants()) do
-		if v:IsA("VehicleSeat") then
-			table.insert(vehicleSeats, v)
 		end
 	end
-	if _G.Configs['Boost Speed Boat'] then
-		for _, v in pairs(vehicleSeats) do
-			v.MaxSpeed = 350
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Sail Boat'] then
+			Service.VirtualInputManager:SendKeyEvent(true, "W", false, game)
 		end
-	else
-		for _, v in pairs(vehicleSeats) do
-			v.MaxSpeed = 125
+	end
+end)
+
+function SpeedBoat()
+	pcall(function()
+		local vehicleSeats = {}
+		for i, v in pairs(workspace.Boats:GetDescendants()) do
+			if v:IsA("VehicleSeat") then
+				table.insert(vehicleSeats, v)
+			end
+		end
+		if C()['Speed Boat'] then
+			for _, v in pairs(vehicleSeats) do
+				v.MaxSpeed = 350
+			end
+		else
+			for _, v in pairs(vehicleSeats) do
+				v.MaxSpeed = 125
+			end
+		end
+	end)
+end
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Noclip Rock'] then
+			pcall(function()
+				if LocalPlayer.Character.Humanoid.Sit == true then
+					for _, v in pairs(workspace.Boats:GetDescendants()) do
+						if v:IsA("BasePart") and v.CanCollide == true then
+							v.CanCollide = false
+						end
+					end
+					for _, v in pairs(LocalPlayer.Character:GetDescendants()) do
+						if v:IsA("BasePart") and v.CanCollide == true then
+							v.CanCollide = false
+						end
+					end
+				elseif LocalPlayer.Character.Humanoid.Sit == false then
+					for _, v in pairs(workspace.Boats:GetDescendants()) do
+						if v:IsA("BasePart") and v.CanCollide == false then
+							v.CanCollide = true
+						end
+					end
+					for _, v in pairs(LocalPlayer.Character:GetDescendants()) do
+						if v:IsA("BasePart") and v.CanCollide == false then
+							v.CanCollide = true
+						end
+					end
+				end
+			end)
 		end
 	end
-end
+end)
 
-function NoclipRock()
-	if _G.Configs['No Clip Rock'] then
-		pcall(function()
-			if LocalPlayer.Character.Humanoid.Sit == true then
-				for _, v in pairs(workspace.Boats:GetDescendants()) do
-					if v:IsA("BasePart") and v.CanCollide == true then
-						v.CanCollide = false
-					end
-				end
-				for _, v in pairs(LocalPlayer.Character:GetDescendants()) do
-					if v:IsA("BasePart") and v.CanCollide == true then
-						v.CanCollide = false
-					end
-				end
-			elseif LocalPlayer.Character.Humanoid.Sit == false then
-				for _, v in pairs(workspace.Boats:GetDescendants()) do
-					if v:IsA("BasePart") and v.CanCollide == false then
-						v.CanCollide = true
-					end
-				end
-				for _, v in pairs(LocalPlayer.Character:GetDescendants()) do
-					if v:IsA("BasePart") and v.CanCollide == false then
-						v.CanCollide = true
-					end
-				end
-			end
-		end)
+task.spawn(function()
+	while task.wait() do
+		if C()['Teleport to Boat'] then
+			pcall(function()
+				tp(workspace.Boats:FindFirstChild(C()['Select Boat']):GetPivot() * CFrame.new(0,15,0))
+			end)
+		end
 	end
-end
+end)
 
-function Teleport_to_Boat()
-	if _G.Configs['Tween to Boat'] then
-		pcall(function()
-			tp(workspace.Boats:FindFirstChild(_G.Configs['Select Boat']):GetPivot() * CFrame.new(0,15,0))
-		end)
-	end
-end
+task.spawn(function()
+	while task.wait() do
+		if C()['Farm Chest'] then
+			pcall(function()
+				local nearestChest = nil
+				local shortestDistance = math.huge
+				local root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 
-function Chest()
-	if _G.Configs['Auto Chest'] then
-		pcall(function()
-			local nearestChest = nil
-			local shortestDistance = math.huge
-			local root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-
-			for _, v in pairs(workspace.ChestModels:GetChildren()) do
-				if v:IsA("Model") and v:FindFirstChild("TouchInterest", true) then
-					local dist = (v:GetPivot().Position - root.Position).Magnitude
-					if dist < shortestDistance then
-						shortestDistance = dist
-						nearestChest = v
+				for _, v in pairs(workspace.ChestModels:GetChildren()) do
+					if v:IsA("Model") and v:FindFirstChild("TouchInterest", true) then
+						local dist = (v:GetPivot().Position - root.Position).Magnitude
+						if dist < shortestDistance then
+							shortestDistance = dist
+							nearestChest = v
+						end
 					end
 				end
-			end
 
-			if nearestChest then
-				tp(nearestChest:GetPivot())
-			elseif _G.Configs['Auto Chest HOP'] then
-				HopServer()
-			end
-		end)
+				if nearestChest then
+					tp(nearestChest:GetPivot())
+				elseif C()['Farm Chest HOP'] then
+					HopServer()
+				end
+			end)
+		end
 	end
-end
+end)
 
-function Castle_Raid()
-	if _G.Configs['Castle Raid'] then
-		pcall(function()
-			for _, v in pairs(workspace.Enemies:GetChildren()) do
-				local hrp = v:FindFirstChild("HumanoidRootPart")
-				local distance = (hrp.Position - Vector3.new(-5591, 343, -2950)).Magnitude
-				if distance < 500 then
-					Kill(Monster(v.Name), function()
-						return not _G.Configs.CastleRaid
-					end)
+task.spawn(function()
+	while task.wait() do
+		if C()['Castle Raid'] then
+			pcall(function()
+				if (CFrame.new(-5118.48682, 314.54129, -2958.64404, -0.387232125, 1.81507858e-08, 0.921982229, -7.54388907e-08, 1, -5.13709999e-08, -0.921982229, -8.94458196e-08, -0.387232125).Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 2000 then
+					for _,v in pairs(workspace.Enemies:GetChildren()) do
+						if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 and (v.HumanoidRootPart.Position-LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= 1000 then
+							Kill(v, function()
+								return not C()['Castle Raid']
+							end)
+						end
+					end
 				else
-					tp(CFrame.new(-5113, 315, -2963))
+					if (CFrame.new(-5118.48682, 314.54129, -2958.64404, -0.387232125, 1.81507858e-08, 0.921982229, -7.54388907e-08, 1, -5.13709999e-08, -0.921982229, -8.94458196e-08, -0.387232125).Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 2000 then
+						for _,v in pairs(Service.ReplicatedStorage:GetChildren()) do
+							if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 and (v.HumanoidRootPart.Position-LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= 1000 then
+								Kill(v, function()
+									return not C()['Castle Raid']
+								end)
+							end
+						end
+					end
+					tp(CFrame.new(-5118.48682, 314.54129, -2958.64404, -0.387232125, 1.81507858e-08, 0.921982229, -7.54388907e-08, 1, -5.13709999e-08, -0.921982229, -8.94458196e-08, -0.387232125))
 				end
-			end
-		end)
+			end)
+		end
 	end
-end
+end)
 
-function Fruit()
-	if _G.Configs['Fruit Find'] then
-		pcall(function()
-			for _, v in pairs(workspace:GetChildren()) do
-				if v:IsA("Tool") and string.find(v.Name, "Fruit") then
-					tp(v:GetPivot())
-				end
-			end
-		end)
-	end
-	if _G.Configs['Fruit Random'] then
-		pcall(function()
-			ComF("Cousin", "Buy")
-			wait(5)
-		end)
-	end
-	if _G.Configs['Fruit Stored'] then
-		pcall(function()
-			local fruitsToStore = {
-				["Bomb Fruit"] = "Bomb-Bomb",
-				["Spike Fruit"] = "Spike-Spike",
-				["Blade Fruit"] = "Blade-Blade",
-				["Spring Fruit"] = "Spring-Spring",
-				["Rocket Fruit"] = "Rocket-Rocket",
-				["Smoke Fruit"] = "Smoke-Smoke",
-				["Spin Fruit"] = "Spin-Spin",
-				["Flame Fruit"] = "Flame-Flame",
-				["Falcon Fruit"] = "Falcon",
-				["Ice Fruit"] = "Ice-Ice",
-				["Sand Fruit"] = "Sand-Sand",
-				["Dark Fruit"] = "Dark-Dark",
-				["Ghost Fruit"] = "Ghost-Ghost",
-				["Diamond Fruit"] = "Diamond-Diamond",
-				["Light Fruit"] = "Light-Light",
-				["Love Fruit"] = "Love-Love",
-				["Rubber Fruit"] = "Rubber-Rubber",
-				["Barrier Fruit"] = "Barrier-Barrier",
-				["Magma Fruit"] = "Magma-Magma",
-				["Portal Fruit"] = "Portal-Portal",
-				["Quake Fruit"] = "Quake-Quake",
-				["Buddha Fruit"] = "Buddha-Buddha",
-				["Spider Fruit"] = "Spider-Spider",
-				["Phoenix Fruit"] = "Phoenix-Phoenix",
-				["Rumble Fruit"] = "Rumble-Rumble",
-				["Pain Fruit"] = "Pain-Pain",
-				["Gravity Fruit"] = "Gravity-Gravity",
-				["Dough Fruit"] = "Dough-Dough",
-				["Shadow Fruit"] = "Shadow-Shadow",
-				["Venom Fruit"] = "Venom-Venom",
-				["Control Fruit"] = "Control-Control",
-				["Spirit Fruit"] = "Spirit-Spirit",
-				["Dragon Fruit"] = "Dragon-Dragon",
-				["T-Rex Fruit"] = "T-Rex-T-Rex",
-				["Kitsune Fruit"] = "Kitsune-Kitsune",
-				["Yeti Fruit"] = "Yeti-Yeti",
-				["Sound Fruit"] = "Sound-Sound",
-				["Mammoth Fruit"] = "Mammoth-Mammoth",
-				["Leopard Fruit"] = "Leopard-Leopard",
-				["Blizzard Fruit"] = "Blizzard-Blizzard"
-			}
-			for fruitName, storeName in pairs(fruitsToStore) do
-				local fruit = LocalPlayer.Character:FindFirstChild(fruitName) or Backpack:FindFirstChild(fruitName)
-				if fruit then
-					ComF("StoreFruit", storeName, fruit)
-				end
-			end
-		end)
-	end
-end
-
-function Mirage_Auto()
-	if _G.Configs['To Mirage'] then
-		pcall(function()
-			tp(workspace.Map:FindFirstChild("MysticIsland"):GetPivot() * CFrame.new(0, 70, 0))
-		end)
-	end
-	if _G.Configs['To Advanced Fruit Dealer'] then
-		pcall(function()
-			if Service.ReplicatedStorage.NPCs:FindFirstChild("Advanced Fruit Dealer") then
-				tp(Service.ReplicatedStorage.NPCs["Advanced Fruit Dealer"]:GetPivot())
-			else
-				tp(workspace.NPCs["Advanced Fruit Dealer"]:GetPivot())
-			end
-		end)
-	end
-	if _G.Configs['To Gear'] then
-		pcall(function()
-			for i,v in pairs(workspace.Map:FindFirstChild('MysticIsland'):GetChildren()) do
-				if v.Name == "Part" then
-					if v.ClassName == "MeshPart" then
-						tp(v.CFrame)
-						v.Transparency = 0
+task.spawn(function()
+	while task.wait() do
+		if C()['Fruit Find'] then
+			pcall(function()
+				for _, v in pairs(workspace:GetChildren()) do
+					if v:IsA("Tool") and string.find(v.Name, "Fruit") then
+						tp(v:GetPivot())
 					end
 				end
-			end
-		end)
+			end)
+		end
 	end
-end
+end)
 
-function Kitsune_Auto()
-	if _G.Configs['To Kitsune'] then
-		pcall(function()
-			tp(workspace.Map:FindFirstChild("KitsuneIsland"):GetPivot() * CFrame.new(0, 70, 0))
-		end)
+task.spawn(function()
+	while task.wait() do
+		if C()['Fruit Random'] then
+			pcall(function()
+				ComF("Cousin", "Buy")
+				wait(5)
+			end)
+		end
 	end
-	if _G.Configs['Azure Ember'] then
-		pcall(function()
-			if workspace:FindFirstChild("AttachedAzureEmber") then
-				tp(workspace:WaitForChild("EmberTemplate"):FindFirstChild("Part").CFrame)
-			end
-		end)
-	end
-end
+end)
 
-function Auto_Prehistoric()
-	if _G.Configs['To Prehistoric'] then
-		pcall(function()
-			tp(workspace.Map:FindFirstChild("PrehistoricIsland"):GetPivot() * CFrame.new(0, 70, 0))
-		end)
+task.spawn(function()
+	while task.wait() do
+		if C()['Fruit Stored'] then
+			pcall(function()
+				local fruitsToStore = {
+					["Bomb Fruit"] = "Bomb-Bomb",
+					["Spike Fruit"] = "Spike-Spike",
+					["Blade Fruit"] = "Blade-Blade",
+					["Spring Fruit"] = "Spring-Spring",
+					["Rocket Fruit"] = "Rocket-Rocket",
+					["Smoke Fruit"] = "Smoke-Smoke",
+					["Spin Fruit"] = "Spin-Spin",
+					["Flame Fruit"] = "Flame-Flame",
+					["Falcon Fruit"] = "Falcon",
+					["Ice Fruit"] = "Ice-Ice",
+					["Sand Fruit"] = "Sand-Sand",
+					["Dark Fruit"] = "Dark-Dark",
+					["Ghost Fruit"] = "Ghost-Ghost",
+					["Diamond Fruit"] = "Diamond-Diamond",
+					["Light Fruit"] = "Light-Light",
+					["Love Fruit"] = "Love-Love",
+					["Rubber Fruit"] = "Rubber-Rubber",
+					["Barrier Fruit"] = "Barrier-Barrier",
+					["Magma Fruit"] = "Magma-Magma",
+					["Portal Fruit"] = "Portal-Portal",
+					["Quake Fruit"] = "Quake-Quake",
+					["Buddha Fruit"] = "Buddha-Buddha",
+					["Spider Fruit"] = "Spider-Spider",
+					["Phoenix Fruit"] = "Phoenix-Phoenix",
+					["Rumble Fruit"] = "Rumble-Rumble",
+					["Pain Fruit"] = "Pain-Pain",
+					["Gravity Fruit"] = "Gravity-Gravity",
+					["Dough Fruit"] = "Dough-Dough",
+					["Shadow Fruit"] = "Shadow-Shadow",
+					["Venom Fruit"] = "Venom-Venom",
+					["Control Fruit"] = "Control-Control",
+					["Spirit Fruit"] = "Spirit-Spirit",
+					["Dragon Fruit"] = "Dragon-Dragon",
+					["T-Rex Fruit"] = "T-Rex-T-Rex",
+					["Kitsune Fruit"] = "Kitsune-Kitsune",
+					["Yeti Fruit"] = "Yeti-Yeti",
+					["Sound Fruit"] = "Sound-Sound",
+					["Mammoth Fruit"] = "Mammoth-Mammoth",
+					["Leopard Fruit"] = "Leopard-Leopard",
+					["Blizzard Fruit"] = "Blizzard-Blizzard"
+				}
+				for fruitName, storeName in pairs(fruitsToStore) do
+					local fruit = LocalPlayer.Character:FindFirstChild(fruitName) or Backpack:FindFirstChild(fruitName)
+					if fruit then
+						ComF("StoreFruit", storeName, fruit)
+					end
+				end
+			end)
+		end
 	end
-	if _G.Configs['Dino Bone'] then
-		pcall(function()
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Teleport to Mirage'] then
+			pcall(function()
+				tp(workspace.Map:FindFirstChild("MysticIsland"):GetPivot() * CFrame.new(0, 70, 0))
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Teleport to Advanced Dealer'] then
+			pcall(function()
+				if Service.ReplicatedStorage.NPCs:FindFirstChild("Advanced Fruit Dealer") then
+					tp(Service.ReplicatedStorage.NPCs["Advanced Fruit Dealer"]:GetPivot())
+				else
+					tp(workspace.NPCs["Advanced Fruit Dealer"]:GetPivot())
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait()do
+		if C()['Teleport to Gear'] then
+			pcall(function()
+				for _,v in pairs(workspace.Map:FindFirstChild('MysticIsland'):GetChildren()) do
+					if v.Name == "Part" then
+						if v.ClassName == "MeshPart" then
+							tp(v.CFrame)
+							v.Transparency = 0
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Teleport to Kitsune'] then
+			pcall(function()
+				tp(workspace.Map:FindFirstChild("KitsuneIsland"):GetPivot() * CFrame.new(0, 70, 0))
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Azure Embers'] then
+			pcall(function()
+				if workspace:FindFirstChild("AttachedAzureEmber") then
+					tp(workspace:WaitForChild("EmberTemplate"):FindFirstChild("Part").CFrame)
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Teleport Prehistoric'] then
+			pcall(function()
+				tp(workspace.Map:FindFirstChild("PrehistoricIsland"):GetPivot() * CFrame.new(0, 70, 0))
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Dino Bone'] then
 			if workspace:FindFirstChild("DinoBone") then
 				tp(workspace:WaitForChild("DinoBone"):FindFirstChild("Part").CFrame)
 			end
-		end)
+		end
 	end
-	if _G.Configs['Kill Aura'] then
-		pcall(function()
-			for _, enemy in pairs(workspace.Enemies:GetChildren()) do
-				if enemy:FindFirstChild("Humanoid") and enemy:FindFirstChild("HumanoidRootPart") then
-					local hum = enemy.Humanoid
-					local hrp = enemy.HumanoidRootPart
-					if hum.Health > 0 then
-						task.wait(0.1)
-						sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
-						hum.Health = 0
-						hrp.CanCollide = false
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Kill Aura'] then
+			pcall(function()
+				for _, enemy in pairs(workspace.Enemies:GetChildren()) do
+					if enemy:FindFirstChild("Humanoid") and enemy:FindFirstChild("HumanoidRootPart") then
+						local hum = enemy.Humanoid
+						local hrp = enemy.HumanoidRootPart
+						if hum.Health > 0 then
+							task.wait(0.1)
+							sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
+							hum.Health = 0
+							hrp.CanCollide = false
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Factory'] then
+			pcall(function()
+				if Monster("Core") then
+					KillBoss("Core", function()
+						return not C()['Factory']
+					end)
+				elseif Service.ReplicatedStorage:FindFirstChild("Core") then
+					tp(CFrame.new(502.7349853515625, 143.0749053955078, -379.078125))
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto Pole 1'] then
+			pcall(function()
+				if w1 then
+					if Monster("Thunder God") then
+						Kill(Monster("Thunder God"), function()
+							return not C()['Auto Pole 1']
+						end)
+					else
+						if not C()['HOP Pole 1'] then
+							WaitMonster("Thunder God", function()
+								return not C()['Auto Pole 1']
+							end)
+						else
+							HopServer()
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto Saber'] then
+			pcall(function()
+				if w1 then
+					pcall(function()
+						if LocalPlayer.Data.Level.Value >= 200 and workspace.Map.Jungle.Final.Part.Transparency == 0 then
+							if game:GetService("Workspace").Map.Jungle.Final.Part.Transparency == 0 then
+								if game:GetService("Workspace").Map.Jungle.QuestPlates.Door.Transparency == 0 then
+									for i,v in next,game:GetService("Workspace").Map.Jungle.QuestPlates:GetChildren() do
+										if v:IsA("Model") and v.Button:FindFirstChild("TouchInterest") then
+											firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, v.Button, 0)
+										end
+									end
+								else
+									if not game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ProQuestProgress")["UsedTorch"] then
+										game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ProQuestProgress","GetTorch")
+										Equip("Torch")
+										game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ProQuestProgress","DestroyTorch")
+									elseif not game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ProQuestProgress")["UsedCup"] then
+										game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ProQuestProgress","GetCup")
+										Equip("Cup")
+										game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ProQuestProgress","FillCup",game:GetService("Players").LocalPlayer.Character.Cup)
+										game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ProQuestProgress","SickMan")
+									elseif not game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ProQuestProgress")["KilledMob"] then
+										game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ProQuestProgress","RichSon")
+										if Monster("Mob Leader") then
+											Kill(Monster("Mob Leader"), function()
+												return game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ProQuestProgress")["KilledMob"] or not C()['Auto Saber']
+											end)
+										end
+									elseif not game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ProQuestProgress")["UsedRelic"] then
+										game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ProQuestProgress","RichSon")
+										Equip("Relic")
+										game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ProQuestProgress","PlaceRelic")
+									end
+								end
+							else
+								if Monster('Saber Expert') then
+									Kill(Monster('Saber Expert'), function()
+										return not C()['Auto Saber']
+									end)
+								else
+									if not C()['HOP Saber'] then
+										tp(CFrame.new(-1459, 30, -50))
+									else
+										HopServer()
+									end
+								end
+							end
+						end
+					end)
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto Trident'] then
+			pcall(function()
+				if w1 then
+					if Monster("Fishman Lord") then
+						Kill(Monster("Fishman Lord"), function()
+							return not C()['Auto Trident']
+						end)
+					else
+						if not C()['HOP Trident'] then
+							WaitMonster("Fishman Lord", function()
+								return not C()['Auto Trident']
+							end)
+						else
+							HopServer()
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto Bazooka'] then
+			pcall(function()
+				if w1 then
+					if Monster("Wysper") then
+						Kill(Monster("Wysper"), function()
+							return not C()['Auto Bazooka']
+						end)
+					else
+						if not C()['HOP Bazooka'] then
+							WaitMonster("Wysper", function()
+								return not C()['Auto Bazooka']
+							end)
+						else
+							HopServer()
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto CoolShade'] then
+			pcall(function()
+				if w1 then
+					if Monster("Cyborg") then
+						Kill(Monster("Cyborg"), function()
+							return not C()['Auto CoolShade']
+						end)
+					else
+						if not C()['HOP CoolShade'] then
+							WaitMonster("Cyborg", function()
+								return not C()['Auto CoolShade']
+							end)
+						else
+							HopServer()
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto LongSword'] then
+			pcall(function()
+				if w2 then
+					if Monster("Diamond") then
+						Kill(Monster("Diamond"), function()
+							return not C()['Auto LongSword']
+						end)
+					else
+						if not C()['HOP LongSword'] then
+							WaitMonster("Diamond", function()
+								return not C()['Auto LongSword']
+							end)
+						else
+							HopServer()
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto GravityBlade'] then
+			pcall(function()
+				if w2 then
+					if Monster("Fajita") then
+						Kill(Monster("Fajita"), function()
+							return not C()['Auto GravityBlade']
+						end)
+					else
+						if not C()['HOP GravityBlade'] then
+							WaitMonster("Fajita", function()
+								return not C()['Auto GravityBlade']
+							end)
+						else
+							HopServer()
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto SwanGlasses'] then
+			pcall(function()
+				if w2 then
+					if Monster("Don Swan") then
+						Kill(Monster("Don Swan"), function()
+							return not C()['Auto SwanGlasses']
+						end)
+					else
+						if not C()['HOP SwanGlasses'] then
+							WaitMonster("Don Swan", function()
+								return not C()['Auto SwanGlasses']
+							end)
+						else
+							HopServer()
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto Flail'] then
+			pcall(function()
+				if w2 then
+					if Monster("Smoke Admiral") then
+						Kill(Monster("Smoke Admiral"), function()
+							return not C()['Auto Flail']
+						end)
+					else
+						if not C()['HOP Flail'] then
+							WaitMonster("Smoke Admiral", function()
+								return not C()['Auto Flail']
+							end)
+						else
+							HopServer()
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto DragonTrident'] then
+			pcall(function()
+				if w2 then
+					if Monster("Tide Keeper") then
+						Kill(Monster("Tide Keeper"), function()
+							return not C()['Auto DragonTrident']
+						end)
+					else
+						if not C()['HOP DragonTrident'] then
+							WaitMonster("Tide Keeper", function()
+								return not C()['Auto DragonTrident']
+							end)
+						else
+							HopServer()
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto Rengoku'] then
+			if w2 then
+				pcall(function()
+					if CheckItem("Hidden Key") and HaveItem("Rengoku") then
+						tp(CFrame.new(6571.1201171875, 299.23028564453, -6967.841796875))
+					else
+						local mon = {"Arctic Warrior", "Snow Lurker", "Awakened Ice Admiral"}
+						if Monster(mon) then
+							Kill(Monster(mon), function()
+								return not C()['Auto Rengoku']
+							end)
+						else
+							WaitMonster(mon, function()
+								return Monster(mon) or not C()['Auto Rengoku']
+							end)
+						end
+					end
+				end)
+			end
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto Law'] then
+			pcall(function()
+				if not CheckItem("Microchip") then 
+					ComF("BlackbeardReward", "Microchip", "2") 
+				end
+				if Monster("Order") then
+					Kill(Monster("Order"), function()
+						return not C()['Auto Law'] or not Monster('Order') or Monster('Order').Humanoid.Health <= 0
+					end)
+				else
+					if CheckItem("Microchip") then
+						fireclickdetector(game:GetService("Workspace").Map.CircleIsland.RaidSummon.Button.Main.ClickDetector)
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto PilotHelmet'] then
+			pcall(function()
+				if w3 then
+					if Monster("Stone") then
+						Kill(Monster("Stone"), function()
+							return not C()['Auto PilotHelmet']
+						end)
+					else
+						if not C()['HOP PilotHelmet'] then
+							WaitMonster("Stone", function()
+								return not C()['Auto PilotHelmett']
+							end)
+						else
+							HopServer()
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto VenomBow'] then
+			pcall(function()
+				if w3 then
+					if Monster("Hydra Leader") then
+						Kill(Monster("Hydra Leader"), function()
+							return not C()['Auto VenomBow']
+						end)
+					else
+						if not C()['HOP VenomBow'] then
+							WaitMonster("Hydra Leader", function()
+								return not C()['Auto VenomBow']
+							end)
+						else
+							HopServer()
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto Lei'] then
+			pcall(function()
+				if w3 then
+					if Monster("Kilo Admiral") then
+						Kill(Monster("Kilo Admiral"), function()
+							return not C()['Auto Lei']
+						end)
+					else
+						if not C()['HOP Lei'] then
+							WaitMonster("Kilo Admiral", function()
+								return not C()['Auto Lei']
+							end)
+						else
+							HopServer()
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto TwinHooks'] then
+			pcall(function()
+				if w3 then
+					if Monster("Captain Elephant") then
+						Kill(Monster("Captain Elephant"), function()
+							return not C()['Auto TwinHooks']
+						end)
+					else
+						if not C()['HOP TwinHooks'] then
+							WaitMonster("Captain Elephant", function()
+								return not C()['Auto TwinHooks']
+							end)
+						else
+							HopServer()
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto Canvender'] then
+			pcall(function()
+				if w3 then
+					if Monster("Beautiful Pirate") then
+						Kill(Monster("Beautiful Pirate"), function()
+							return not C()['Auto Canvender']
+						end)
+					else
+						if not C()['HOP Canvender'] then
+							WaitMonster("Beautiful Pirate", function()
+								return not C()['Auto Canvender']
+							end)
+						else
+							HopServer()
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto BuddySword'] then
+			pcall(function()
+				if w3 then
+					if Monster("Cake Queen") then
+						Kill(Monster("Cake Queen"), function()
+							return not C()['Auto BuddySword']
+						end)
+					else
+						if not C()['HOP BuddySword'] then
+							WaitMonster("Cake Queen", function()
+								return not C()['Auto BuddySword']
+							end)
+						else
+							HopServer()
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Holy Torch'] then
+			pcall(function()
+				wait(1)
+				repeat tp(CFrame.new(-10752, 417, -9366)) wait() until not C()['Holy Torch'] or (LocalPlayer.Character.HumanoidRootPart.Position-Vector3.new(-10752, 417, -9366)).Magnitude <= 10
+				wait(1)
+				repeat tp(CFrame.new(-11672, 334, -9474)) wait() until not C()['Holy Torch'] or (LocalPlayer.Character.HumanoidRootPart.Position-Vector3.new(-11672, 334, -9474)).Magnitude <= 10
+				wait(1)
+				repeat tp(CFrame.new(-12132, 521, -10655)) wait() until not C()['Holy Torch'] or (LocalPlayer.Character.HumanoidRootPart.Position-Vector3.new(-12132, 521, -10655)).Magnitude <= 10
+				wait(1)
+				repeat tp(CFrame.new(-13336, 486, -6985)) wait() until not C()['Holy Torch'] or (LocalPlayer.Character.HumanoidRootPart.Position-Vector3.new(-13336, 486, -6985)).Magnitude <= 10
+				wait(1)
+				repeat tp(CFrame.new(-13489, 332, -7925)) wait() until not C()['Holy Torch'] or (LocalPlayer.Character.HumanoidRootPart.Position-Vector3.new(-13489, 332, -7925)).Magnitude <= 10
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto Darkbeard'] then
+			if Monster("Darkbeard") then
+				KillBoss(Monster("Darkbeard"), function()
+					return not C()['Auto Darkbeard']
+				end)
+			else
+				if not C()['HOP Darkbeard'] then
+					WaitMonster("Darkbeard", function()
+						return not C()['Auto Darkbeard']
+					end)
+				else
+					HopServer()
+				end
+			end
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto HallowScythe'] then
+			if Monster("Soul Reaper") then
+				KillBoss(Monster("Soul Reaper"), function()
+					return not C()['Auto HallowScythe']
+				end)
+			else
+				if not C()['HOP HallowScythe'] then
+					WaitMonster("Soul Reaper", function()
+						return not C()['Auto HallowScythe']
+					end)
+				else
+					HopServer()
+				end
+			end
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto Trial V4'] then
+			if w3 then
+				pcall(function()
+					if LocalPlayer.Data.Race.Value == "Mink" then	
+						if workspace.Map:FindFirstChild("MinkTrial") then
+							if (workspace.Map.MinkTrial.Ceiling.CFrame - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 200 then
+								tp(workspace.Map.MinkTrial.Ceiling.CFrame * CFrame.new(0,-20,0))
+							end
+						end
+					elseif LocalPlayer.Data.Race.Value == "Human" then
+						if workspace.Map:FindFirstChild("HumanTrial") then
+							for i,v in pairs(workspace.Enemies:GetChildren()) do
+								if (v.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= 400 then
+									KillBoss(v, function()
+										return not C()['Auto Trial V4']
+									end)
+								end
+							end
+						end
+					elseif LocalPlayer.Data.Race.Value == "Cyborg" then
+						if workspace.Map:FindFirstChild("CybrogTrial") then
+							tp(workspace.Map.CyborgTrial.Floor.CFrame*CFrame.new(0,500,0))
+						end
+					elseif LocalPlayer.Data.Race.Value == "Skypiea" then
+						if workspace.Map:FindFirstChild("SkyTrial") then
+							if (workspace.Map.SkyTrial.Model.FinishPart.CFrame-LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 750 then
+								tp(workspace.Map.SkyTrial.Model.FinishPart.CFrame)
+							end
+						end
+					elseif LocalPlayer.Data.Race.Value == "Ghoul" then
+						if workspace.Map:FindFirstChild("GhoulTrial") then 
+							for i,v in pairs(workspace.Enemies:GetChildren()) do
+								if (v.HumanoidRootPart.Position-game:GetService("Players").RootPart.Position).magnitude <= 400 then
+									KillBoss(v, function()
+										return not C()['Auto Trial V4']
+									end)
+								end
+							end
+						end
+					elseif LocalPlayer.Data.Race.Value == "Fishman" then
+						if workspace.Map:FindFirstChild("FishTrial") then
+							if (workspace.Map:FindFirstChild("FishTrial").Part.Position-LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 500 then
+								tp(CFrame.new(25032.043, 75.04647064, 12619.5967))
+							end
+						end
+					end
+				end)
+			end
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Teleport to Door'] then
+			if w3 then
+				pcall(function()
+					if LocalPlayer.Data.Race.Value == "Mink" then
+						tp(workspace.Map["Temple of Time"].MinkCorridor.Door.Entrance.CFrame) 
+					elseif LocalPlayer.Data.Race.Value == "Fishman" then
+						tp(workspace.Map["Temple of Time"].FishmanCorridor.Door.Entrance.CFrame) 
+					elseif LocalPlayer.Data.Race.Value == "Skypiea" then
+						tp(workspace.Map["Temple of Time"].SkyCorridor.Door.Entrance.CFrame) 
+					elseif LocalPlayer.Data.Race.Value == "Human" then
+						tp(workspace.Map["Temple of Time"].HumanCorridor.Door.Entrance.CFrame) 
+					elseif LocalPlayer.Data.Race.Value == "Ghoul" then
+						tp(workspace.Map["Temple of Time"].GhoulCorridor.Door.Entrance.CFrame) 
+					elseif LocalPlayer.Data.Race.Value == "Cybrog" then
+						tp(workspace.Map["Temple of Time"].CybrogCorridor.Door.Entrance.CFrame) 
+					end
+				end)
+			end
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto Evo Race V2'] then
+			pcall(function() 
+				if not LocalPlayer.Data.Race:FindFirstChild("Evolved") then
+					ComF("Alchemist", "1")
+					local step = ComF("Alchemist", "1")
+					if step == 0 then
+						local targetPos = CFrame.new(-2779, 72, -3574)
+						tp(targetPos)
+						if (targetPos - LocalPlayer.HumanoidRootPart.Position).Magnitude <= 2 then 
+							ComF("Alchemist","2")
+						end
+					elseif step == 1 then
+						local flowers = {"Flower 1", "Flower 2", "Flower 3"}
+						for i, flower in ipairs(flowers) do
+							if not (LocalPlayer.Backpack:FindFirstChild(flower) and LocalPlayer.Character:FindFirstChild(flower)) then
+								if i < 3 then 
+									tp(workspace["Flower" .. i].CFrame)
+								elseif i == 3 then 
+									if Monster("Zombie") then
+										Kill(Monster("Zombie"), function()
+											return not C()['Auto Evo Race V2'] or Backpack:FindFirstChild("Flower 3")
+										end)
+									else
+										WaitMonster("Zomebie", function()
+											return not C()['Auto Evo Race V2'] or Backpack:FindFirstChild("Flower 3")
+										end)
+									end
+								end
+								break
+							end
+						end
+					elseif step == 2 then ComF("Alchemist", "3") end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Find Berry'] then
+			pcall(function()
+				local BerryBush = Service.CollectionService:GetTagged("BerryBush")
+				for i = 1, #BerryBush do
+					local Bush = BerryBush[i]
+					for _, v in pairs(Bush.Parent:GetChildren()) do
+						if v.Name == "Berries" then
+							if v:IsA('Model') then
+								tp(v:GetPivot())
+							end
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Sea 2'] then
+			pcall(function()
+				if w1 then
+					local IceDoor = workspace.Map.Ice.Door
+					if IceDoor.CanCollide and IceDoor.Transparency == 1 then
+						if LocalPlayer.Backpack:FindFirstChild("Key") or LocalPlayer.Character:FindFirstChild("Key") then
+							Equip(LocalPlayer.Backpack:FindFirstChild("Key"))
+							tp(CFrame.new(1347, 37, -1325))
+						else
+							tp(CFrame.new(4849, 5, 719))
+						end
+					else
+						if Monster("Ice Admiral") then
+							Kill(Monster("Ice Admiral"), function()
+								return not C()['Sea 2']
+							end)
+						else
+							WaitMonster("Ice Admiral", function()
+								return not C()['Sea 2']
+							end)
+						end
+						repeat ComF("TravelDressrosa") until not C()['Sea 2'] or not game:GetService("Workspace").Enemies:FindFirstChild("Ice Admiral")
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Look Moon'] then
+			pcall(function()
+				local moonDir = Service.Lighting:GetMoonDirection()
+				local lookAtPos = camera.CFrame.p + moonDir * 100
+				camera.CFrame = CFrame.lookAt(camera.CFrame.p, lookAtPos)
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait(5) do
+		if C()['Buy Legendary Sword'] then
+			pcall(function()
+				ComF("LegendarySwordDealer", "2")
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait(1) do
+		if C()['Auto Start Raid'] then
+			pcall(function()
+				local locations = game:GetService("Workspace")["_WorldOrigin"].Locations
+				if not locations:FindFirstChild("Island 1")  then
+					if LocalPlayer.Backpack:FindFirstChild("Special Microchip") then
+						if w2 then
+							fireclickdetector(game:GetService("Workspace").Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
+						elseif w3 then
+							fireclickdetector(game:GetService("Workspace").Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait(5) do
+		if C()['Auto Buy Awaken'] then
+			pcall(function()
+				ComF("Awakener","Check")
+				ComF("Awakener","Awaken")
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait() do
+		if C()['Auto Raid'] then
+			pcall(function()
+				local locations = workspace["_WorldOrigin"].Locations
+				for i,enemy in pairs(workspace.Enemies:GetChildren()) do
+					if (enemy.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 1000 then
+						if IsAlive(enemy) then
+							local v = enemy
+							tp(v.HumanoidRootPart.CFrame * CFrame.new(0, 40, 0))
+							local Human = v:FindFirstChildOfClass("Humanoid")
+							local distance = (v.HumanoidRootPart.CFrame.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+							if Human.Health > 0 and distance <= 40 then 
+								Human.Health = 1
+								Human.Health = 0
+							end
+						else
+							for islands = 5, 1, -1 do
+								local island = locations:FindFirstChild("Island " .. islands)
+								if island then 
+									tp(island.CFrame * CFrame.new(0, 100, 0)) break 
+								end
+							end
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
+
+task.spawn(function()
+	while task.wait(1) do
+		if C()['Auto Unstored Fruit'] then
+			for i,v in pairs(ComF("getInventoryFruits")) do
+				if v["Price"] < 10000000 then
+					ComF("LoadFruit",v["Name"])
+				end
+			end
+		end
+	end
+end)
+
+task.spawn(function()
+	local MobT = {
+		"Reborn Skeleton",
+		"Living Zombie",
+		"Demonic Soul",
+		"Posessed Mummy"
+	}
+	while task.wait() do
+		if C()['Auto Train V4'] then
+			if LocalPlayer.Character:FindFirstChild("RaceEnergy") then
+				if LocalPlayer.Character.RaceEnergy.Value >= 1 and LocalPlayer.Character:FindFirstChild("RaceTransformed") and not LocalPlayer.Character.RaceTransformed.Value then
+					tp(CFrame.new(-9515.3720703125, 164.00624084473, 5786.0610351562))
+					Backpack.Awakening.RemoteFunction:InvokeServer(true)
+					wait()
+					ComF("UpgradeRace", "Check")
+					ComF("UpgradeRace", "Buy")
+				else
+					if Monster(MobT) then
+						Kill(Monster(MobT), function()
+							return not C()['Auto Train V4']
+						end)
+					else
+						WaitMonster(MobT, function()
+							return not C()['Auto Train V4']
+						end)
 					end
 				end
 			end
-		end)
+		end
 	end
-end
+end)
 
 
-LoadSettings()
 
 Icons = {
 	general = 81707063924327,jigsaw = 112798812841371,
@@ -1573,9 +2407,8 @@ Icons = {
 };
 
 Fetching = loadstr("https://github.com/MerrySubs4t/Softwork/blob/main/Fetching/FrameworkUI.lua?raw=true")
-Window = Fetching:Window({Logo = 128185233852701,Size = UDim2.new(0, 500,0, 375)})
 
-------///////////  TABS   //////////////--------
+Window = Fetching:Window({Logo = 128185233852701,Size = UDim2.new(0, 500,0, 375)})
 
 _General = Window:CreateTab({Title = translate("General", "ทั่วไป"),Icon = Icons.thunder});
 _Auto = Window:CreateTab({Title = translate("Automatic", "อัตโนมัติ"),Icon = Icons.special});
@@ -1584,158 +2417,150 @@ _Teleport = Window:CreateTab({Title = translate("Teleport", "เทเลพอ�
 _Visual = Window:CreateTab({Title = translate("Visual", "การมองเห็น"),Icon = 127654928705257});
 _Misc = Window:CreateTab({Title = translate("Others", "เพิ่มเติม"),Icon = Icons.jigsaw});
 
---------------------------------------------------
+function Section(p, t, s)
+	return p:CreateSection({
+		Title = t,
+		Side = s
+	});
+end
 
-
-------///////////  General - Ad   //////////////--------
-Advertisement = _General:CreateSection({Title = translate("Advertisement", "โฆษณา"),Side = "l"});
-Advertisement:Image({Image = Icons.cutesofia})
-Advertisement:Line()
-Advertisement:CreateButton({Title = translate("Join Discord", "เข้าร่วมดิสคอร์ด"),CallBack = function()
-	copy("https://discord.gg/uy6TP4ew7d")
-end})
-
-
-------///////////  General - General   //////////////--------
-General = _General:CreateSection({Title = translate("Level", "เลเวล"),Side = "r"});
-General:CreateToggle({Title = translate("Automatic Level","ออโต้ฟาร์มเวเวล"),Value = _G.Configs['Level'],CallBack = function(v)
-	_G.Configs['Level'] = v
-	SaveSettings()
-end})
-General:Line()
-General:CreateToggle({Title = translate("Farm Nerest Monsters","ฟาร์มมอนรอบๆ"),Value = _G.Configs['Farm Nearest'],CallBack = function(v)
-	_G.Configs['Farm Nearest'] = v
-	SaveSettings()
-end})
-
-WeAreLoop(AutoLevel)
-WeAreLoop(Nearest)
-
-
-------///////////  General - Settings   //////////////--------
-Setting = _General:CreateSection({Title = translate("Settings", "การตั้งต่า"),Side = "r"});
-Setting:CreateSelect({Title = translate("Select Weapon", "เลือกอาวุธ"),List = {"Melee", "Sword"},Value = _G.Configs['Weapon'],Callback = function(v)
-	_G.Configs['Weapon'] = v
-	SaveSettings()
-end})
-Setting:Line()
-Setting:CreateToggle({Title = translate("Double Quest","ฟาร์มเลวลแบบสองเควส"),Value = _G.Configs['Double Quest'],CallBack = function(v)
-	_G.Configs['Double Quest'] = v
-	SaveSettings()
-end})
-Setting:Line()
-Setting:CreateToggle({Title = translate("Disable Notifications","ปิดการแจ้งเตือน"),Value = _G.Configs['Notify'],CallBack = function(v)
-	_G.Configs['Notify'] = v
-	if v then
-		PlayerGui.Notifications.Enabled = false
-	else
-		PlayerGui.Notifications.Enabled = true
-	end
-	SaveSettings()
-end})
-Setting:Line()
-Setting:CreateToggle({Title = translate("Automatic Set Spawn","เซฟจุดเกิดอัตโนมัติ"),Value = _G.Configs['Set Spawn'],CallBack = function(v)
-	_G.Configs['Set Spawn'] = v
-	SaveSettings()
-end})
-Setting:CreateToggle({Title = translate("Random Position Farming","ฟาร์มสุ่มตำแหน่งรอบมอนสเตอร์"),Value = _G.Configs['Random Position Farming'],CallBack = function(v)
-	_G.Configs['Random Position Farming'] = v
-	SaveSettings()
-end})
-
-WeAreLoop(Setspawn)
-
-
-
-------///////////  General - Settings   //////////////--------
-Options = _General:CreateSection({Title = translate("Options", "ฟังชั่น"),Side = "l"});
-Options:CreateToggle({Title = translate("Automatic Active Awakening [V4]","ออโต้เปิดเผ่าวีสี่"),Value = _G.Configs['V4'],CallBack = function(v)
-	_G.Configs['V4'] = v
-	SaveSettings()
-end})
-Options:CreateToggle({Title = translate("Automatic Active Ability [V3]","ออโต้เปิดเผ่าวีสี่"),Value = _G.Configs['V3'],CallBack = function(v)
-	_G.Configs['V3'] = v
-	SaveSettings()
-end})
-Options:CreateToggle({Title = translate("Attack Aura","ออร่าการโจมตี"),Value = _G.Configs['Attack Aura'],CallBack = function(v)
-	_G.Configs['Attack Aura'] = v
-	SaveSettings()
-end})
-Options:CreateToggle({Title = translate("Use Skill","ใช้สกิล"),Value = _G.Configs['Use Skill'],CallBack = function(v)
-	_G.Configs['Use Skill'] = v
-	SaveSettings()
-end})
-
-WeAreLoop(AttackAll)
-WeAreLoop(V3)
-WeAreLoop(V4)
-
-
-
-
-------///////////  General - Stats   //////////////--------
-Stat = _General:CreateSection({Title = translate("Stats", "ค่าพลัง"),Side = "l"});
-Stat:CreateToggle({Title = translate("Upgrade Melee","อัพหมัด"),Value = _G.Configs['UP_Melee'],CallBack = function(v)
-	_G.Configs['UP_Melee'] = v
-	SaveSettings()
-end})
-Stat:CreateToggle({Title = translate("Upgrade Defense","อัพเลือด"),Value = _G.Configs['UP_Health'],CallBack = function(v)
-	_G.Configs['UP_Health'] = v
-	SaveSettings()
-end})
-Stat:CreateToggle({Title = translate("Upgrade Sword","อัพดาบ"),Value = _G.Configs['UP_Sword'],CallBack = function(v)
-	_G.Configs['UP_Sword'] = v
-	SaveSettings()
-end})
-Stat:CreateToggle({Title = translate("Upgrade Gun","อัพปืน"),Value = _G.Configs['UP_Gun'],CallBack = function(v)
-	_G.Configs['UP_Gun'] = v
-	SaveSettings()
-end})
-Stat:CreateToggle({Title = translate("Upgrade Fruit","อัพผล"),Value = _G.Configs['UP_Fruit'],CallBack = function(v)
-	_G.Configs['UP_Fruit'] = v
-	SaveSettings()
-end})
-
-WeAreLoop(UP_Stats)
-
-
-
-------///////////  General - Boss   //////////////--------
-Boss = _General:CreateSection({Title = translate("Boss", "บอส"),Side = "r"});
-CheckList = {}
-tableboss = {}
-for _, v in pairs(workspace.Enemies:GetChildren()) do
-	if v:FindFirstChild("HumanoidRootPart") and v:GetAttribute("IsBoss") then
-		if not CheckList[v.Name] then
-			table.insert(tableboss, v.Name)
-			CheckList[v.Name] = true
+function Toggle(s, t, v, c)
+	return s:CreateToggle({
+		Title = t,
+		Value = C()[v],
+		CallBack = function(value)
+			if c then
+				c(value)
+			end
+			C()[v] = value
+			Save(v, value)
 		end
+	})
+end
+
+function Button(s, t, c)
+	return s:CreateButton({
+		Title = t,
+		CallBack = function()
+			c()
+		end
+	})
+end
+
+
+function ToggleImage(s, t, v, i, c)
+	return s:ImageToggle({
+		Title = t,
+		Icon = i,
+		Value = C()[v],
+		CallBack = function(value)
+			if c then
+				c(value)
+			end
+			C()[v] = value
+			Save(v, value)
+		end
+	})
+end
+
+function Slider(s, t, min, max, v, r)
+	return s:CreateSlider({
+		Title = t,
+		Min = min,
+		Max = max,
+		Value = C()[v],
+		Rounding = 1,
+		CallBack = function(value)
+			C()[v] = value
+			Save(v, value)
+		end
+	})
+end
+
+function Selection(s, t, l, v)
+	return s:CreateSelect({
+		Title = t,
+		List = l,
+		Value = C()[v],
+		Callback = function(value)
+			C()[v] = value
+			Save(v, value)
+		end
+	})
+end
+
+function ImageHeader(s, t, d, i)
+	return s:CreateImage({
+		Title = t,
+		Desc = d,
+		Icon = "http://www.roblox.com/asset/?id=" .. tostring(i)
+	})
+end
+
+
+local Advertisement = Section(_General, translate("Advertisement", "โฆษนา"), "l") do
+	Advertisement:Image({Image = Icons.cutesofia})
+	Advertisement:Line()
+	Button(Advertisement, translate("Discord", "ดิสคอร์ด"), function()
+		copy("https://discord.gg/uy6TP4ew7d")
+	end)
+end
+
+local Level = Section(_General, translate("Level", "เลเวล"), 'r') do
+	Toggle(Level, translate("Automatic Farm Level", "ออโต้ฟาร์มเลเวล"), "Level")
+	Level:Line()
+	Toggle(Level, translate("Automatic Nearest Monster", "ฟาร์มมอนสเตอร์รอบๆ"), "Nearest")
+	if w1 then
+		Level:Line()
+		Toggle(Level, translate("Automatic Second Sea", "ออโต้ไปโลก 2"), "Sea 2")
 	end
 end
-for _, v in pairs(Service.ReplicatedStorage:GetChildren()) do
-	if v:FindFirstChild("HumanoidRootPart") and v:GetAttribute("IsBoss") then
-		if not CheckList[v.Name] then
-			table.insert(tableboss, v.Name)
-			CheckList[v.Name] = true
+
+local Settings = Section(_General, translate("Settings", "การตั้งค่า"), 'r') do
+	Selection(Settings, translate("Select Weapon", "เลือกอาวุธ"), {"Melee", "Sword"}, "Weapon")
+	Settings:Line()
+	Toggle(Settings, translate("Double Quest", "รับสองเควส"), "Double Quest")
+	Settings:Line()
+	Toggle(Settings, translate("Disable Notifications", "ปิดการแจ้งเตือน"), "Notify", function(v)
+		if v then
+			PlayerGui.Notifications.Enabled = false
+		else
+			PlayerGui.Notifications.Enabled = true
 		end
-	end
+	end)
+	Settings:Line()
+	Toggle(Settings, translate("Automatic Set Spawn", "ออโต้เซฟจุดเกิด"), "Set Spawn")
+	Settings:Line()
+	Toggle(Settings, translate("Random Position Farming", "สุ่มตำแหน่งรอบมอนสเตอร์ตอนฟาร์ม"), "Random Position Farming")
+	Settings:Line()
+	Toggle(Settings, translate("Force Upper Tweening", "บังคับขึ้นข้างบนตอนบิน"), "Upper Tween")
 end
-DropdownBoss = Boss:CreateDropdown({
-	Title = translate("Select Boss", "เลือกบอส"),
-	List = tableboss,
-	Value = SelectBoss,
-	Multi = false,
-	Callback = function(v)
-		SelectBoss = v
-	end
-})
-Boss:CreateButton({Title = translate("Refresh", "รีเฟรช"),Callback = function()
-	DropdownBoss:Clear()
+
+local Option = Section(_General, translate("Options", "การใช้งาน"), 'l') do
+	Toggle(Option, translate("Automatic Enable V4", "ออโต้เปิดเผ่าวี 4"), "V4")
+	Toggle(Option, translate("Automatic Enable V3", "ออโต้เปิดเผ่าวี 3"), "V3")
+	Toggle(Option, translate("Use Skill Farm", "ใช้สกิลตอนฟาร์ม"), "Use Skill")
+end
+
+local Stats = Section(_General, translate("Stats", "ค่าพลัง"), 'r') do
+	Toggle(Stats, translate("Upgrade Melee", "อัพค่าพลังหมัด"), "UP_Melee")
+	Toggle(Stats, translate("Upgrade Defense", "อัพค่าพลังป้องกัน"), "UP_Healht")
+	Toggle(Stats, translate("Upgrade Sword", "อัพค่าพลังดาบ"), "UP_Sword")
+	Toggle(Stats, translate("Upgrade Gun", "อัพค่าพลังปืน"), "UP_Gun")
+	Toggle(Stats, translate("Upgrade Fruit", "อัพค่าพลังผลปีศาจ"), "UP_Fruit")
+	Stats:Line()
+	Button(Stats, translate("Reset Stats", "รีเซ็ตค่าพลัง"),function()
+		ComF("BlackbeardReward","Refund","2")
+	end)
+end
+
+local Boss = Section(_General, translate("Boss", "บอส"), 'l') do
 	CheckList = {}
+	tableboss = {}
 	for _, v in pairs(workspace.Enemies:GetChildren()) do
 		if v:FindFirstChild("HumanoidRootPart") and v:GetAttribute("IsBoss") then
 			if not CheckList[v.Name] then
-				DropdownBoss:AddList(v.Name)
+				table.insert(tableboss, v.Name)
 				CheckList[v.Name] = true
 			end
 		end
@@ -1743,473 +2568,43 @@ Boss:CreateButton({Title = translate("Refresh", "รีเฟรช"),Callback =
 	for _, v in pairs(Service.ReplicatedStorage:GetChildren()) do
 		if v:FindFirstChild("HumanoidRootPart") and v:GetAttribute("IsBoss") then
 			if not CheckList[v.Name] then
-				DropdownBoss:AddList(v.Name)
+				table.insert(tableboss, v.Name)
 				CheckList[v.Name] = true
 			end
 		end
 	end
-end})
-Boss:CreateToggle({Title = translate("Farm Select Boss","ฟาร์มบอสที่เลือก"),Value = _G.Configs['Farm Select Boss'],CallBack = function(v)
-	_G.Configs['Farm Select Boss'] = v
-	SaveSettings()
-end})
-Boss:Line()
-Boss:CreateToggle({Title = translate("Farm All Boss","ฟาร์มบอสทุกตัว"),Value = _G.Configs['Farm All Boss'],CallBack = function(v)
-	_G.Configs['Farm All Boss'] = v
-	SaveSettings()
-end})
-Boss:CreateToggle({Title = translate("HOP Boss","เปิดการใช้งานย้ายเซิร์ฟหาบอส"),Value = _G.Configs['HOP Boss'],CallBack = function(v)
-	_G.Configs['HOP Boss'] = v
-	SaveSettings()
-end})
-
-WeAreLoop(Farm_All_Boss)
-WeAreLoop(Farm_Select_Boss)
-
-
-
-
-------///////////  Teleport - Sea   //////////////--------
-Sea = _Teleport:CreateSection({Title = translate("Options", "ฟังชั่น"),Side = "l"});
-Sea:CreateButton({Title = translate("Teleport to World 3", "ไปโลก 3"),Callback = function()
-	ComF("TravelZou")
-end})
-Sea:Line()
-Sea:CreateButton({Title = translate("Teleport to World 2", "ไปโลก 2"),Callback = function()
-	ComF("TravelDressrosa")
-end})
-Sea:Line()
-Sea:CreateButton({Title = translate("Teleport to World 1", "ไปโลก 1"),Callback = function()
-	ComF("TravelMain")
-end})
-
-
-------///////////  Teleport - Island   //////////////--------
-IslandList = {}
-for _, v in pairs(workspace._WorldOrigin.Locations:GetChildren()) do
-	table.insert(IslandList, v.Name)
-end
-Island = _Teleport:CreateSection({Title = translate("Island", "เกาะ"),Side = "r"});
-Island:CreateDropdown({Title = translate("Select Island [ Automatic Update ]", "เลือกเกาะต่างๆ"),List = IslandList,Value = _G.Configs['Select Island'],Multi = false,Callback = function(v)
-	_G.Configs['Select Island'] = v
-	SaveSettings()
-end})
-Island:CreateToggle({Title = translate("Tween to Island","ไปที่เกาะ"),Value = _G.Configs['Teleport to Island'],CallBack = function(v)
-	_G.Configs['Teleport to Island'] = v
-	SaveSettings()
-end})
-
-Island:Line()
-
-if w1 then
-	Island_C = {
-		"WindMill",
-		"Marine",
-		"Middle Town",
-		"Jungle",
-		"Pirate Village",
-		"Desert",
-		"Snow Island",
-		"MarineFord",
-		"Colosseum",
-		"Sky Island 1",
-		"Sky Island 2",
-		"Sky Island 3",
-		"Prison",
-		"Magma Village",
-		"Under Water Island",
-		"Fountain City",
-		"Shank Room",
-		"Mob Island",
-	}
-elseif w2 then
-	Island_C = {
-		"The Cafe",
-		"First Spot",
-		"Dark Area",
-		"Flamingo Mansion",
-		"Flamingo Room",
-		"Green Zone",
-		"Factory",
-		"Colosseum",
-		"Zombie Island",
-		"Two Snow Mountain",
-		"Punk Hazard",
-		"Cursed Ship",
-		"Ice Castle",
-		"Forgotten Island",
-		"Ussop Island",
-		"Mini Sky Island"
-	}
-elseif w3 then
-	Island_C = {
-		"Mansion",
-		"Port Town",
-		"Great Tree",
-		"Castle On The Sea",
-		"MiniSky",
-		"Hydra Island",
-		"Floating Turtle",
-		"Haunted Castle",
-		"Ice Cream Island",
-		"Peanut Island",
-		"Cake Island",
-		"Cocoa Island",
-		"Candy Island",
-		"Tiki Outpost"
-	}
-end
-
-Island:CreateDropdown({Title = translate("Select Island [ Custom ]", "เลือกเกาะต่างๆ [ Custom ]"),List = Island_C,Value = _G.Configs['Select Island C'],Multi = false,Callback = function(v)
-	_G.Configs['Select Island C'] = v
-	SaveSettings()
-end})
-Island:CreateToggle({Title = translate("Tween to Island","ไปที่เกาะ"),Value = _G.Configs['Teleport to Island C'],CallBack = function(v)
-	_G.Configs['Teleport to Island C'] = v
-	SaveSettings()
-end})
-
-WeAreLoop(Teleport_Island)
-WeAreLoop(Teleport_Island_C)
-
-
-
-
-
-if w3 then
-	------///////////  General - Elite   //////////////--------
-	EliteSection = _General:CreateSection({Title = translate("Elite", "อีลีทฮันเตอร์"),Side = "r"});
-	Elite = EliteSection:CreateImage({
-		Title = translate("Elite Hunters : ", "อีลีทฮันเตอร์ : ") .. Isnil,
-		Desc = translate("Progress : ", "ฆ่าไปแล้ว : ") .. Isnil,
-		Icon = "http://www.roblox.com/asset/?id=139078897425682"
+	local DropdownBoss = Boss:CreateDropdown({
+		Title = translate("Select Boss", "เลือกบอส"),
+		List = tableboss,
+		Value = SelectBoss,
+		Multi = false,
+		Callback = function(value)
+			SelectBoss = value
+		end
 	})
-	local Elitemob = {"Diablo", "Deandre", "Urban"}
-	WeAreLoop(function()
-		pcall(function()
-			Elite:SetDesc(translate("Progress : ", "ฆ่าไปแล้ว : ") .. html(tostring(ComF("EliteHunter","Progress")), Color3.fromRGB(0, 170, 255)) .. translate(" Elite", " ตัว"))
-			if Monster(Elitemob) then
-				Elite:SetTitle(translate("Elite Hunters : ", "อีลีทฮันเตอร์ : ") ..  IsSpawn)
-			else
-				Elite:SetTitle(translate("Elite Hunters : ", "อีลีทฮันเตอร์ : ") .. IsNotSpawn)
-			end
-		end)
-	end)
-	EliteSection:Line()
-	EliteSection:CreateToggle({Title = translate("Automatic Kill Elite","ออโต้ตีอีลีท"),Value = _G.Configs['Elite'],CallBack = function(v)
-		_G.Configs['Elite'] = v
-		SaveSettings()
-	end})
-	EliteSection:CreateToggle({Title = translate("HOP Elite","เปิดการใช้งานย้ายเซิร์ฟหาอีลีท"),Value = _G.Configs['HOP Elite'],CallBack = function(v)
-		_G.Configs['HOP Elite'] = v
-		SaveSettings()
-	end})
-	WeAreLoop(Auto_Elite)
-
-
-
-
-
-	------///////////  General - Cake   //////////////--------
-	CakeSection = _General:CreateSection({Title = translate("Cake Prince", "คาตาคุริ"),Side = "r"});
-	Cake = CakeSection:CreateImage({
-		Title = translate("Cake Prince : ", "คาตาคุริ : ") .. Isnil,
-		Desc = translate("Required : ", "ต้องฆ่าอีกจำนวน : ") .. Isnil,
-		Icon = "http://www.roblox.com/asset/?id=80630925030885"
-	})
-	CakeSection:Line()
-	CakeSection:CreateToggle({Title = translate("Automatic Cake Prince","ออโต้ตีคาตาคุริ"),Value = _G.Configs['Auto Katakuri'],CallBack = function(v)
-		_G.Configs['Auto Katakuri'] = v
-		SaveSettings()
-	end})
-	CakeSection:CreateToggle({Title = translate("Automatic Spawn Cake Prince","ออโต้ตีคาตาคุริ"),Value = _G.Configs['Spawn Katakuri'],CallBack = function(v)
-		_G.Configs['Spawn Katakuri'] = v
-		SaveSettings()
-	end})
-
-	WeAreLoop(Katakuri)
-	WeAreLoop(function()
-		if w3 then
-			pcall(function()
-				if tonumber(string.match(tostring(ComF("CakePrinceSpawner")), "%d+")) ~= nil then
-					local killsLeft = string.match(tostring(ComF("CakePrinceSpawner")), "%d+")
-					local descText = translate("Required : ", "ต้องฆ่าอีกจำนวน : ") .. html(killsLeft, Color3.fromRGB(255, 116, 223)) .. translate(" Enemies", " ตัว")
-					Cake:SetDesc(descText)
-					Cake:SetTitle(translate("Cake Prince : ", "คาตาคุริ : ") .. IsNotSpawn)
-				else
-					Cake:SetDesc(translate(html("Cake Prince is Spawned", Color3.fromRGB(0, 255, 127)), html("คาตาคุริเกิดแล้ว", Color3.fromRGB(0, 255, 127))))
-					Cake:SetTitle(translate("Cake Prince : ", "คาตาคุริ : ") .. IsSpawn)
-					if _G.Configs['Spawn Katakuri'] then
-						ComF("CakePrinceSpawner", true)
-					end
+	Toggle(Boss, translate("Farm Select Boss", "ฟาร์มบอสที่เลือก"), "Farm Select Boss")
+	Button(Boss, translate("Refresh", "รีเฟรช"), function()
+		DropdownBoss:Clear()
+		CheckList = {}
+		for _, v in pairs(workspace.Enemies:GetChildren()) do
+			if v:FindFirstChild("HumanoidRootPart") and v:GetAttribute("IsBoss") then
+				if not CheckList[v.Name] then
+					DropdownBoss:AddList(v.name)
+					CheckList[v.Name] = true
 				end
-			end)
+			end
+		end
+		for _, v in pairs(Service.ReplicatedStorage:GetChildren()) do
+			if v:FindFirstChild("HumanoidRootPart") and v:GetAttribute("IsBoss") then
+				if not CheckList[v.Name] then
+					DropdownBoss:AddList(v.name)
+					CheckList[v.Name] = true
+				end
+			end
 		end
 	end)
-
-
-
-
-	------///////////  General - Bone   //////////////--------
-	BoneSection = _General:CreateSection({Title = translate("Bones", "กระดูก"),Side = "l"});
-	Bone = BoneSection:CreateImage({
-		Title = translate("Bones", "กระดูก"),
-		Desc = translate("Value : ", "จำนวน : ") .. Isnil,
-		Icon = "http://www.roblox.com/asset/?id=107550685864886"
-	})
-	WeAreLoop(function()
-		pcall(function()
-			Bone:SetDesc(translate("Value : ", "จำนวน : ") .. html(tostring(ComF("Bones","Check")), Color3.fromRGB(255, 170, 0)))
-		end)
-	end)
-	BoneSection:Line()
-	BoneSection:CreateToggle({Title = translate("Automatic Farm Bones","ออโต้ฟาร์มกระดูก"),Value = _G.Configs['Auto Bone'],CallBack = function(v)
-		_G.Configs['Auto Bone'] = v
-		SaveSettings()
-	end})
-	BoneSection:Line()
-	BoneSection:CreateToggle({Title = translate("Random Bones","สุ่มกระดูก"),Value = _G.Configs['Random Bone'],CallBack = function(v)
-		_G.Configs['Random Bone'] = v
-		SaveSettings()
-	end})
-
-	WeAreLoop(Bones)
-
-
-
-
-
-	------///////////  Auto -Sea events   //////////////--------
-	Sea = _Auto:CreateSection({Title = translate("Sea Events", "อีเว้นท์ทะเล"),Side = "l"});
-
-	AllBoat = {}
-
-	for _, v in	pairs(workspace.Boats:GetChildren()) do
-		table.insert(AllBoat, v.Name)
-	end
-
-	DropdownBoat = Sea:CreateDropdown({Title = translate("Select Boat", "เลือกเรือ"),List = AllBoat,Value = _G.Configs['Select Boat'],Multi = false,Callback = function(v)
-		_G.Configs['Select Boat'] = v
-		SaveSettings()
-	end})
-	Sea:CreateButton({Title = translate("Refresh", "รีเฟรช"),Callback = function()
-		DropdownBoat:Clear()
-		for _, v in	pairs(workspace.Boats:GetChildren()) do
-			DropdownBoat:AddList(v.Name)
-		end
-	end})
-	Sea:CreateToggle({Title = translate("Teleport to Boat","ไปหาเรือ"),Value = _G.Configs['Tween Boat'],CallBack = function(v)
-		_G.Configs['Tween to Boat'] = v
-		SaveSettings()
-	end})
-	Sea:Line()
-	Sea:CreateToggle({Title = translate("Automatic Sea Events","ออโต้ตีอีเว้นท์ทะเล"),Value = _G.Configs['Auto SeaEvent'],CallBack = function(v)
-		_G.Configs['Auto SeaEvent'] = v
-		SaveSettings()
-	end})
-	Sea:CreateToggle({Title = translate("Automatic Drive Boat","ออโต้ขับเรือ"),Value = _G.Configs['Auto Drive'],CallBack = function(v)
-		_G.Configs['Auto Drive'] = v
-		SaveSettings()
-	end})
-	Sea:CreateToggle({Title = translate("Boost Speed Ship","เพิ่มความเร็วเรือ"),Value = _G.Configs['Boost Speed Boat'],CallBack = function(v)
-		_G.Configs['Boost Speed Boat'] = v
-		SpeedShip()
-		SaveSettings()
-	end})
-	Sea:CreateToggle({Title = translate("No Clip Rock","ทะลุหิน"),Value = _G.Configs['No Clip Rock'],CallBack = function(v)
-		_G.Configs['No Clip Rock'] = v
-		SaveSettings()
-	end})
-
-
-	WeAreLoop(SeaEvents)
-	WeAreLoop(SailBoat)
-	WeAreLoop(NoclipRock)
-	WeAreLoop(Teleport_to_Boat)
-
-
-elseif w2 then
-
-
-	------///////////  General - Ectoplasm   //////////////--------
-	EctoplasmSection = _General:CreateSection({Title = translate("Ectoplasms", "เอคโทพลาสซึม"),Side = "l"});
-	Ectoplasm = EctoplasmSection:CreateImage({
-		Title = translate("Ectoplasms", "เอคโทพลาสซึม"),
-		Desc = translate("Value : ", "จำนวน : ") .. Isnil,
-		Icon = "http://www.roblox.com/asset/?id=111965933541112"
-	})
-	WeAreLoop(function()
-		pcall(function()
-			Ectoplasm:SetDesc(translate("Value : ", "จำนวน : ") .. html(tostring(ComF("Ectoplasm","Check")), Color3.fromRGB(0, 255, 0)))
-		end)
-	end)
-	EctoplasmSection:Line()
-	EctoplasmSection:CreateToggle({Title = translate("Automatic Farm Ectoplasm","ออโต้ฟาร์มเอคโทพลาสซึม"),Value = _G.Configs['Auto Ectoplasm'],CallBack = function(v)
-		_G.Configs['Auto Ectoplasm'] = v
-		SaveSettings()
-	end})
-
-	WeAreLoop(Auto_Ectoplasm)
+	Boss:Line()
+	Toggle(Boss, translate("Farm All Boss", "ฟาร์มบอสทั้งหมด"), "All Boss")
+	Toggle(Boss, translate("HOP Boss", "ย้ายเซิฟหาบอส"), "HOP Boss")
 end
 
-
-
-
-
-------///////////  Auto - Chest   //////////////--------
-Chestz = _Auto:CreateSection({Title = translate("Chests", "กล่องสมบัติ"),Side = "r"});
-Chestz:CreateToggle({Title = translate("Automatic Farm Chest","ออโต้ฟาร์มกล่องสมบัติ"),Value = _G.Configs['Auto Chest'],CallBack = function(v)
-	_G.Configs['Auto Chest'] = v
-	SaveSettings()
-end})
-Chestz:CreateToggle({Title = translate("HOP Chest","ย้ายเซิร์ฟหากล่อง"),Value = _G.Configs['Auto Chest HOP'],CallBack = function(v)
-	_G.Configs['Auto Chest HOP'] = v
-	SaveSettings()
-end})
-WeAreLoop(Chest)
-
-
-
-
-------///////////  Auto - Auto   //////////////--------
-Automatic = _Auto:CreateSection({Title = translate("Automatic", "อัตโนมัติ"),Side = "r"});
-if w3 then
-	Automatic:CreateToggle({Title = translate("Automatic Castle Raid","ออโต้ฟาร์มกล่องสมบัติ"),Value = _G.Configs['Castle Raid'],CallBack = function(v)
-		_G.Configs['Castle Raid'] = v
-		SaveSettings()
-	end})
-	Automatic:Line()
-
-	WeAreLoop(Castle_Raid)
-
-
-	------///////////  Auto - Mirage   //////////////--------
-	MirageSection = _Auto:CreateSection({Title = translate("Mirage Island", "เกาะลับ"),Side = "l"});
-	Mirage = MirageSection:CreateImage({
-		Title = translate("Mirage Island : ", "เกาะลับ : ") .. Isnil,
-		Desc = translate("Value : ", "ค่าคงที่ : ") .. Isnil,
-		Icon = "http://www.roblox.com/asset/?id=137862117764931"
-	})
-	MirageSection:Line()
-	WeAreLoop(function()
-		if workspace.Map:FindFirstChild("MysticIsland") then
-			Mirage:SetTitle(translate("Mirage Island : ", "เกาะลับ : ") .. IsSpawn)
-		else
-			Mirage:SetTitle(translate("Mirage Island : ", "เกาะลับ : ") .. IsNotSpawn)
-		end
-	end)
-	MirageSection:CreateToggle({Title = translate("Teleport to Mirage Island","ไปเกาะลับ"),Value = _G.Configs['To Mirage'],CallBack = function(v)
-		_G.Configs['To Mirage'] = v
-		SaveSettings()
-	end})
-	MirageSection:CreateToggle({Title = translate("Find Gear","หาเกียร์"),Value = _G.Configs['To Gear'],CallBack = function(v)
-		_G.Configs['To Gear'] = v
-		SaveSettings()
-	end})
-	MirageSection:CreateToggle({Title = translate("Advanced Fruit Dealer","ไปหาคนขายผลในเกาะลับ"),Value = _G.Configs['To Advanced Fruit Dealer'],CallBack = function(v)
-		_G.Configs['To Advanced Fruit Dealer'] = v
-		SaveSettings()
-	end})
-	MirageSection:Line()
-	MirageSection:CreateButton({Title = translate("Remove Fog", "ลบหมอก"),Callback = function()
-		pcall(function()
-			Service.Lighting.LightingLayers.MirageFog:Destroy()
-		end)
-	end})
-
-	WeAreLoop(Mirage_Auto)
-
-
-	------///////////  Auto - Kitsune   //////////////--------
-
-	KitsuneSection = _Auto:CreateSection({Title = translate("Kitsune Island", "เกาะคิสึเนะ"),Side = "l"});
-	Kitsune = KitsuneSection:CreateImage({
-		Title = translate("Kitsune Shrine : ", "เกาะคิสึเนะ : ") .. Isnil,
-		Desc = translate("Value : ", "ค่าคงที่ : ") .. Isnil,
-		Icon = "http://www.roblox.com/asset/?id=139338487369906"
-	})
-	KitsuneSection:Line()
-	WeAreLoop(function()
-		if workspace.Map:FindFirstChild("KitsuneIsland") then
-			Kitsune:SetTitle(translate("Kitsune Shrine : ", "เกาะคิสึเนะ : ") .. IsSpawn)
-		else
-			Kitsune:SetTitle(translate("Kitsune Shrine : ", "เกาะคิสึเนะ : ") .. IsNotSpawn)
-		end
-	end)
-	KitsuneSection:CreateToggle({Title = translate("Teleport to Mirage","ไปเกาะคิสึเนะ"),Value = _G.Configs['To Kisune'],CallBack = function(v)
-		_G.Configs['To Kisune'] = v
-		SaveSettings()
-	end})
-	KitsuneSection:CreateToggle({Title = translate("Collect Azure Embers","เก็บลูกไฟ"),Value = _G.Configs['Azure Ember'],CallBack = function(v)
-		_G.Configs['Azure Ember'] = v
-		SaveSettings()
-	end})
-
-	WeAreLoop(Kitsune_Auto)
-
-
-	------///////////  Auto - Vocalnic   //////////////--------
-
-	PrehistoricSection = _Auto:CreateSection({Title = translate("Prehistoric Island", "เกาะภูเขาไฟ"),Side = "r"});
-	Prehistoric = PrehistoricSection:CreateImage({
-		Title = translate("Kitsune Shrine : ", "เกาะภูเขาไฟ : ") .. Isnil,
-		Desc = translate("Value : ", "ค่าคงที่ : ") .. Isnil,
-		Icon = "http://www.roblox.com/asset/?id=81347338447956"
-	})
-	PrehistoricSection:Line()
-	WeAreLoop(function()
-		if workspace.Map:FindFirstChild("PrehistoricIsland") then
-			Prehistoric:SetTitle(translate("Prehistoric Island : ", "เกาะภูเขาไฟ : ") .. IsSpawn)
-		else
-			Prehistoric:SetTitle(translate("Prehistoric Island : ", "เกาะภูเขาไฟ : ") .. IsNotSpawn)
-		end
-	end)
-	PrehistoricSection:CreateToggle({Title = translate("Teleport to PrehistoricIsland","ไปเกาะภูเขาไฟ"),Value = _G.Configs['To Prehistoric'],CallBack = function(v)
-		_G.Configs['To Prehistoric'] = v
-		SaveSettings()
-	end})
-	PrehistoricSection:CreateToggle({Title = translate("Enable Kill Aura","เปิดใช้งานออร่าแห่งความตาย"),Value = _G.Configs['Kill Aura'],CallBack = function(v)
-		_G.Configs['Kill Aura'] = v
-		SaveSettings()
-	end})
-	PrehistoricSection:Line()
-	PrehistoricSection:CreateToggle({Title = translate("Collect Dino Bones","เก็บกระดูกไดโนเสาร์"),Value = _G.Configs['Dino Bone'],CallBack = function(v)
-		_G.Configs['Dino Bone'] = v
-		SaveSettings()
-	end})
-
-	WeAreLoop(Auto_Prehistoric)
-elseif w2 then
-
-
-
-	Automatic:CreateToggle({Title = translate("Automatic Factory","ออโต้ตีโรงงาน"),Value = _G.Configs['Factory'],CallBack = function(v)
-		_G.Configs['Factory'] = v
-		SaveSettings()
-	end})
-	Automatic:Line()
-end
-
-
-
-Automatic:CreateImage({
-	Title = translate("Fruits Section", "หมวดหมู่ผลปีศาจ"),
-	Desc = translate("Random, Find, Stored ...", "สุ่มผล, หาผล, เก็บผล ..."),
-	Icon = "http://www.roblox.com/asset/?id=126938685435017"
-})
-Automatic:CreateToggle({Title = translate("Automatic Find Fruits","ออโต้หาผล"),Value = _G.Configs['Fruit Find'],CallBack = function(v)
-	_G.Configs['Fruit Find'] = v
-	SaveSettings()
-end})
-Automatic:CreateToggle({Title = translate("Automatic Random Fruits","ออโต้สุ่มผล"),Value = _G.Configs['Fruit Random'],CallBack = function(v)
-	_G.Configs['Fruit Random'] = v
-	SaveSettings()
-end})
-Automatic:CreateToggle({Title = translate("Automatic Store Fruits","ออโต้เก็บผล"),Value = _G.Configs['Fruit Stored'],CallBack = function(v)
-	_G.Configs['Fruit Stored'] = v
-	SaveSettings()
-end})
-Automatic:CreateButton({Title = translate("Random Fruit", "สุ่มผล"),Callback = function()
-	ComF:InvokeServer("Cousin", "Buy")
-end})
-WeAreLoop(Fruit)
