@@ -5,8 +5,6 @@ repeat task.wait() until game:IsLoaded() and game:GetService("Players") and game
 if game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)") then game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CommF_"):InvokeServer("SetTeam", _G.Team or "Pirates") repeat wait(5) until not game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("Main (minimal)")end
 
 getgenv = getgenv
-if getgenv().One_Executions then return end
-getgenv().One_Executions = true
 
 _G.Configs = {}
 
@@ -110,10 +108,6 @@ Default = function(v, a)
 		end
 	end
 end;
-
-Default({
-
-})
 
 DeleteSettings = function()
 	if isfile(_Folder) then
@@ -294,8 +288,6 @@ tp = function(Position)
 	local hrp = LocalPlayer.Character.HumanoidRootPart
 	local Distance = (Position.Position - hrp.Position).Magnitude
 	local CanTeleport = false
-	local closestDistance = math.huge
-	local closestV = nil
 
 	if not LocalPlayer.Character:FindFirstChild("PartTele") then
 		local partTele = Instance.new("Part", LocalPlayer.Character)
@@ -331,16 +323,11 @@ tp = function(Position)
 		return task.wait(0.1)
 	else
 		if Distance > 300 then
-			if C()['Upper Tween'] then
-				if partTele.Position.Y ~= 150 then
-					partTele.CFrame = CFrame.new(hrp.Position.X, 150, hrp.Position.Z)
-				end
-			end
 
 			local tw = Service.TweenService:Create(
 				partTele,
 				TweenInfo.new(Distance / 300, Enum.EasingStyle.Linear),
-				{CFrame = CFrame.new(Position.X, 150, Position.Z)}
+				{CFrame = CFrame.new(Position.X, Position.Y, Position.Z)}
 			)
 			tw:Play()
 
@@ -362,7 +349,7 @@ index = {
 	'Teleport Island',
 	'Farm Select Boss',
 	'All Boss',
-	'Farm Materail',
+	'Farm Material',
 	'Elite',
 	'Farm Bone',
 	'Cake Prince',
@@ -2489,15 +2476,6 @@ function Selection(s, t, l, v)
 	})
 end
 
-function ImageHeader(s, t, d, i)
-	return s:CreateImage({
-		Title = t,
-		Desc = d,
-		Icon = "http://www.roblox.com/asset/?id=" .. tostring(i)
-	})
-end
-
-
 local Advertisement = Section(_General, translate("Advertisement", "โฆษนา"), "l") do
 	Advertisement:Image({Image = Icons.cutesofia})
 	Advertisement:Line()
@@ -2510,9 +2488,15 @@ local Level = Section(_General, translate("Level", "เลเวล"), 'r') do
 	Toggle(Level, translate("Automatic Farm Level", "ออโต้ฟาร์มเลเวล"), "Level")
 	Level:Line()
 	Toggle(Level, translate("Automatic Nearest Monster", "ฟาร์มมอนสเตอร์รอบๆ"), "Nearest")
+end
+
+local Automatic = Section(_General, translate("Automatic", "อัตโนมัติ"), 'l') do
 	if w1 then
-		Level:Line()
 		Toggle(Level, translate("Automatic Second Sea", "ออโต้ไปโลก 2"), "Sea 2")
+	elseif w2 then
+		Toggle(Automatic, translate("Automatic Factory", "ออโต้ตีโรงงาน"), "Factory")
+	elseif w3 then
+		Toggle(Automatic, translate("Automatic Castle Raid", "ออโต้ตีโจรสลัดบุกปราสาท"), "Castle Raid")
 	end
 end
 
@@ -2532,8 +2516,6 @@ local Settings = Section(_General, translate("Settings", "การตั้ง�
 	Toggle(Settings, translate("Automatic Set Spawn", "ออโต้เซฟจุดเกิด"), "Set Spawn")
 	Settings:Line()
 	Toggle(Settings, translate("Random Position Farming", "สุ่มตำแหน่งรอบมอนสเตอร์ตอนฟาร์ม"), "Random Position Farming")
-	Settings:Line()
-	Toggle(Settings, translate("Force Upper Tweening", "บังคับขึ้นข้างบนตอนบิน"), "Upper Tween")
 end
 
 local Option = Section(_General, translate("Options", "การใช้งาน"), 'l') do
@@ -2608,3 +2590,239 @@ local Boss = Section(_General, translate("Boss", "บอส"), 'l') do
 	Toggle(Boss, translate("HOP Boss", "ย้ายเซิฟหาบอส"), "HOP Boss")
 end
 
+local Materails = Section(_General, translate("Materails", "วัตถุดิบ"), 'r') do
+	Default("SelectMaterial", AllMaterial[1])
+	Materails:CreateDropdown({Title = translate("Select Material", "เลือกวัตถุดิบ"),List = AllMaterial,Value = C()['SelectMaterial'],Multi = false,Callback = function(value)
+		C()['SelectMaterial'] = value
+		Save('SelectMaterial', value)
+	end})
+	Materails:Line()
+	Toggle(Materails, translate("Farm Select Materails", "ฟาร์มวัตถุดิบที่เลือก"), "Farm Material")
+end
+
+local SeaEvents = Section(_General, translate("Sea Events", "อีเว้นท์ในท้องทะเล"), 'l') do
+	AllBoat = {}
+	for _, v in	pairs(workspace.Boats:GetChildren()) do
+		table.insert(AllBoat, v.Name)
+	end
+	DropdownBoat = SeaEvents:CreateDropdown({Title = translate("Select Boat", "เลือกเรือ"),List = AllBoat,Value = C()['Select Boat'],Multi = false,Callback = function(v)
+		C()['Select Boat'] = v
+		Save('Select Boat', v)
+	end})
+	Button(SeaEvents, translate("Refresh", "รีเฟรช"), function()
+		DropdownBoat:Clear()
+		for _, v in	pairs(workspace.Boats:GetChildren()) do
+			DropdownBoat:AddList(v.Name)
+		end
+	end)
+	Toggle(SeaEvents, translate("Tween to Boat", "บินไปที่เรือ"), "Teleport to Boat")
+	SeaEvents:Line()
+	if not w1 then
+		Toggle(SeaEvents, translate("Automatic Sea Events", "ออโต้ตีอีเว้นท์ทะเล"), "Sea Events")
+	end
+	Toggle(SeaEvents, translate("Boost Speed Boat", "เพิ่มความเร็วเรือ"), 'Speed Boat', function()
+		pcall(SpeedBoat)
+	end)
+	Toggle(SeaEvents, translate("Enable Noclip Rock", "เปิดใช้งานทะลุหิน"), "Noclip Rock")
+	Toggle(SeaEvents, translate("Automatic Drive Boat", "ออโต้ขับเรือ"), "Sail Boat")
+end
+
+local Fruits = Section(_General, translate("Fruits", "ผลไม้"), 'r') do
+	Toggle(Fruits, translate("Automatic Find Fruits", "ออโต้หาผลปีศาจ"), "Fruit Find")
+	Fruits:Line()
+	Toggle(Fruits, translate("Automatic Find Berry", "ออโต้หาผลเบอร์รี่"), "Find Berry")
+	Fruits:Line()
+	Toggle(Fruits, translate("Automatic Random Fruits", "ออโต้สุ่มผลปีศาจ"), "Fruit Random")
+	Toggle(Fruits, translate("Automatic Stored Fruits", "ออโต้เก็บผลปีศาจ"), "Fruit Stored")
+	Fruits:Line()
+	Button(Fruits, translate("Random Fruits", "สุ่มผลปีศาจ"), function()
+		ComF("Cousin", "Buy")
+	end)
+end
+
+if w3 then
+	
+	--[[local Indra = Section(_Auto, translate("Race", "เผ่า"), 'r') do
+		Indra_ = Indra:CreateImage({
+			Title = translate("Rip Indra : ", "เผ่า : ") .. Isnil,
+			Desc = translate("Server God Chalice : ", "มีถ้วยเสกแอดใินในเซิฟมั้ย : ") .. Isnil,
+			Icon = "http://www.roblox.com/asset/?id=107550685864886"
+		})
+		WeAreLoop(function()
+			for _, v in pairs(Service.Players:GetDescendants()) do
+				if v.Name == "God's Chalice" then
+					
+				end
+			end
+		end)
+	end]]
+	
+	function CheckAcientOneStatus()
+		if not LocalPlayer.Character:FindFirstChild("RaceTransformed") then
+			return ". . ."
+		end
+		local fragment, trained, status = nil, nil, nil
+		status, trained, fragment = ComF("UpgradeRace", "Check")
+		if status == 1 or status == 3 then
+			return translate("You need to train more", "คุณต้องฝึกอีก")
+		elseif status == 2 or status == 4 or status == 7 then
+			return translate("You can buy gear with " .. html(tostring(fragment) .. " Fragment", Color3.fromRGB(149, 20, 255)))
+		elseif status == 5 then
+			return translate("You are done your race", "คุณได้อัพเผ่าของคุณแล้ว")
+		elseif status == 6 then
+			return translate("Upgrade completed: " .. (trained - 2) .. "/3, Need Trains More", "อัปเกรดแล้ว: " .. (trained - 2) .. "/3 ขั้น ต้องฝึกเพิ่มอีก")
+		elseif status == 0 then
+			return translate("Ready for next trials", "คุณสามารถเข้ารวมบททดสอบต่อไปได้")
+		elseif status == 8 then
+			return translate("Remaining " .. (10 - trained) .. " Training Sessions.", "เหลือการฝึกอีก " .. (10 - trained) .. " ครั้ง")
+		else
+			return ". . ."
+		end
+	end
+	
+	local Race = Section(_Auto, translate("Race", "เผ่า"), 'r') do
+		Race_ = Race:CreateImage({
+			Title = translate("Race : ", "เผ่า : ") .. html(tostring(LocalPlayer.Data.Race.Value), Color3.fromRGB(0, 170, 255)),
+			Desc = translate("Status : ", "สถานะ : ") .. Isnil,
+			Icon = "http://www.roblox.com/asset/?id=107550685864886"
+		})
+		Toggle(Race, translate('Automatic Complete Trial', "ออโต้ชนะบททดสอบ"), 'Auto Trial V4')
+		Toggle(Race, translate('Teleport to Trial Door', "เทเลพอร์ตไปประตูทำเผ่า"), 'Teleport to Door')
+		Race:Line()
+		Button(Race, translate("Teleport to Temple of Time", "เทเลพอร์ตไปที่วัดแห่งการเวลา"), function()
+			ComF("requestEntrance", Vector3.new(28282.5703125, 14896.8505859375, 105.1042709350586))
+		end)
+		WeAreLoop(function()
+			Race_:SetDesc(translate("Status : ", "สถานะ : ") .. CheckAcientOneStatus())
+			task.wait(5)
+		end)
+	end
+	
+	local BoneSection = Section(_Auto, translate("Haunted Castle", "ประสาทผีสิง"), 'l') do
+		Bone = BoneSection:CreateImage({Title = translate("Bones", "กระดูก"),Desc = translate("Value : ", "จำนวน : ") .. Isnil,Icon = "http://www.roblox.com/asset/?id=107550685864886"})
+		WeAreLoop(function()
+			pcall(function()
+				Bone:SetDesc(translate("Value : ", "จำนวน : ") .. html(tostring(ComF("Bones","Check")), Color3.fromRGB(255, 170, 0)))
+			end)
+		end)
+		BoneSection:Line()
+		Toggle(BoneSection, translate("Automatic Farm Bones", "ออโต้ฟาร์มกระดูก"), "Farm Bone")
+		BoneSection:Line()
+		Toggle(BoneSection, translate("Random Bones", "สุ่มกระดูก"), "Random Bone")
+	end
+
+	local CakeSection = Section(_Auto, translate("Sea of Treats", "ทะเลแห่งขนมหวาน"), 'r') do
+		Cake = CakeSection:CreateImage({
+			Title = translate("Cake Prince : ", "คาตาคุริ : ") .. Isnil,
+			Desc = translate("Required : ", "ต้องฆ่าอีกจำนวน : ") .. Isnil,
+			Icon = "http://www.roblox.com/asset/?id=80630925030885"
+		})
+		CakeSection:Line()
+		Toggle(CakeSection, translate("Automatic Cake Prince", "ออโต้ฟาร์มคาตาคุริ"), "Cake Prince")
+		CakeSection:Line()
+		Toggle(CakeSection, translate("Spawn Cake Prince", "ออโต้เสกคาตาคุริ"), 'Spawn Katakuri')
+		WeAreLoop(function()
+			pcall(function()
+				if tonumber(string.match(tostring(ComF("CakePrinceSpawner")), "%d+")) ~= nil then
+					local killsLeft = string.match(tostring(ComF("CakePrinceSpawner")), "%d+")
+					local descText = translate("Required : ", "ต้องฆ่าอีกจำนวน : ") .. html(killsLeft, Color3.fromRGB(255, 116, 223)) .. translate(" Enemies", " ตัว")
+					Cake:SetDesc(descText)
+					Cake:SetTitle(translate("Cake Prince : ", "คาตาคุริ : ") .. IsNotSpawn)
+				else
+					Cake:SetDesc(translate(html("Cake Prince is Spawned", Color3.fromRGB(0, 255, 127)), html("คาตาคุริเกิดแล้ว", Color3.fromRGB(0, 255, 127))))
+					Cake:SetTitle(translate("Cake Prince : ", "คาตาคุริ : ") .. IsSpawn)
+					if C()['Spawn Katakuri'] then
+						ComF("CakePrinceSpawner", true)
+					end
+				end
+			end)
+		end)
+	end
+	
+	local EliteSection = Section(_Auto, translate("Elite Hunters", "อีลีทฮันเตอร์"), 'l') do
+		Elite = EliteSection:CreateImage({
+			Title = translate("Elite Hunters : ", "อีลีทฮันเตอร์ : ") .. Isnil,
+			Desc = translate("Progress : ", "ฆ่าไปแล้ว : ") .. Isnil,
+			Icon = "http://www.roblox.com/asset/?id=139078897425682"
+		})
+		Toggle(EliteSection, translate("Automatic Elite", "ออโต้ล่าอีลีท"), "Elite")
+		Toggle(EliteSection, translate("HOP Elite", "ย้ายเซิฟหาอีลีท"), 'HOP Elite')
+		local Elitemob = {"Diablo", "Deandre", "Urban"}
+		WeAreLoop(function()
+			pcall(function()
+				Elite:SetDesc(translate("Progress : ", "ฆ่าไปแล้ว : ") .. html(tostring(ComF("EliteHunter","Progress")), Color3.fromRGB(0, 170, 255)) .. translate(" Elite", " ตัว"))
+				if Monster(Elitemob) then
+					Elite:SetTitle(translate("Elite Hunters : ", "อีลีทฮันเตอร์ : ") ..  IsSpawn)
+				else
+					Elite:SetTitle(translate("Elite Hunters : ", "อีลีทฮันเตอร์ : ") .. IsNotSpawn)
+				end
+			end)
+		end)
+	end
+	
+	local MirageSection = Section(_Auto, translate("Mirage Island", "เกาะลับ"), 'r') do
+		Mirage = MirageSection:CreateImage({
+			Title = translate("Mirage Island : ", "เกาะลับ : ") .. Isnil,
+			Desc = translate("Mirage Island", "เกาะลับ"),
+			Icon = "http://www.roblox.com/asset/?id=137862117764931"
+		})
+		MirageSection:Line()
+		Toggle(MirageSection, translate('Teleport to Mirage Island', "เทเลพอร์ตไปหาเกาะลับ"), 'Teleport to Mirage')
+		Toggle(MirageSection, translate('Teleport to Advanced Dealer', "เทเลพอร์ตไปหาคนขายผลในเกาะลับ"), 'Teleport to Advanced Dealer')
+		Toggle(MirageSection, translate("Teleport to Gear", "เทเลพอร์ตไปหาเฟือง"), "Teleport to Gear")
+		MirageSection:Line()
+		Button(MirageSection, translate("Remove Fog", "ลบหมอก"), function()
+			pcall(function()
+				Service.Lighting.LightingLayers.MirageFog:Destroy()
+			end)
+		end)
+		WeAreLoop(function()
+			if workspace.Map:FindFirstChild("MysticIsland") then
+				Mirage:SetTitle(translate("Mirage Island : ", "เกาะลับ : ") .. IsSpawn)
+			else
+				Mirage:SetTitle(translate("Mirage Island : ", "เกาะลับ : ") .. IsNotSpawn)
+			end
+		end)
+	end
+	
+	local KitsuneSection = Section(_Auto, translate("Kitsune Shrine", "ศาลเจ้าคิสึเนะ"), 'l') do
+		Kitsune = KitsuneSection:CreateImage({
+			Title = translate("Kitsune Shrine : ", "ศาลเจ้าคิสึเนะ : ") .. Isnil,
+			Desc = translate("Kitsune Shrine", "ศาลเจ้าคิสึเนะ"),
+			Icon = "http://www.roblox.com/asset/?id=139338487369906"
+		})
+		KitsuneSection:Line()
+		Toggle(KitsuneSection, translate("Teleport to Kitsune Island", "เทเลพอร์ตไปหาศาลเจ้าคิสึเนะ"), 'Teleport to Kitsune')
+		Toggle(KitsuneSection, translate("Collect Azure Embers", "ออโต้เก็บลูกไฟ"), 'Azure Embers')
+		WeAreLoop(function()
+			if workspace.Map:FindFirstChild("KitsuneIsland") then
+				Kitsune:SetTitle(translate("Kitsune Shrine : ", "ศาลเจ้าคิสึเนะ : ") .. IsSpawn)
+			else
+				Kitsune:SetTitle(translate("Kitsune Shrine : ", "ศาลเจ้าคิสึเนะ : ") .. IsNotSpawn)
+			end
+		end)
+	end
+	
+	local PrehistoricSection = Section(_Auto, translate("Volcano Event", "อีเว้นท์ภูเขาไฟ"), 'r') do
+		Prehistoric = PrehistoricSection:CreateImage({
+			Title = translate("Prehistoric Island : ", "เกาะภูเขาไฟ : ") .. Isnil,
+			Desc = translate("Prehistoric Island", "เกาะภูเขาไฟ"),
+			Icon = "http://www.roblox.com/asset/?id=81347338447956"
+		})
+		PrehistoricSection:Line()
+		Toggle(PrehistoricSection, translate("Teleport to Prehistoric Island", "เทเลพอร์ตไปหาเกาะภูเขาไฟ"), 'Teleport Prehistoric')
+		PrehistoricSection:Line()
+		Toggle(PrehistoricSection, translate("Enable Kill Aura", "เปิดใช้งานออร่าแห่งความหาย"), 'Kill Aura')
+		PrehistoricSection:Line()
+		Toggle(PrehistoricSection, translate("Collect Dino Bone", "เก็บกระดูกไดโนเสาร์"), 'Dino Bone')
+		WeAreLoop(function()
+			if workspace.Map:FindFirstChild("PrehistoricIsland") then
+				Prehistoric:SetTitle(translate("Prehistoric Island : ", "เกาะภูเขาไฟ : ") .. IsSpawn)
+			else
+				Prehistoric:SetTitle(translate("Prehistoric Island : ", "เกาะภูเขาไฟ : ") .. IsNotSpawn)
+			end
+		end)
+	end
+elseif w2 then
+	
+end
