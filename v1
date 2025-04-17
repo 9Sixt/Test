@@ -119,12 +119,12 @@ end)
 local success2, translate = pcall(function()
 	return loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/translateAPI"))()
 end)
-if success1 and type(WeAreLoop) == "function" then
+if success1 then
 	print("Loaded We are Loop : true")
 else
 	LocalPlayer:Kick("Cant Preloaded Function(WeareLoop); . . .")
 end
-if success2 and type(translate) == "function" then
+if success2 then
 	print("Loaded We are Loop : true")
 else
 	LocalPlayer:Kick("Cant Preloaded Function(translate); . . .")
@@ -1605,7 +1605,7 @@ local success, bosses = pcall(function()
 	return loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/main/Fetching/DateBoss.lua"))()
 end)
 
-if success and type(bosses) == "table" then
+if success then
 	for _, boss in ipairs(bosses) do
 		WeAreLoop(function()
 			if C()[boss.setting] then
