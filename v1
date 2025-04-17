@@ -736,30 +736,32 @@ GetPartAllMob = function(name)
 end
 
 WaitMonster = function(Path,u)
-	if typeof(Path) == "table" then
-		if #MobBlacklist >= 4 then
-			MobBlacklist = {}
-			return
-		end
-		local GetPart
-		for i,v in next,Path do
-			if not Monster(Path) then
-				if not table.find(MobBlacklist,v) then
-					GetPart = DetectPartSpawnMob(v)
-					repeat
-						tp(GetPart.CFrame * CFrame.new(0,40,0))
-						wait(.5)
-					until (GetPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 50 or (u and u())
+	if C()['Wait Monster'] then
+		if typeof(Path) == "table" then
+			if #MobBlacklist >= 4 then
+				MobBlacklist = {}
+				return
+			end
+			local GetPart
+			for i,v in next,Path do
+				if not Monster(Path) then
+					if not table.find(MobBlacklist,v) then
+						GetPart = DetectPartSpawnMob(v)
+						repeat
+							tp(GetPart.CFrame * CFrame.new(0,40,0))
+							wait(.5)
+						until (GetPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 50 or (u and u())
+					end
 				end
 			end
-		end
-	else
-		for i, v in next, GetPartAllMob(Path) do
-			if not Monster(Path) then
-				repeat
-					tp(v.CFrame * CFrame.new(0, 40, 0))
-					wait(0.5)
-				until (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 50 or (u and u())
+		else
+			for i, v in next, GetPartAllMob(Path) do
+				if not Monster(Path) then
+					repeat
+						tp(v.CFrame * CFrame.new(0, 40, 0))
+						wait(0.5)
+					until (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 50 or (u and u())
+				end
 			end
 		end
 	end
@@ -775,18 +777,13 @@ BringMob = function(m)
 			v.HumanoidRootPart.CFrame = m.HumanoidRootPart.CFrame
 			v.Humanoid.JumpPower = 0
 			v.Humanoid.WalkSpeed = 0
-			for _, v in ipairs(v:GetDescentdants()) do
-				if v:IsA("BasePart") then
-					v.CanCollide = false
-				end
-			end
 			v.Humanoid.Sit = true	
 			v.Humanoid.PlatformStand = true			
-			v.Humanoid:ChangeState(11)
 			v.Humanoid:ChangeState(14)
 			if v.Humanoid:FindFirstChild("Animator") then
 				v.Humanoid.Animator:Destroy()
 			end
+			v.HumanoidRootPart.CanCollide = false
 			pcall(function()
 				sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
 				setscriptable(LocalPlayer, "SimulationRadius", true)
@@ -794,6 +791,7 @@ BringMob = function(m)
 		end
 	end
 end
+
 
 WeAreLoop(function()
 	if tablecheck(_G.Configs, index) then
@@ -819,29 +817,6 @@ WeAreLoop(function()
 		end)
 	end
 end)
-
-Attack = function()
-	pcall(function()
-		for i, v in next, workspace.Enemies:GetChildren() do
-			if v.Humanoid.Health > 0 and v:FindFirstChild("HumanoidRootPart") and (v.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= tonumber(100) then
-				Service.ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/RegisterAttack"):FireServer(0)
-				local args = {
-					[1] = v:FindFirstChild("HumanoidRootPart"),
-					[2] = {}
-				}
-				for _, e in next, workspace:WaitForChild("Enemies"):GetChildren() do
-					if e:FindFirstChild("Humanoid") and e.Humanoid.Health > 0 then
-						table.insert(args[2], {
-							[1] = e,
-							[2] = e:FindFirstChild("HumanoidRootPart") or e:FindFirstChildOfClass("BasePart")
-						})
-					end
-				end
-				Service.ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/RegisterHit"):FireServer(unpack(args))
-			end
-		end
-	end)
-end
 
 UseSkill = function(target)
 	delay(0, function()
@@ -885,18 +860,14 @@ Kill = function(v, u)
 		Service.ReplicatedStorage.Remotes.CommE:FireServer("Ken", true)
 		pcall(EquipSelect)
 		BringMob(v)
-		Attack()
 		if C()['Random Position Farming'] then
 			tp(v:GetPivot() * RandomPosition())
-			Attack()
 		else
 			tp(v:GetPivot() * CFrame.new(0, 40, 0))
-			Attack()
 		end
 		if C()['Use Skill'] then
 			UseSkill(v)
 		end
-		Attack()
 		task.wait()
 	until not v:FindFirstChild("Humanoid") or v.Humanoid.Health <= 0 or not v:FindFirstChild("HumanoidRootPart") or (u and u())
 end
@@ -1601,6 +1572,8 @@ WeAreLoop(function()
 	end)
 end)
 
+
+
 local success, bosses = pcall(function()
 	return loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/main/Fetching/DateBoss.lua"))()
 end)
@@ -2198,6 +2171,8 @@ local Settings = Section(_General, translate("Settings", "การตั้ง�
 Selection(Settings, translate("Select Weapon", "เลือกอาวุธ"), {"Melee", "Sword"}, "Weapon")
 Settings:Line()
 Toggle(Settings, translate("Double Quest", "รับสองเควส"), "Double Quest")
+Settings:Line()
+Toggle(Settings, translate("Waiting for Monster", "รอมอนสเตอร์แบบไม่ลอยอยู่นิ่งๆ"), "Wait Monster")
 Settings:Line()
 Toggle(Settings, translate("Disable Notifications", "ปิดการแจ้งเตือน"), "Notify", function(v)
 	if v then
