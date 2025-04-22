@@ -467,7 +467,7 @@ index = {
 
 getcombatnow = function()
 	pcall(function()
-		return LocalPlayer.Character:FindFirstChildOfClass("Tools")
+		return LocalPlayer.Character:FindFirstChildOfClass("Tool")
 	end)
 end
 
