@@ -124,30 +124,15 @@ end;
 
 C = function() return _G.Configs end;
 
-local success1, WeAreLoop = pcall(function()
-	return loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/WeAreLoop"))()
-end)
-local success2, translate = pcall(function()
-	return loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/translateAPI"))()
-end)
-local success3, ESP = pcall(function()
-	return loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/esp"))()
-end)
+WeAreLoop = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Utils/Loop", true))()
+translate = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Utils/Traslation", true))()
+ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Utils/esp", true))()
+Attack = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Utils/Attack.lua", true))()
+bosses = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Utils/DateBoss.lua", true))()
+API_Request = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Utils/CheckQuest", true))()
 
-if success1 then
-	print("Loaded We are Loop : true")
-else
-	LocalPlayer:Kick("Cant Preloaded Function(WeareLoop); . . .")
-end
-if success2 then
-	print("Loaded translation : true")
-else
-	LocalPlayer:Kick("Cant Preloaded Function(translation); . . .")
-end
-if success3 then
-	print("Loaded ESP : true")
-else
-	LocalPlayer:Kick("Cant Preloaded Function(ESP); . . .")
+if hookfunction then
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Utils/hookfunction", true))()
 end
 
 copy = function(str)
@@ -285,10 +270,6 @@ task.spawn(function()
 		end)
 	end
 end);
-
-if hookfunction then
-	loadstr("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/hookfunctions")
-end
 
 if Service.CoreGui:FindFirstChild("Fetching") then
 	Service.CoreGui:FindFirstChild("Fetching"):Destroy()
@@ -484,6 +465,38 @@ index = {
 	'Teleport Player','Tyrant',
 }
 
+getcombatnow = function()
+	pcall(function()
+		return LocalPlayer.Character:FindFirstChildOfClass("Tools")
+	end)
+end
+
+if require then
+	local v1 = require(game:GetService("ReplicatedStorage").Controllers.CombatController)
+	local u5 = require(game:GetService("ReplicatedStorage").Modules.CombatUtil)
+	local u147 = getcombatnow
+	local u149 = u5:GetWeaponName()
+	u5:GetWeaponData(u149).HitboxMagnitude = 100
+	local fakeInput = {
+		UserInputType = Enum.UserInputType.MouseButton1,
+		UserInputState = Enum.UserInputState.Begin,
+		GetPropertyChangedSignal = function() return Instance.new("BindableEvent").Event end
+	}
+	task.spawn(function()
+		while task.wait(.1) do
+			if tablecheck(_G.Configs, index) then
+				for _, Enemy in ipairs(workspace:WaitForChild("Enemies"):GetChildren()) do
+					local humanoidPart = Enemy:FindFirstChild("HumanoidRootPart")
+					if humanoidPart and (humanoidPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude < 60 then
+						u5.PlayMeleeHitParticles(nil, u147, humanoidPart.CFrame, u149)
+					end
+				end
+				v1.Attack(nil, u147, fakeInput, nil)
+			end
+		end
+	end)
+end
+
 WeAreLoop(function()
 	pcall(function()
 		if tablecheck(_G.Configs, index) then
@@ -504,9 +517,32 @@ WeAreLoop(function()
 				HL.Name = 'IsHighlight'
 				HL.Parent = LocalPlayer.Character
 				HL.Adornee = LocalPlayer.Character
-				HL.OutlineColor = Color3.fromRGB(0, 0, 0)
-				HL.FillColor = Color3.fromRGB(255, 255, 255)
-				HL.FillTransparency = 0
+				HL.OutlineColor = Color3.fromRGB(255, 255, 255)
+				local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
+				if humanoid then
+					local healthPercent = humanoid.Health / humanoid.MaxHealth
+					if healthPercent < 0.2 then
+						HL.FillColor = Color3.fromRGB(255, 0, 0)
+					elseif healthPercent < 0.5 then
+						HL.FillColor = Color3.fromRGB(255, 255, 0)
+					else
+						HL.FillColor = Color3.fromRGB(0, 170, 255)
+					end
+				end
+				HL.FillTransparency = 0.3
+			else
+				local HL = LocalPlayer.Character:FindFirstChild("IsHighlight")
+				local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
+				if HL and humanoid then
+					local healthPercent = humanoid.Health / humanoid.MaxHealth
+					if healthPercent < 0.2 then
+						HL.FillColor = Color3.fromRGB(255, 0, 0)
+					elseif healthPercent < 0.5 then
+						HL.FillColor = Color3.fromRGB(255, 255, 0)
+					else
+						HL.FillColor = Color3.fromRGB(0, 170, 255)
+					end
+				end
 			end
 			for i, v in pairs(LocalPlayer.Character:GetChildren()) do
 				if v:IsA("BasePart") then
@@ -690,112 +726,27 @@ function WaitMonster(Path,u)
 	end
 end
 
-Bring_ = 275
-
-local activeMobs = {}
-
-function updateBringRange()
-	for _, player in ipairs(Service.Players:GetPlayers()) do
-		if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-			local distance = (player.Character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-			if distance <= 225 then
-				Bring_ = 20
-				return
+BringMob = function(m)
+	for _, v in pairs(workspace.Enemies:GetChildren()) do
+		if v:FindFirstChild("Humanoid") and 
+			v:FindFirstChild("HumanoidRootPart") and 
+			not v:GetAttribute("IsBoss") and
+			(v.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 170 then
+			if v.Humanoid:FindFirstChild("Animator") then
+				v.Humanoid.Animator:Destroy()
 			end
-		end
-	end
-	Bring_ = 275
-end
-
-function isValidMob(mob)
-	return mob:FindFirstChild("Humanoid") and mob:FindFirstChild("HumanoidRootPart") and not mob:GetAttribute("IsBoss") and mob.Humanoid.Health > 0 and (mob.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= Bring_
-end
-
-BringMob = function(targetMob)
-	if not C()['Bring Monster'] then return end
-	updateBringRange()
-
-	local count = 0
-	for _, mob in ipairs(workspace.Enemies:GetChildren()) do
-		if count >= 2 then break end
-
-		if isValidMob(mob) then
-			local hrp = mob:FindFirstChild("HumanoidRootPart")
-			local humanoid = mob:FindFirstChildOfClass("Humanoid")
-
-			if hrp and humanoid and humanoid.Health > 0 then
-				hrp.Rotation = Vector3.zero
-				hrp.CanCollide = false
-				hrp.CFrame = targetMob.HumanoidRootPart.CFrame
-
-				if humanoid:FindFirstChild("Animator") then
-					humanoid.Animator:Destroy()
+			v.Humanoid.JumpPower = 0
+			v.Humanoid:ChangeState(14)
+			for _, part in ipairs(v:GetDescendants()) do
+				if part:IsA("BasePart") then
+					part.CanCollide = false
 				end
-
-				humanoid.JumpPower = 0
-				humanoid.WalkSpeed = 0
-				humanoid:ChangeState(Enum.HumanoidStateType.Physics)
-
-				pcall(function()
-					sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
-					setscriptable(LocalPlayer, "SimulationRadius", true)
-				end)
-
-				count += 1
 			end
+			v.HumanoidRootPart.CFrame = m.HumanoidRootPart.CFrame
+			sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
 		end
 	end
 end
-
-
-at = function()
-	pcall(function()
-		for i, v in next, workspace.Enemies:GetChildren() do
-			if v.Humanoid.Health > 0 and v:FindFirstChild("HumanoidRootPart") and (v.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= tonumber(60) then
-				Service.ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/RegisterAttack"):FireServer(0)
-				local args = {
-					[1] = v:FindFirstChild("HumanoidRootPart"),
-					[2] = {}
-				}
-				for _, e in next, workspace:WaitForChild("Enemies"):GetChildren() do
-					if e:FindFirstChild("Humanoid") and e.Humanoid.Health > 0 then
-						table.insert(args[2], {
-							[1] = e,
-							[2] = e:FindFirstChild("HumanoidRootPart") or e:FindFirstChildOfClass("BasePart")
-						})
-					end
-				end
-				Service.ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/RegisterHit"):FireServer(unpack(args))
-			end
-		end
-	end)
-end
-
-Service.RunService.PreSimulation:Connect(function()
-	if tablecheck(_G.Configs, index) then
-		pcall(function()
-			for i, v in next, workspace.Enemies:GetChildren() do
-				if v.Humanoid.Health > 0 and v:FindFirstChild("HumanoidRootPart") and (v.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= tonumber(60) then
-					Service.ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/RegisterAttack"):FireServer(0)
-					local args = {
-						[1] = v:FindFirstChild("HumanoidRootPart"),
-						[2] = {}
-					}
-					for _, e in next, workspace:WaitForChild("Enemies"):GetChildren() do
-						if e:FindFirstChild("Humanoid") and e.Humanoid.Health > 0 then
-							table.insert(args[2], {
-								[1] = e,
-								[2] = e:FindFirstChild("HumanoidRootPart") or e:FindFirstChildOfClass("BasePart")
-							})
-						end
-					end
-					Service.ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/RegisterHit"):FireServer(unpack(args))
-				end
-			end
-		end)
-	end
-	task.wait(0.05)
-end)
 
 UseSkill = function(target)
 	delay(0, function()
@@ -829,10 +780,10 @@ end
 
 Kill = function(v, u)
 	repeat
+		pcall(Attack)
 		Service.ReplicatedStorage.Remotes.CommE:FireServer("Ken", true)
 		pcall(EquipSelect)
 		BringMob(v)
-		at()
 		tp(v:GetPivot() + Vector3.new(0, 40, 0))
 		if C()['Use Skill'] then
 			UseSkill(v)
@@ -843,9 +794,9 @@ end
 
 KillBoss = function(v, u)
 	repeat
+		pcall(Attack)
 		Service.ReplicatedStorage.Remotes.CommE:FireServer("Ken", true)
 		pcall(EquipSelect)
-		at()
 		if C()['Sea Events'] then
 			local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
 			if humanoid and humanoid.Health <= humanoid.MaxHealth * 0.25 then
@@ -861,7 +812,6 @@ KillBoss = function(v, u)
 	until v.Humanoid.Health <= 0 or not v:FindFirstChild("HumanoidRootPart") or (u and u())
 end
 
-API_Request = loadstr("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Check%20Quest")
 Level_Quest = API_Request:CheckQuest()[2]
 
 WeAreLoop(function()
@@ -1530,32 +1480,26 @@ end)
 
 
 
-local success, bosses = pcall(function()
-	return loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/main/Fetching/DateBoss.lua"))()
-end)
 
 
-if success then
-	WeAreLoop(function()
-		for configName, data in pairs(bosses) do 
-			if C()[configName] then
-				pcall(function()
-					if data.Boss then
-						if Monster(data.Boss) then
-							KillBoss(Monster(data.Boss), function() 
-								return not C()[configName] 
-							end)
-						elseif data.hop and C()[data.hop] then
-							pcall(HopServer)
-						end
+
+WeAreLoop(function()
+	for configName, data in pairs(bosses) do 
+		if C()[configName] then
+			pcall(function()
+				if data.Boss then
+					if Monster(data.Boss) then
+						KillBoss(Monster(data.Boss), function() 
+							return not C()[configName] 
+						end)
+					elseif data.hop and C()[data.hop] then
+						pcall(HopServer)
 					end
-				end)
-			end
+				end
+			end)
 		end
-	end)
-else
-	LocalPlayer:Kick("Cant Preloaded Data Boss ( . . . ) ")
-end
+	end
+end)
 
 
 WeAreLoop(function()
@@ -2316,7 +2260,7 @@ Icons = {
 	automatic = 17113787043, shop = 71444644802667
 };
 
-Fetching = loadstr("https://github.com/MerrySubs4t/Softwork/blob/main/Fetching/FrameworkUI.lua?raw=true")
+Fetching = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Framework/Mains", true))()
 
 Window = Fetching:Window({
 	Logo = 128185233852701,
@@ -2705,7 +2649,8 @@ if w2 or w3 then
 end
 
 if w3 then
-	Tyrant_ = Automatic:CreateImage({
+	local Tyran = Section(_Auto, translate("Tiki", "ทิคกิ"), 'r')
+	Tyrant_ = Tyran:CreateImage({
 		Title = translate("Eyes : ", " ตาแดงแล้ว : ") .. Isnil,
 		Desc = translate("Spawn Tyrant", "เสกบอสนกอินทรีย์"),
 		Icon = "http://www.roblox.com/asset/?id=139073550150476"
@@ -2713,29 +2658,26 @@ if w3 then
 	WeAreLoop(function()
 		pcall(function()
 			local model = workspace.Map.TikiOutpost.IslandModel
-			local eyes = {"Eye1", "Eye2", "Eye3", "Eye4"}
-			local redCount = 0
-
-			for _, eyeName in ipairs(eyes) do
-				local eye = model:FindFirstChild(eyeName)
-				if eye and eye.Transparency == 0 then
-					redCount += 1
+			if model:FindFirstChild("Eye1") and
+				model:FindFirstChild("Eye2") and
+				model:FindFirstChild("Eye3") and
+				model:FindFirstChild("Eye4") then
+				if model.Eye4.Transparency == 0 then
+					Tyrant_:SetTitle(translate("Eyes : ", " ตาแดงแล้ว : ") .. html("4", Color3.fromRGB(255, 0, 0)))
+				elseif model.Eye3.Transparency == 0 then
+					Tyrant_:SetTitle(translate("Eyes : ", " ตาแดงแล้ว : ") .. html("3", Color3.fromRGB(255, 0, 0)))
+				elseif model.Eye2.Transparency == 0 then
+					Tyrant_:SetTitle(translate("Eyes : ", " ตาแดงแล้ว : ") .. html("2", Color3.fromRGB(255, 0, 0)))
+				elseif model.Eye1.Transparency == 0 then
+					Tyrant_:SetTitle(translate("Eyes : ", " ตาแดงแล้ว : ") .. html("1", Color3.fromRGB(255, 0, 0)))
 				else
-					redCount = 0
+					Tyrant_:SetTitle(translate("Eyes : ", " ตาแดงแล้ว : ") .. html("0", Color3.fromRGB(255, 0, 0)))
 				end
-			end
-
-			if redCount > 0 then
-				Tyrant_:SetTitle(
-					translate("Eyes : ", " ตาแดงแล้ว : ") ..
-						html(tostring(redCount), Color3.fromRGB(255, 0, 0))
-				)
 			end
 		end)
 	end)
 
-	Toggle(Automatic, translate("Automatic Tyrant Fully", "ออโต้ตีบอสนกอินทรีย์"), 'Tyrant')
-	Automatic:Line()
+	Toggle(Tyran, translate("Automatic Tyrant Fully", "ออโต้ตีบอสนกอินทรีย์"), 'Tyrant')
 
 	Toggle(Automatic, translate("Automatic Castle Raid", "ออโต้ตีโจรสลัดบุกปราสาท"), "Castle Raid")
 	Automatic:Line()
@@ -3383,7 +3325,7 @@ Toggle(IslandESP, translate("Mirage Island", "เกาะลับ"), 'ESP Mira
 IslandESP:Line()
 Toggle(IslandESP, translate("Kitsune Shrine", "ศาลเจ้าคิสึเนะ"), 'ESP Kitsune')
 IslandESP:Line()
-Toggle(IslandESP, translate("Prehistoric Island", "ศาลเจ้าคิสึเนะ"), 'ESP PrehistoricIsland')
+Toggle(IslandESP, translate("Prehistoric Island", "เกาะภูเขาไฟ"), 'ESP PrehistoricIsland')
 IslandESP:Line()
 Toggle(IslandESP, translate("Leviathan Gate", "ประตูลิเวียธาน"), 'ESP Frozen Dim')
 
