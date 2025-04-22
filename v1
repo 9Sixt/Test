@@ -474,8 +474,8 @@ end
 if require then
 	local v1 = require(game:GetService("ReplicatedStorage").Controllers.CombatController)
 	local u5 = require(game:GetService("ReplicatedStorage").Modules.CombatUtil)
-	local u147 = getcombatnow
-	local u149 = u5:GetWeaponName()
+	local u147 = getcombatnow()
+	local u149 = u5:GetWeaponName(u147)
 	u5:GetWeaponData(u149).HitboxMagnitude = 100
 	local fakeInput = {
 		UserInputType = Enum.UserInputType.MouseButton1,
