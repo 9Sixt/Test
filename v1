@@ -5,7 +5,7 @@ repeat task.wait() until game:IsLoaded() and game:GetService("Players") and game
 getgenv = getgenv
 
 if getgenv().Fetching then
-	return error("Dectection 2 Executions: Line 8 return function(...)")
+	return error("Fetching is Alreadt Running: return 'protectcall'")
 end
 
 getgenv().Fetching = true
@@ -157,7 +157,7 @@ ComF = function(...)
 end;
 
 task.spawn(function()
-	if LocalPlayer.Team == "Neutral" then
+	if LocalPlayer.Team.Name == "Neutral" then
 		ComF("SetTeam", _G.Team or "Marines")
 		ComF("BartiloQuestProgress")
 	end
@@ -226,19 +226,6 @@ Equip = function(ToolSe)
 		LocalPlayer.Character.Humanoid:EquipTool(tool)
 	end
 end;
-
-EquipSelect = function()
-	for _, p in pairs(LocalPlayer.Backpack:GetChildren()) do
-		if p:IsA("Tool") and p.ToolTip == C()['Weapon'] then
-			if LocalPlayer.Backpack:FindFirstChild(p.Name) then
-				LocalPlayer.Character.Humanoid:EquipTool(p)
-			end
-		end
-	end
-	if not LocalPlayer.Character:FindFirstChild("HasBuso") then
-		ComF("Buso")
-	end
-end
 
 UnEsp = function(v)
 	if v:FindFirstChild('Constant') then
@@ -340,7 +327,7 @@ tp = function(Position)
 				end
 				task.wait(1)
 				ComF("requestEntrance", closestV)
-				wait(1)
+				wait()
 			else
 				tw:Play()
 			end
@@ -465,37 +452,23 @@ index = {
 	'Teleport Player','Tyrant',
 }
 
-getcombatnow = function()
-	pcall(function()
-		return LocalPlayer.Character:FindFirstChildOfClass("Tool")
-	end)
-end
-
-if require then
-	local v1 = require(game:GetService("ReplicatedStorage").Controllers.CombatController)
-	local u5 = require(game:GetService("ReplicatedStorage").Modules.CombatUtil)
-	local u147 = getcombatnow()
-	local u149 = u5:GetWeaponName(u147)
-	u5:GetWeaponData(u149).HitboxMagnitude = 100
-	local fakeInput = {
-		UserInputType = Enum.UserInputType.MouseButton1,
-		UserInputState = Enum.UserInputState.Begin,
-		GetPropertyChangedSignal = function() return Instance.new("BindableEvent").Event end
-	}
-	task.spawn(function()
-		while task.wait(.1) do
-			if tablecheck(_G.Configs, index) then
-				for _, Enemy in ipairs(workspace:WaitForChild("Enemies"):GetChildren()) do
-					local humanoidPart = Enemy:FindFirstChild("HumanoidRootPart")
-					if humanoidPart and (humanoidPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude < 60 then
-						u5.PlayMeleeHitParticles(nil, u147, humanoidPart.CFrame, u149)
-					end
+--[[task.spawn(function()
+	if require then
+		local CombatController = require(Service.ReplicatedStorage.Controllers.CombatController)
+		local CombatUtil = require(Service.ReplicatedStorage.Modules.CombatUtil)
+		local Camera = require(game.ReplicatedStorage.Util.CameraShaker)
+		Camera:Stop()
+		WeAreLoop(function()
+			pcall(function()
+				if LocalPlayer.Character:FindFirstChildOfClass("Tool") then
+					_G.Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
+					local weaponName = CombatUtil:GetWeaponName(_G.Tool)
+					CombatUtil:GetWeaponData(weaponName).HitboxMagnitude = 100
 				end
-				v1.Attack(nil, u147, fakeInput, nil)
-			end
-		end
-	end)
-end
+			end)
+		end)
+	end
+end)]]
 
 WeAreLoop(function()
 	pcall(function()
@@ -726,24 +699,56 @@ function WaitMonster(Path,u)
 	end
 end
 
-BringMob = function(m)
-	for _, v in pairs(workspace.Enemies:GetChildren()) do
-		if v:FindFirstChild("Humanoid") and 
-			v:FindFirstChild("HumanoidRootPart") and 
-			not v:GetAttribute("IsBoss") and
-			(v.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 170 then
-			if v.Humanoid:FindFirstChild("Animator") then
-				v.Humanoid.Animator:Destroy()
+Bring_ = 275
+
+local activeMobs = {}
+
+function updateBringRange()
+	for _, player in ipairs(Service.Players:GetPlayers()) do
+		if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+			local distance = (player.Character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+			if distance <= 225 then
+				Bring_ = 20
+				return
 			end
-			v.Humanoid.JumpPower = 0
-			v.Humanoid:ChangeState(14)
-			for _, part in ipairs(v:GetDescendants()) do
-				if part:IsA("BasePart") then
-					part.CanCollide = false
+		end
+	end
+	Bring_ = 275
+end
+
+function isValidMob(mob)
+	return mob:FindFirstChild("Humanoid") and mob:FindFirstChild("HumanoidRootPart") and not mob:GetAttribute("IsBoss") and mob.Humanoid.Health > 0 and (mob.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= Bring_
+end
+
+BringMob = function(targetMob)
+	if not C()['Bring Monster'] then return end
+	updateBringRange()
+
+	local count = 0
+	for _, mob in ipairs(workspace.Enemies:GetChildren()) do
+		if count >= 2 then break end
+
+		if isValidMob(mob) then
+			local hrp = mob:FindFirstChild("HumanoidRootPart")
+			local humanoid = mob:FindFirstChildOfClass("Humanoid")
+
+			if hrp and humanoid and humanoid.Health > 0 then
+				hrp.CFrame = targetMob.HumanoidRootPart.CFrame
+				hrp.CanCollide = false
+				if humanoid:FindFirstChild("Animator") then
+					humanoid.Animator:Destroy()
 				end
+
+				humanoid.JumpPower = 0
+				humanoid.WalkSpeed = 0
+
+				pcall(function()
+					sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
+					setscriptable(LocalPlayer, "SimulationRadius", true)
+				end)
+
+				count += 1
 			end
-			v.HumanoidRootPart.CFrame = m.HumanoidRootPart.CFrame
-			sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
 		end
 	end
 end
@@ -780,23 +785,48 @@ end
 
 Kill = function(v, u)
 	repeat
-		pcall(Attack)
-		Service.ReplicatedStorage.Remotes.CommE:FireServer("Ken", true)
-		pcall(EquipSelect)
+		pcall(function()
+			for _, p in pairs(LocalPlayer.Backpack:GetChildren()) do
+				if p:IsA("Tool") and p.ToolTip == C()['Weapon'] then
+					if LocalPlayer.Backpack:FindFirstChild(p.Name) then
+						LocalPlayer.Character.Humanoid:EquipTool(p)
+					end
+				end
+			end
+			if not LocalPlayer.Character:FindFirstChild("HasBuso") then
+				ComF("Buso")
+			end
+			if LocalPlayer:GetAttribute("KenActive") ~= true and LocalPlayer:GetAttribute("KenDodgesLeft") > 0 then
+				Service.ReplicatedStorage.Remotes.CommE:FireServer("Ken", true)
+			end
+		end)
 		BringMob(v)
+		pcall(Attack)
 		tp(v:GetPivot() + Vector3.new(0, 40, 0))
-		if C()['Use Skill'] then
-			UseSkill(v)
-		end
+		if C()['Use Skill'] then UseSkill(v) end
 		task.wait()
 	until not v:FindFirstChild("Humanoid") or v.Humanoid.Health <= 0 or not v:FindFirstChild("HumanoidRootPart") or (u and u())
+	pcall(Attack)
 end
 
 KillBoss = function(v, u)
 	repeat
+		pcall(function()
+			for _, p in pairs(LocalPlayer.Backpack:GetChildren()) do
+				if p:IsA("Tool") and p.ToolTip == C()['Weapon'] then
+					if LocalPlayer.Backpack:FindFirstChild(p.Name) then
+						LocalPlayer.Character.Humanoid:EquipTool(p)
+					end
+				end
+			end
+			if not LocalPlayer.Character:FindFirstChild("HasBuso") then
+				ComF("Buso")
+			end
+			if LocalPlayer:GetAttribute("KenActive") ~= true and LocalPlayer:GetAttribute("KenDodgesLeft") > 0 then
+				Service.ReplicatedStorage.Remotes.CommE:FireServer("Ken", true)
+			end
+		end)
 		pcall(Attack)
-		Service.ReplicatedStorage.Remotes.CommE:FireServer("Ken", true)
-		pcall(EquipSelect)
 		if C()['Sea Events'] then
 			local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
 			if humanoid and humanoid.Health <= humanoid.MaxHealth * 0.25 then
@@ -810,6 +840,7 @@ KillBoss = function(v, u)
 		end
 		task.wait()
 	until v.Humanoid.Health <= 0 or not v:FindFirstChild("HumanoidRootPart") or (u and u())
+	pcall(Attack)
 end
 
 Level_Quest = API_Request:CheckQuest()[2]
@@ -2693,7 +2724,6 @@ if w3 then
 	Indra:Line()
 	Button(Indra, translate("Check God's Chalice", "เช็คว่ามีคนได้ถ้วยมั้ย"), function()
 		pcall(function()
-			local found = false
 			for _, player in ipairs(Service.Players:GetPlayers()) do
 				local backpack = player:FindFirstChildOfClass("Backpack")
 				local character = player.Character
@@ -2701,18 +2731,15 @@ if w3 then
 					local english = html(player.Name, Color3.fromRGB(0, 170, 255)) .. " has " .. html("God's Chalice", Color3.fromRGB(255, 255, 127))
 					local thai = html(player.Name, Color3.fromRGB(0, 170, 255)) .. " มี " .. html("ถ้วยเสกแอดมิน", Color3.fromRGB(255, 255, 127))
 					Indra_:SetDesc(translate(english, thai))
-					found = true
-					break
+				else
+					Indra_:SetDesc(translate("No one has God's Chalice", "ไม่มีใครได้ถ้วยเสกแอดมิน"))
 				end
-			end
-			if not found then
-				Indra_:SetDesc(translate("No one has God's Chalice", "ไม่มีใครได้ถ้วยเสกแอดมิน"))
 			end
 		end)
 	end)
 	Indra:Line()
-	ToggleImage(Indra, translate("Automatic Rip Indra", "ออโต้ตีแอดมิน"), '77066544764774', 'Indra')
-	Toggle(Indra, translate("HOP Rip Indra", "ออโต้ตีแอดมิน"),'HOP Indra')
+	Toggle(Indra, translate("Automatic Rip Indra", "ออโต้ตีแอดมิน"), 'Indra')
+	Toggle(Indra, translate("HOP Rip Indra", "ย้ายเซิฟหาแอดมินแอดมิน"),'HOP Indra')
 	Indra:Line()
 	Toggle(Indra, translate("Holy Torch Tushita Quest", "ออโต้จุดไฟเควสทุชิตะ"),'Holy Torch')
 	WeAreLoop(function()
@@ -2735,7 +2762,7 @@ if w3 then
 		elseif status == 2 or status == 4 or status == 7 then
 			return translate("You can buy gear with " .. html(tostring(fragment) .. " Fragment", Color3.fromRGB(149, 20, 255)))
 		elseif status == 5 then
-			return translate("You are done your race", "คุณได้อัพเผ่าของคุณแล้ว")
+			return translate("You are done your race", "คุณได้อัพเกรดเผ่าของคุณแล้ว")
 		elseif status == 6 then
 			return translate("Upgrade completed: " .. (trained - 2) .. "/3, Need Trains More", "อัปเกรดแล้ว: " .. (trained - 2) .. "/3 ขั้น ต้องฝึกเพิ่มอีก")
 		elseif status == 0 then
@@ -2899,6 +2926,29 @@ if w3 then
 			Prehistoric:SetTitle(translate("Prehistoric Island : ", "เกาะภูเขาไฟ : ") .. IsSpawn)
 		else
 			Prehistoric:SetTitle(translate("Prehistoric Island : ", "เกาะภูเขาไฟ : ") .. IsNotSpawn)
+		end
+	end)
+
+
+
+	local FrozenSection = Section(_Auto, translate("Leviathan", "ลิเวียธาร"), 'l')
+	FrozenDim = FrozenSection:CreateImage({
+		Title = translate("Leviathan Gate : ", "ประตูลิเวียธาร : ") .. Isnil,
+		Desc = translate("Leviathan Gate", "ประตูลิเวียธาร"),
+		Icon = "http://www.roblox.com/asset/?id=127424561323585"
+	})
+	FrozenSection:Line()
+	Toggle(FrozenSection, translate("Teleport to Leviathan Gate", "เทเลพอร์ตไปหาประตูลิเวียธาร"), 'Teleport to Leviathan')
+	WeAreLoop(function()
+		if C()['Teleport to Leviathan'] then
+			if workspace.Map:FindFirstChild("FrozenDimension") then
+				tp(workspace.Map:FindFirstChild("FrozenDimension"))
+			end
+		end
+		if workspace.Map:FindFirstChild("FrozenDimension") then
+			FrozenDim:SetTitle(translate("Leviathan Gate : ", "ประตูลิเวียธาร : ") .. IsSpawn)
+		else
+			FrozenDim:SetTitle(translate("Leviathan Gate : ", "ประตูลิเวียธาร : ") .. IsNotSpawn)
 		end
 	end)
 end
