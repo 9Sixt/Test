@@ -1,85 +1,115 @@
-if not game:IsLoaded() then game.Loaded:Wait()end
-getgenv().Start = tick()
-repeat task.wait() until game:IsLoaded() and game:GetService("Players") and game:GetService("Players").LocalPlayer and game:GetService("Players").LocalPlayer.Character and game:GetService("Players").LocalPlayer.PlayerGui and game:GetService("Players").LocalPlayer.Backpack
+local Env_ : Global = getgenv()
 
-getgenv = getgenv
+repeat 
+	task.wait()
+until game:IsLoaded() and game:GetService("Players") and game:GetService("Players").LocalPlayer and game:GetService("Players").LocalPlayer.Character and game:GetService("Players").LocalPlayer.PlayerGui and game:GetService("Players").LocalPlayer.Backpack and game:GetService("Players").LocalPlayer.PlayerScripts and game:GetService("Players").LocalPlayer.Team and game:GetService("Players").LocalPlayer.Data and game:GetService("Players").LocalPlayer.Data.Level and game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CommF_")
 
-if getgenv().Fetching then
-	return error("Fetching is Alreadt Running: return 'protectcall'")
+
+if Env_.Fetching then
+	return error("Fetching is Already Execution")
 end
 
-getgenv().Fetching = true
-
-_G.Configs = {}
-
-do
-	Service = {
-		CollectionService = game:GetService('CollectionService');
-		CoreGui = game:GetService("CoreGui"),
-		ReplicatedStorage = game:GetService("ReplicatedStorage");
-		RunService = game:GetService("RunService");
-		TweenService = game:GetService("TweenService");
-		UserInputService = game:GetService("UserInputService");
-		GuiService = game:GetService("GuiService");
-		VirtualInputManager =game:GetService("VirtualInputManager");
-		VirtualUser = game:GetService("VirtualUser");
-		MarketplaceService = game:GetService("MarketplaceService");
-		HttpService = game:GetService("HttpService");
-		Lighting = game:GetService("Lighting");
-		TeleportService = game:GetService("TeleportService");
-		Players = game:GetService("Players");
-	};
-	id = game.PlaceId;
-	jobid = game.JobId;
-	camera = workspace.CurrentCamera;
-	rendersteped = Service.RunService.RenderStepped;
-	LocalPlayer = Service.Players.LocalPlayer;
-	_Folder = "Fetching'Script/Config/" .. LocalPlayer.Name .. "/" .. id .. ".json";
-	PlayerGui = LocalPlayer.PlayerGui;
-	Backpack = LocalPlayer.Backpack;
-	getconnections = getconnections;
-	cloneref = cloneref;
-	readfile = readfile;
-	writefile = writefile;
-	isfile = isfile;
-	isfolder = isfolder;
-	makefolder = makefolder;
-	delfile = delfile;
-	setclipboard = setclipboard;
-	fireproximityprompt = fireproximityprompt;
-	setscriptable = setscriptable;
-	sethiddenproperty = sethiddenproperty;
-	islclosure = islclosure;
-	hookfunction = hookfunction;
-	firetouchinterest = firetouchinterest;
-	fireclickdetector = fireclickdetector;
-	getnilinstances = getnilinstances;
-	Service.ReplicatedStorage.Assets.GUI.DamageCounter.Enabled = false;
+if game:GetService("CoreGui"):FindFirstChild("Fetching") then
+	game:GetService("CoreGui"):FindFirstChild("Fetching"):Destroy()
 end;
 
-if id == 2753915549 then
-	w1 = true
-elseif id == 4442272183 then
-	w2 = true
-elseif id == 7449423635 then
-	w3 = true
+Env_.Fetching = true
+Env_.Configs = {}
+
+local Players = game:GetService("Players")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local CollectionService = game:GetService("CollectionService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TeleportService = game:GetService("TeleportService")
+local RunService = game:GetService("RunService")
+local VirtualUser = game:GetService("VirtualUser")
+local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+
+local PlaceId = game.PlaceId
+local JobId = game.JobId
+local Camera = workspace.CurrentCamera
+local Tick = tick()
+
+local LocalPlayer = Players.LocalPlayer
+local Backpack = LocalPlayer.Backpack
+local PlayerGui = LocalPlayer.PlayerGui
+local Character = LocalPlayer.Character
+local PlayerScript =  LocalPlayer.PlayerScripts
+local Name = LocalPlayer.Name
+local DisplayName = LocalPlayer.DisplayName
+local PlayerId = LocalPlayer.UserId
+local Team = LocalPlayer.Team.Name
+local _Folder = "Fetching'Script/Config/" .. PlayerId .. "/" .. PlaceId .. ".json";
+
+LocalPlayer.CharacterAdded:Connect(function(new)
+	Character = new
+end)
+
+local ChestModels = workspace:WaitForChild("ChestModels")
+local WorldOrigin = workspace:WaitForChild("_WorldOrigin")
+local Characters = workspace:WaitForChild("Characters")
+local SeaBeasts = workspace:WaitForChild("SeaBeasts")
+local Enemies = workspace:WaitForChild("Enemies")
+local Map = workspace:WaitForChild("Map")
+
+local EnemySpawns = WorldOrigin:WaitForChild("EnemySpawns")
+local Locations = WorldOrigin:WaitForChild("Locations")
+
+local RenderStepped = RunService.RenderStepped
+local Heartbeat = RunService.Heartbeat
+local Stepped = RunService.Stepped
+
+local Data = LocalPlayer:WaitForChild("Data")
+local Level = Data:WaitForChild("Level")
+local Fragments = Data:WaitForChild("Fragments")
+local Money = Data:WaitForChild("Beli")
+
+local Module = ReplicatedStorage:WaitForChild("Modules")
+local Net = Module:WaitForChild("Net")
+local Remotes = ReplicatedStorage:WaitForChild("Remotes")
+local CommF = Remotes:WaitForChild("CommF_")
+local CommE = Remotes:WaitForChild("CommE")
+
+local Executor = string.upper(identifyexecutor())
+local Blacklist_Executor = table.find({"SOLARA", "XENO"}, Executor)
+
+Attack = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/fetching/refs/heads/main/Utils/Attack.lua", true))()
+Loop = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/fetching/refs/heads/main/Utils/Loop.lua", true))()
+Quest = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/fetching/refs/heads/main/Utils/Quest.lua", true))()
+translate = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/fetching/refs/heads/main/Utils/translate.lua", true))()
+ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/fetching/refs/heads/main/Utils/ESP.lua", true))()
+
+if not Blacklist_Executor then
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/fetching/refs/heads/main/Utils/hookmeta.lua", true))()
+end
+
+ReplicatedStorage:WaitForChild("Assets").GUI.DamageCounter.Enabled = false;
+
+if PlaceId == 2753915549 then
+	Env_.w1 = true
+elseif PlaceId == 4442272183 then
+	Env_.w2 = true
+elseif PlaceId == 7449423635 then
+	Env_.w3 = true
 end;
 
 Save = function(a,b)
 	if a ~= nil then
-		_G.Configs[a] = b
+		Env_.Configs[a] = b
 	end
 	if not isfolder("Fetching'Script") then
 		makefolder("Fetching'Script")
 	end
-	writefile(_Folder, Service.HttpService:JSONEncode(_G.Configs))
+	writefile(_Folder, HttpService:JSONEncode(Env_.Configs))
 end;
 
 Load = function()
 	local baseFolder = "Fetching'Script"
 	local configFolder = baseFolder .. "/Config"
-	local playerFolder = configFolder .. "/" .. LocalPlayer.Name
-	local filePath = playerFolder .. "/" .. id .. ".json"
+	local playerFolder = configFolder .. "/" .. PlayerId
+	local filePath = playerFolder .. "/" .. PlaceId .. ".json"
 
 	if not isfolder(baseFolder) then
 		makefolder(baseFolder)
@@ -98,20 +128,20 @@ Load = function()
 	end
 
 	local content = readfile(filePath)
-	return Service.HttpService:JSONDecode(content)
+	return HttpService:JSONDecode(content)
 end
 
 
 Default = function(v, a)
 	if type(v) == "table" then
 		for i, k in pairs(v) do
-			if _G.Configs[i] == nil then
-				_G.Configs[i] = k
+			if Env_.Configs[i] == nil then
+				Env_.Configs[i] = k
 			end
 		end
 	else
-		if _G.Configs[v] == nil then
-			_G.Configs[v] = a
+		if Env_.Configs[v] == nil then
+			Env_.Configs[v] = a
 		end
 	end
 end;
@@ -122,25 +152,20 @@ DeleteSettings = function()
 	end
 end;
 
-C = function() return _G.Configs end;
+Equip = function(ToolSe)
+	if Backpack:FindFirstChild(ToolSe) and not LocalPlayer.Character:FindFirstChild(ToolSe) then
+		local tool = Backpack:FindFirstChild(ToolSe)
+		LocalPlayer.Character.Humanoid:EquipTool(tool)
+	end
+end;
 
-WeAreLoop = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Utils/Loop", true))()
-translate = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Utils/Traslation", true))()
-ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Utils/esp", true))()
-Attack = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Utils/Attack.lua", true))()
-bosses = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Utils/DateBoss.lua", true))()
-API_Request = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Utils/CheckQuest", true))()
+ComF = function(...)
+	return ReplicatedStorage.Remotes.CommF_:InvokeServer(...)
+end;
 
-if hookfunction then
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Utils/hookfunction", true))()
-end
 
 copy = function(str)
 	setclipboard(str)
-end;
-
-loadstr = function(raw)
-	return loadstring(game:HttpGet(raw))()
 end;
 
 tablecheck = function(config,_table)
@@ -152,27 +177,12 @@ tablecheck = function(config,_table)
 	return false 
 end;
 
-ComF = function(...)
-	return Service.ReplicatedStorage.Remotes.CommF_:InvokeServer(...)
-end;
-
-task.spawn(function()
-	if LocalPlayer.Team.Name == "Neutral" then
-		ComF("SetTeam", _G.Team or "Marines")
-		ComF("BartiloQuestProgress")
-	end
-end)
-
-RbxtoNumber = function(rbx)
-	return tonumber(string.match(rbx, "%d+"))
-end;
-
-HopServer = function()
+HOP = function()
 	pcall(function()
-		local _servers = "https://games.roblox.com/v1/games/"..id.."/servers/Public?sortOrder=Asc&limit=100"
+		local _servers = "https://games.roblox.com/v1/games/"..PlaceId.."/servers/Public?sortOrder=Asc&limit=100"
 		local ListServers = function (cursor)
 			local Raw = game:HttpGet(_servers .. ((cursor and "&cursor="..cursor) or ""))
-			return Service.HttpService:JSONDecode(Raw)
+			return HttpService:JSONDecode(Raw)
 		end
 		local Server, Next;
 		repeat
@@ -180,7 +190,7 @@ HopServer = function()
 			Server = Servers.data[1]
 			Next = Servers.nextPageCursor
 		until Server
-		Service.TeleportService:TeleportToPlaceInstance(id,Server.id,LocalPlayer)
+		TeleportService:TeleportToPlaceInstance(PlaceId,Server.id,LocalPlayer)
 	end)
 end;
 
@@ -192,10 +202,6 @@ html = function(text, color)
 	return text
 end;
 
-Isnil = html("N/A", Color3.fromRGB(255, 255, 0))
-IsSpawn = translate(html("Spawned", Color3.fromRGB(0, 255, 127)), html("เกิดแล้ว !", Color3.fromRGB(0, 255, 127)))
-IsNotSpawn = translate(html("Not Spawned", Color3.fromRGB(255, 0, 0)), html("ยังไม่เกิด !", Color3.fromRGB(255, 0, 0)))
-
 NumtoRbx = function(i)
 	if type(i) == 'string' and not i:find('rbxassetid://') then
 		return "rbxassetid://".. i
@@ -206,26 +212,9 @@ NumtoRbx = function(i)
 	end
 end;
 
-GetY = function(part)
-	return part.Position + Vector3.new(0, part.Size.Y / 2, 0)
-end;
-
-IsAlive = function(model)
-	if not model then return false end
-	local Humanoid = model:FindFirstChild("Humanoid")
-	return Humanoid and Humanoid.Health > 0
-end
-
-jobtp = function(job_id)
-	Service.TeleportService:TeleportToPlaceInstance(id,job_id,LocalPlayer)
-end;
-
-Equip = function(ToolSe)
-	if Backpack:FindFirstChild(ToolSe) and not LocalPlayer.Character:FindFirstChild(ToolSe) then
-		local tool = Backpack:FindFirstChild(ToolSe)
-		LocalPlayer.Character.Humanoid:EquipTool(tool)
-	end
-end;
+Isnil = html("N/A", Color3.fromRGB(255, 255, 0))
+IsSpawn = translate(html("Spawned", Color3.fromRGB(0, 255, 127)), html("เกิดแล้ว !", Color3.fromRGB(0, 255, 127)))
+IsNotSpawn = translate(html("Not Spawned", Color3.fromRGB(255, 0, 0)), html("ยังไม่เกิด !", Color3.fromRGB(255, 0, 0)))
 
 UnEsp = function(v)
 	if v:FindFirstChild('Constant') then
@@ -233,72 +222,47 @@ UnEsp = function(v)
 	end
 end
 
-distance = function(a,b,noHeight)
-	if not b then
-		b = LocalPlayer.Character.HumanoidRootPart.Position
-	end
-	return (Vector3.new(a.X,not noHeight and a.Y,a.Z) - Vector3.new(b.X,not noHeight and b.Y,b.Z)).magnitude
-end
-
-task.spawn(function()
-	if getconnections then
-		for _,v in pairs(getconnections(LocalPlayer.Idled)) do
-			if v["Disable"] then
-				v["Disable"](v)
-			elseif v["Disconnect"] then
-				v["Disconnect"](v)
-			end
-		end
-	else
-		local VirtualUser = cloneref(Service.VirtualUser)
-		LocalPlayer.Idled:Connect(function()
-			VirtualUser:CaptureController()
-			VirtualUser:ClickButton2(Vector2.new())
-		end)
-	end
-end);
-
-if Service.CoreGui:FindFirstChild("Fetching") then
-	Service.CoreGui:FindFirstChild("Fetching"):Destroy()
+C = function() 
+	return Env_.Configs 
 end;
 
-if Service.UserInputService.TouchEnabled and not Service.UserInputService.KeyboardEnabled then
-	_G.Mobile = true 
-else 
-	_G.PC = true 
-end;
+Env_.Configs = Load()
 
-_G.Configs = Load()
-
-if w1 then
+if Env_.w1 then
 	Canteleport = {
-		Vector3.new(3864.6884765625, 5.716391563415527, -1926.214111328125), -- Gate
-		Vector3.new(61163.8515625, 5.650546073913574, 1819.7841796875), -- Under Water
-		Vector3.new(-7894.61767578125, 5545.8349609375, -380.29119873046875), -- Sky 2
-		Vector3.new(-4607.82275, 872.54248+50, -1667.55688) -- Sky 1
+		Vector3.new(3864, 5, -1926), -- Gate
+		Vector3.new(61163, 5, 1819), -- Under Water
+		Vector3.new(-7894, 5545, -380), -- Sky 2
+		Vector3.new(-4607, 872, -1667) -- Sky 1
 	}
-elseif w2 then
+elseif Env_.w2 then
 	Canteleport = {
-		Vector3.new(923.2125244140625, 125.40035247802734, 32852.83203125), -- Ghost Ship
-		Vector3.new(-286.6488037109375, 306.130615234375, 596.5967407226562), -- Mansion
-		Vector3.new(-6505.7294921875, 83.31233978271484, -130.24234008789062) -- Out Ghost Ship
+		Vector3.new(-289, 306, 600), -- Flamingo Mansion
+		Vector3.new(2284, 15, 905), -- Flamingo Room
+		Vector3.new(923, 125, 32853), -- Cursed Ship
+		Vector3.new(-6509, 83, -133) -- Zombie Island
+	}
+elseif Env_.w3 then
+	Canteleport = {
+		Vector3.new(-12471, 374, -7551), -- Mansion
+		Vector3.new(5661, 1013, -335 ), -- Hydra Island
+		Vector3.new(-5074, 314, -3153), -- Castle on the Sea
 	}
 end
 
 tp = function(Position)
-	local character = LocalPlayer.Character
-	if not (character and character:FindFirstChild("HumanoidRootPart")) then return end
-	local Distance = (Position.Position - character.HumanoidRootPart.Position).Magnitude
+	if not Character then return end
+	local Distance = (Position.Position - Character.HumanoidRootPart.Position).Magnitude
 	if Distance > 0 and Distance < 300 then
-		Service.TweenService:Create(
-			character.HumanoidRootPart,
-			TweenInfo.new(0.05, Enum.EasingStyle.Linear),
+		TweenService:Create(
+			Character.HumanoidRootPart,
+			TweenInfo.new(0.08, Enum.EasingStyle.Linear),
 			{CFrame = CFrame.new(Position.X, Position.Y, Position.Z)}
 		):Play()
 		return
 	else
-		local tw = Service.TweenService:Create(
-			character.HumanoidRootPart,
+		local tw = TweenService:Create(
+			Character.HumanoidRootPart,
 			TweenInfo.new(Distance / 299, Enum.EasingStyle.Linear),
 			{CFrame = CFrame.new(Position.X, Position.Y, Position.Z)}
 		)
@@ -307,232 +271,31 @@ tp = function(Position)
 				tw:Cancel()
 			end
 		end
-		if w1 or w2 then
-			local closestDistance = math.huge
-			local closestV = nil
-			for i, v in ipairs(Canteleport) do
-				if (v - Position.Position).Magnitude < (LocalPlayer.Character.HumanoidRootPart.Position - Position.Position).Magnitude
-					and LocalPlayer.Character.Humanoid.Health > 0
-					and (v - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 30 then
-					local distance = (v - Position.Position).Magnitude
-					if distance < closestDistance then
-						closestDistance = distance
-						closestV = v
-					end
+		local closestDistance = math.huge
+		local closestV = nil
+		for i, v in ipairs(Canteleport) do
+			if (v - Position.Position).Magnitude < (Character.HumanoidRootPart.Position - Position.Position).Magnitude
+				and LocalPlayer.Character.Humanoid.Health > 0
+				and (v - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 30 then
+				local distance = (v - Position.Position).Magnitude
+				if distance < closestDistance then
+					closestDistance = distance
+					closestV = v
 				end
 			end
-			if closestV then
-				if tw then
-					tw:Cancel()
-				end
-				task.wait(1)
-				ComF("requestEntrance", closestV)
-				wait()
-			else
-				tw:Play()
+		end
+		if closestV then
+			if tw then
+				tw:Cancel()
 			end
-		elseif w3 then
+			task.wait(1)
+			ComF("requestEntrance", closestV)
+			wait()
+		else
 			tw:Play()
 		end
 	end
 end
-
-
-
-
-ServiceIcon = {
-
-	--Sword
-	twinhook = 109471529993745,
-	buddySword = 97968424830570,
-	cavender = 124205814177907,
-	yama = 92675612011103,
-	tushita = 135696720033651,
-	darkdagger = 116235335214720,
-	hallowScyte = 113334661706407,
-	bisento = 93823310792913,
-	rengoku = 86367440540065,
-	koko = 85906865034458,
-	midnightblade = 133322593600715,
-	saber = 104181335804105,
-	spikeytriden = 78642257318765,
-	ttk = 120376601375365,
-	wardensword = 104461315405173,
-	trident = 119058078106507,
-	soulcane = 131965793072868,
-	pipe = 112982576639836,
-	longsword = 97989026259278,
-	gravityblade = 105594712741814,
-	flait = 133634961314201,
-	dualheadblade = 115117670114672,
-	dragontriden = 120705978764032,
-	katana = 77894518439639,
-	sharksaw = 105836238868559,
-	tk = 125442714848341,
-	ironmace = 72923170673851,
-	cutlass = 87565233186470,
-	dualkatana = 88599675228212,
-
-	--gun
-	bazooka = 104847116909140,
-	venombow = 107854938166653,
-	kabucha = 120221929314388,
-	finlock = 130114214280607,
-	musket = 133991886907694,
-	acidrifle = 123306480417105,
-	dimensionblizzard = 107802107629984,
-	canon = 135155457592181,
-	dualfinlock = 134453146087890,
-	mafmablazer = 117640863674437,
-	slingshot = 140341415903805,
-	slingshotnoob = 113741638116752,
-
-	--meterrails
-	mirrorfrace = 79278735897569,
-	darkfragment = 87426492611423,
-	meteor = 109783379199285,
-	dragonscale = 83542436733855,
-	mysticaldrop = 124569380866626,
-	greenstone = 140185024031149,
-	gunpowder = 93282744705223,
-	minitusk = 98730401483944,
-	fish = 92506132719320,
-	scrap = 113794893009585,
-	yetifool = 88392924650042,
-	mafmaore = 85891726183835,
-	lether = 83152010926090,
-	wing = 132385762861921,
-
-	--Accsasory
-	eliteacc = 117434417020992,
-	darkcoat = 94197155793163,
-	pretyhelmet = 100312031757051,
-	ghoulmask = 135462620610344,
-	coolshade = 72745293372242,
-	spikeycoat_3 = 125673208082572,
-	holycrown = 76548753026960,
-	zybracrab = 77877774329182,
-	cavenderhat = 94848999644231,
-	pinkcoat = 116543359776670,
-	swordhat = 110894406479343,
-	coat = 92158256948996,
-	pilothelm = 85458326750872,
-	lei = 101076104323433,
-	boneacc = 121066192253008,
-
-	--melee
-	darkstep = 121160800139995,
-	erectric = 95338045306167,
-	waterkungfu = 95988848570506,
-	dragonbreat = 108111820838442,
-	supperhuman = 74706581586634,
-	deadstrp = 89097162139985,
-	fischman = 70893790172008,
-	electrickclaw = 130192608654759,
-	talon = 140132700981267,
-	sanguintart = 121077653999026,
-	godhuman = 138224447014084,
-
-}
-
-
-index = {
-	'Level','Nearest','Teleport Island','Farm Select Boss','All Boss',
-	'Farm Material','Elite','Farm Bone','Cake Prince','Farm Ectoplasm',
-	'Sea Events','Teleport to Boat','Farm Chest','Castle Raid','Fruit Find',
-	'Teleport to Mirage','Teleport to Advanced Dealer','Teleport to Gear',
-	'Teleport to Kitsune','Azure Embers','Teleport Prehistoric','Factory',
-	'Auto Pole 1','Auto Saber','Auto Trident','Auto Bazooka','Auto CoolShade',
-	'Auto LongSword','Auto GravityBlade','Auto SwanGlasses','Auto Flail',
-	'Auto DragonTrident','Auto Rengoku','Auto Law','Auto PilotHelmet',
-	'Auto VenomBow','Auto Lei','Auto TwinHooks','Auto Canvender','Auto BuddySword',
-	'Holy Torch','Auto Darkbeard','Auto HallowScythe','Auto Trial V4',
-	'Teleport to Door','Auto Evo Race V2','Find Berry','Sea 2','Auto Raid',
-	'Auto Train V4','Indra','Next Island','Teleport to Lab','Rainbow Haki',
-	'Teleport Player','Tyrant',
-}
-
---[[task.spawn(function()
-	if require then
-		local CombatController = require(Service.ReplicatedStorage.Controllers.CombatController)
-		local CombatUtil = require(Service.ReplicatedStorage.Modules.CombatUtil)
-		local Camera = require(game.ReplicatedStorage.Util.CameraShaker)
-		Camera:Stop()
-		WeAreLoop(function()
-			pcall(function()
-				if LocalPlayer.Character:FindFirstChildOfClass("Tool") then
-					_G.Tool = LocalPlayer.Character:FindFirstChildOfClass("Tool")
-					local weaponName = CombatUtil:GetWeaponName(_G.Tool)
-					CombatUtil:GetWeaponData(weaponName).HitboxMagnitude = 100
-				end
-			end)
-		end)
-	end
-end)]]
-
-WeAreLoop(function()
-	pcall(function()
-		if tablecheck(_G.Configs, index) then
-			if not C()['Sea Events'] then
-				if LocalPlayer.Character:WaitForChild("Humanoid").Sit then
-					LocalPlayer.Character:WaitForChild("Humanoid").Sit = false
-				end
-			end
-			if not LocalPlayer.Character.HumanoidRootPart:FindFirstChild("BodyVelocity1") then
-				local BodyVelocity = Instance.new("BodyVelocity")
-				BodyVelocity.Name = "BodyVelocity1"
-				BodyVelocity.Parent = LocalPlayer.Character.HumanoidRootPart
-				BodyVelocity.MaxForce = Vector3.new(10000, 10000, 10000)
-				BodyVelocity.Velocity = Vector3.new(0, 0, 0)
-			end
-			if not LocalPlayer.Character:FindFirstChild("IsHighlight") then
-				local HL = Instance.new("Highlight")
-				HL.Name = 'IsHighlight'
-				HL.Parent = LocalPlayer.Character
-				HL.Adornee = LocalPlayer.Character
-				HL.OutlineColor = Color3.fromRGB(255, 255, 255)
-				local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
-				if humanoid then
-					local healthPercent = humanoid.Health / humanoid.MaxHealth
-					if healthPercent < 0.2 then
-						HL.FillColor = Color3.fromRGB(255, 0, 0)
-					elseif healthPercent < 0.5 then
-						HL.FillColor = Color3.fromRGB(255, 255, 0)
-					else
-						HL.FillColor = Color3.fromRGB(0, 170, 255)
-					end
-				end
-				HL.FillTransparency = 0.3
-			else
-				local HL = LocalPlayer.Character:FindFirstChild("IsHighlight")
-				local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
-				if HL and humanoid then
-					local healthPercent = humanoid.Health / humanoid.MaxHealth
-					if healthPercent < 0.2 then
-						HL.FillColor = Color3.fromRGB(255, 0, 0)
-					elseif healthPercent < 0.5 then
-						HL.FillColor = Color3.fromRGB(255, 255, 0)
-					else
-						HL.FillColor = Color3.fromRGB(0, 170, 255)
-					end
-				end
-			end
-			for i, v in pairs(LocalPlayer.Character:GetChildren()) do
-				if v:IsA("BasePart") then
-					v.CanCollide = false
-				end
-			end
-		else
-			pcall(StopTween)
-			if LocalPlayer.Character.HumanoidRootPart:FindFirstChild("BodyVelocity1") then
-				LocalPlayer.Character.HumanoidRootPart:FindFirstChild("BodyVelocity1"):Destroy()
-			end
-			if LocalPlayer.Character:FindFirstChild("IsHighlight") then
-				LocalPlayer.Character:FindFirstChild("IsHighlight"):Destroy()
-			end
-		end
-	end)
-end)
 
 CheckItem = function(item)
 	for _, v in ipairs(Backpack:GetChildren()) do
@@ -643,6 +406,7 @@ DetectPartSpawnMob = function(name)
 		end
 	end
 end
+
 GetPartAllMob = function(name)
 	local results = {}
 	local name1
@@ -669,7 +433,8 @@ GetPartAllMob = function(name)
 	end
 	return results
 end
-function WaitMonster(Path,u)
+
+WaitMonster = function(Path,u)
 	if typeof(Path) == "table" then
 		if #MobBlacklist >= 4 then
 			MobBlacklist = {}
@@ -682,7 +447,7 @@ function WaitMonster(Path,u)
 					GetPart = DetectPartSpawnMob(v)
 					repeat
 						tp(GetPart.CFrame * CFrame.new(0,40,0))
-						task.wait(.5)
+						task.wait(1)
 					until (GetPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 50 or (u and u())
 				end
 			end
@@ -692,7 +457,7 @@ function WaitMonster(Path,u)
 			if not Monster(Path) then
 				repeat
 					tp(v.CFrame * CFrame.new(0, 40, 0))
-					task.wait(0.5)
+					task.wait(1)
 				until (v.Position -LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 50 or (u and u())
 			end
 		end
@@ -704,7 +469,7 @@ Bring_ = 275
 local activeMobs = {}
 
 function updateBringRange()
-	for _, player in ipairs(Service.Players:GetPlayers()) do
+	for _, player in ipairs(Players:GetPlayers()) do
 		if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
 			local distance = (player.Character.HumanoidRootPart.Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
 			if distance <= 225 then
@@ -744,7 +509,6 @@ BringMob = function(targetMob)
 
 				pcall(function()
 					sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
-					setscriptable(LocalPlayer, "SimulationRadius", true)
 				end)
 
 				count += 1
@@ -752,36 +516,6 @@ BringMob = function(targetMob)
 		end
 	end
 end
-
-UseSkill = function(target)
-	delay(0, function()
-		local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-		if hrp and target and target:FindFirstChild("HumanoidRootPart") then
-			local distance = (hrp.Position - target.HumanoidRootPart.Position).Magnitude
-			if distance <= 50 then
-				for _, tool in pairs(LocalPlayer.Character:GetChildren()) do
-					if tool:IsA("Tool") and tool.ToolTip == C()['Weapon'] then
-						local charTool = LocalPlayer.Character:FindFirstChild(tool.Name)
-						if charTool and charTool:FindFirstChild("MousePos") then
-							charTool.MousePos.Value = target.HumanoidRootPart.Position
-							local skillKeys = {}
-							if C()['Weapon'] == 'Melee' then
-								skillKeys = {"Z", "X", "C"}
-							elseif C()['Weapon'] == 'Sword' then
-								skillKeys = {"Z", "X"}
-							end
-							for _, key in ipairs(skillKeys) do
-								Service.VirtualInputManager:SendKeyEvent(true, key, false, game)
-								Service.VirtualInputManager:SendKeyEvent(false, key, false, game)
-							end
-						end
-					end
-				end
-			end
-		end
-	end)
-end
-
 
 Kill = function(v, u)
 	repeat
@@ -797,13 +531,12 @@ Kill = function(v, u)
 				ComF("Buso")
 			end
 			if LocalPlayer:GetAttribute("KenActive") ~= true and LocalPlayer:GetAttribute("KenDodgesLeft") > 0 then
-				Service.ReplicatedStorage.Remotes.CommE:FireServer("Ken", true)
+				CommE:FireServer("Ken", true)
 			end
 		end)
 		BringMob(v)
 		pcall(Attack)
 		tp(v:GetPivot() + Vector3.new(0, 40, 0))
-		if C()['Use Skill'] then UseSkill(v) end
 		task.wait()
 	until not v:FindFirstChild("Humanoid") or v.Humanoid.Health <= 0 or not v:FindFirstChild("HumanoidRootPart") or (u and u())
 	pcall(Attack)
@@ -823,7 +556,7 @@ KillBoss = function(v, u)
 				ComF("Buso")
 			end
 			if LocalPlayer:GetAttribute("KenActive") ~= true and LocalPlayer:GetAttribute("KenDodgesLeft") > 0 then
-				Service.ReplicatedStorage.Remotes.CommE:FireServer("Ken", true)
+				CommE:FireServer("Ken", true)
 			end
 		end)
 		pcall(Attack)
@@ -835,96 +568,155 @@ KillBoss = function(v, u)
 		else
 			tp(v:GetPivot() + Vector3.new(0,40,0))
 		end
-		if C()['Use Skill'] then
-			UseSkill(v)
-		end
 		task.wait()
 	until v.Humanoid.Health <= 0 or not v:FindFirstChild("HumanoidRootPart") or (u and u())
 	pcall(Attack)
 end
 
-Level_Quest = API_Request:CheckQuest()[2]
+index = {
+	'Level','Nearest','Teleport Island','Farm Select Boss','All Boss',
+	'Farm Material','Elite','Farm Bone','Cake Prince','Farm Ectoplasm',
+	'Sea Events','Teleport to Boat','Farm Chest','Castle Raid','Fruit Find',
+	'Teleport to Mirage','Teleport to Advanced Dealer','Teleport to Gear',
+	'Teleport to Kitsune','Azure Embers','Teleport Prehistoric','Factory',
+	'Auto Pole 1','Auto Saber','Auto Trident','Auto Bazooka','Auto CoolShade',
+	'Auto LongSword','Auto GravityBlade','Auto SwanGlasses','Auto Flail',
+	'Auto DragonTrident','Auto Rengoku','Auto Law','Auto PilotHelmet',
+	'Auto VenomBow','Auto Lei','Auto TwinHooks','Auto Canvender','Auto BuddySword',
+	'Holy Torch','Auto Darkbeard','Auto HallowScythe','Auto Trial V4',
+	'Teleport to Door','Auto Evo Race V2','Find Berry','Sea 2','Auto Raid',
+	'Auto Train V4','Indra','Next Island','Teleport to Lab','Rainbow Haki',
+	'Teleport Player','Tyrant','Auto Raid',
+}
 
-WeAreLoop(function()
-	if C()['Level']then
+--/// BodyCli
+Loop(function()
+	if tablecheck(Env_.Configs, index) then
 		pcall(function()
-			local Quest = API_Request:CheckQuest()
-			local mon = string.gsub(string.gsub(string.gsub(PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "^Defeat %d+ ", ""), " %(.-%)$", ""), "s$", "")
-			if not LocalPlayer.PlayerGui.Main.Quest.Visible then
-				if (LocalPlayer.Character.HumanoidRootPart.Position - Quest[4].Position).Magnitude <= 20 then
-					wait(1)
-					ComF("StartQuest", Quest[3], Level_Quest)
-					if C()['Double Quest'] then
-						if Level_Quest == 2 then
-							Level_Quest = 1
-						elseif Level_Quest == 1 and Quest[2] == 2 then
-							Level_Quest = 2
-						else
-							Level_Quest = Quest[2]
-						end
+			if not Character then return end
+			if not C()['Sea Events'] then
+				if Character:WaitForChild("Humanoid").Sit then
+					Character:WaitForChild("Humanoid").Sit = false
+				end
+			end
+			if not Character.HumanoidRootPart:FindFirstChild("BodyVelocity1") then
+				local BodyVelocity = Instance.new("BodyVelocity")
+				BodyVelocity.Name = "BodyVelocity1"
+				BodyVelocity.Parent = Character.HumanoidRootPart
+				BodyVelocity.MaxForce = Vector3.new(10000, 10000, 10000)
+				BodyVelocity.Velocity = Vector3.new(0, 0, 0)
+			end
+			if not Character:FindFirstChild("IsHighlight") then
+				local HL = Instance.new("Highlight")
+				HL.Name = 'IsHighlight'
+				HL.Parent = Character
+				HL.Adornee = Character
+				HL.OutlineColor = Color3.fromRGB(255, 255, 255)
+				local humanoid = Character:FindFirstChild("Humanoid")
+				if humanoid then
+					local healthPercent = humanoid.Health / humanoid.MaxHealth
+					if healthPercent < 0.2 then
+						HL.FillColor = Color3.fromRGB(255, 0, 0)
+					elseif healthPercent < 0.5 then
+						HL.FillColor = Color3.fromRGB(255, 255, 0)
+					else
+						HL.FillColor = Color3.fromRGB(0, 170, 255)
 					end
-				else
-					tp(Quest[4])
+				end
+				HL.FillTransparency = 0.3
+			else
+				local HL = Character:FindFirstChild("IsHighlight")
+				local humanoid = Character:FindFirstChild("Humanoid")
+				if HL and humanoid then
+					local healthPercent = humanoid.Health / humanoid.MaxHealth
+					if healthPercent < 0.2 then
+						HL.FillColor = Color3.fromRGB(255, 0, 0)
+					elseif healthPercent < 0.5 then
+						HL.FillColor = Color3.fromRGB(255, 255, 0)
+					else
+						HL.FillColor = Color3.fromRGB(0, 170, 255)
+					end
+				end
+			end
+			for _, v in pairs(Character:GetChildren()) do
+				if v:IsA("BasePart") then
+					v.CanCollide = false
+				end
+			end
+		end)
+	else
+		pcall(StopTween)
+		if Character.HumanoidRootPart:FindFirstChild("BodyVelocity1") then
+			Character.HumanoidRootPart:FindFirstChild("BodyVelocity1"):Destroy()
+		end
+		if Character:FindFirstChild("IsHighlight") then
+			Character:FindFirstChild("IsHighlight"):Destroy()
+		end
+	end
+end)
+
+
+Level_Quest = Quest()[2]
+
+Loop(function()
+	if not C()['Level'] then return end
+	pcall(function()
+		local Quest = Quest()
+		local mon = string.gsub(string.gsub(string.gsub(PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "^Defeat %d+ ", ""), " %(.-%)$", ""), "s$", "")
+		if not LocalPlayer.PlayerGui.Main.Quest.Visible then
+			if (LocalPlayer.Character.HumanoidRootPart.Position - Quest[4].Position).Magnitude <= 20 then
+				wait(1)
+				ComF("StartQuest", Quest[3], Level_Quest)
+				if C()['Double Quest'] then
+					if Level_Quest == 2 then
+						Level_Quest = 1
+					elseif Level_Quest == 1 and Quest[2] == 2 then
+						Level_Quest = 2
+					else
+						Level_Quest = Quest[2]
+					end
 				end
 			else
-				if Monster(mon) then
-					Kill(Monster(mon), function()
-						return not C()['Level'] or not LocalPlayer.PlayerGui.Main.Quest.Visible
-					end)
-				else
-					WaitMonster(mon, function()
-						return Monster(mon) or not C()['Level'] or not LocalPlayer.PlayerGui.Main.Quest.Visible
+				tp(Quest[4])
+			end
+		else
+			if Monster(mon) then
+				Kill(Monster(mon), function()
+					return not C()['Level'] or not LocalPlayer.PlayerGui.Main.Quest.Visible
+				end)
+			else
+				WaitMonster(mon, function()
+					return Monster(mon) or not C()['Level'] or not LocalPlayer.PlayerGui.Main.Quest.Visible
+				end)
+			end
+		end
+	end)
+end)
+
+Loop(function()
+	if not C()['Nearest'] then return end
+	pcall(function()
+		for _, enemy in pairs(workspace.Enemies:GetChildren()) do
+			if enemy:IsA("Model") and enemy:FindFirstChild("Humanoid") and enemy:FindFirstChild("HumanoidRootPart") and Monster(enemy.Name) then
+				local dist = (LocalPlayer.Character.HumanoidRootPart.Position - enemy.HumanoidRootPart.Position).Magnitude
+				if dist < 500 then
+					Kill(enemy, function()
+						return not C()['Nearest']
 					end)
 				end
 			end
-		end)
-	end
+		end
+	end)
 end)
 
-WeAreLoop(function()
-	if C()['Nearest'] then
-		pcall(function()
-			for _, enemy in pairs(workspace.Enemies:GetChildren()) do
-				if enemy:IsA("Model") and enemy:FindFirstChild("Humanoid") and enemy:FindFirstChild("HumanoidRootPart") and Monster(enemy.Name) then
-					local dist = (LocalPlayer.Character.HumanoidRootPart.Position - enemy.HumanoidRootPart.Position).Magnitude
-					if dist < 500 then
-						Kill(enemy, function()
-							return not C()['Nearest']
-						end)
-					end
-				end
-			end
-		end)
-	end
+Loop(function()
+	if not C()['Teleport Island'] then return end
+	pcall(function()
+		tp(workspace.Map:FindFirstChild(C()['Select Island']):GetPivot() + Vector3.new(0, 25, 0))
+	end)
 end)
 
-WeAreLoop(function()
-	if C()['Set Spawn'] then
-		pcall(function()
-			if LocalPlayer.Character.Humanoid.Health > 0 then
-				ComF:InvokeServer("SetSpawnPoint")
-				task.wait(5)
-			end
-		end)
-	end
-	if C()['V4'] then
-		pcall(function()
-			if LocalPlayer.Character:FindFirstChild("RaceEnergy") 
-				and LocalPlayer.Character.RaceEnergy.Value >= 1 
-				and LocalPlayer.Character:FindFirstChild("RaceTransformed") and not LocalPlayer.Character.RaceTransformed.Value then
-				Backpack.Awakening.RemoteFunction:InvokeServer(true)
-			end
-		end)
-	end
-	if C()['V3'] then
-		pcall(function()
-			Service.ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommE"):FireServer("ActivateAbility")
-		end)
-	end
-	task.wait(5)
-end)
-
-WeAreLoop(function()
+Loop(function()
 	pcall(function()
 		if C()['UP_Melee'] then
 			ComF("AddPoint", "Melee", 1)
@@ -940,18 +732,94 @@ WeAreLoop(function()
 	end)
 end)
 
-WeAreLoop(function()
-	if C()['Teleport Island'] then
+MaterialMob = "N/A"
+Loop(function()
+	if not C()['Farm Material'] then return end
+	pcall(function()
+		if Env_.w1 then
+			if (C()['SelectMaterial'] == "Magma Ore") then
+				MaterialMob = { "Military Soldier", "Military Spy" };
+			elseif ((C()['SelectMaterial'] == "Leather") or (C()['SelectMaterial'] == "Scrap Metal")) then
+				MaterialMob = { "Brute"};
+			elseif (C()['SelectMaterial'] == "Angel Wings") then
+				MaterialMob = { "God's Guard"};
+			elseif (C()['SelectMaterial'] == "Fish Tail") then
+				MaterialMob = { "Fishman Warrior", "Fishman Commando" };
+			elseif (C()['SelectMaterial'] == "Yeti Fur") then
+				MaterialMob = "Yeti"
+			elseif (C()['SelectMaterial'] == "GunPowder") then
+				MaterialMob = {"Brute", "Pirate"}
+			end
+		end
+		if Env_.w2 then
+			if (C()['SelectMaterial'] == "Magma Ore") then
+				MaterialMob = { "Magma Ninja" };
+			elseif (C()['SelectMaterial'] == "Scrap Metal") then
+				MaterialMob = { "Swan Pirate" };
+			elseif (C()['SelectMaterial'] == "Radioactive Material") then
+				MaterialMob = { "Factory Staff" };
+			elseif (C()['SelectMaterial'] == "Vampire Fang") then
+				MaterialMob = { "Vampire" };
+			elseif (C()['SelectMaterial'] == "Mystic Droplet") then
+				MaterialMob = { "Water Fighter", "Sea Soldier" };
+			elseif (C()['SelectMaterial'] == "Meteorite") then
+				MaterialMob = "Fajita"
+			end
+		end
+		if Env_.w3 then
+			if (C()['SelectMaterial'] == "Mini Tusk") then
+				MaterialMob = { "Mythological Pirate" };
+			elseif (C()['SelectMaterial'] == "Fish Tail") then
+				MaterialMob = { "Fishman Raider", "Fishman Captain" };
+			elseif (C()['SelectMaterial'] == "Scrap Metal") then
+				MaterialMob = { "Jungle Pirate" };
+			elseif (C()['SelectMaterial'] == "Dragon Scale") then
+				MaterialMob = { "Dragon Crew Archer", "Dragon Crew Warrior" };
+			elseif (C()['SelectMaterial'] == "Conjured Cocoa") then
+				MaterialMob = { "Cocoa Warrior", "Chocolate Bar Battler", "Sweet Thief","Candy Rebel" };
+			elseif (C()['SelectMaterial'] == "Demonic Wisp") then
+				MaterialMob = { "Demonic Soul" };
+			elseif (C()['SelectMaterial'] == "Gunpowder") then
+				MaterialMob = { "Pistol Billionaire" };
+			end
+		end
+
+		if Monster(MaterialMob) then
+			Kill(Monster(MaterialMob), function()
+				return not C()['Farm Material']
+			end)
+		else
+			WaitMonster(MaterialMob, function()
+				return not C()['Farm Material']
+			end)
+		end
+	end)
+end)
+
+Loop(function()
+	if C()['Set Spawn'] then
+		if Character.Humanoid.Health > 0 then
+			ComF:InvokeServer("SetSpawnPoint")
+		end
+	end
+	if C()['V4'] then
 		pcall(function()
-			local Island_ = workspace.Map:FindFirstChild(C()['Select Island'])
-			if Island_ then
-				tp(Island_:GetPivot() * CFrame.new(0, 25, 0))
+			if Character:FindFirstChild("RaceEnergy") 
+				and Character.RaceEnergy.Value >= 1 
+				and Character:FindFirstChild("RaceTransformed") and not Character.RaceTransformed.Value then
+				Backpack.Awakening.RemoteFunction:InvokeServer(true)
 			end
 		end)
 	end
+	if C()['V3'] then
+		if Character.Humanoid.Health > 0 then
+			CommE:FireServer("ActivateAbility")
+		end
+	end
+	task.wait(3)
 end)
 
-if w1 then
+if Env_.w1 then
 	TableBoss = {
 		"The Gorilla King",
 		"Bobby",
@@ -977,7 +845,7 @@ if w1 then
 		'Yeti Fur',
 		'GunPowder'
 	}
-elseif w2 then
+elseif Env_.w2 then
 	TableBoss = {
 		"Diamond",
 		"Jeremy",
@@ -997,7 +865,7 @@ elseif w2 then
 		"Vampire Fang",
 		"Mystic Droplet",
 	}
-elseif w3 then
+elseif Env_.w3 then
 	TableBoss = {
 		"Stone",
 		"Venom Leader",
@@ -1020,133 +888,61 @@ elseif w3 then
 	}
 end
 
-WeAreLoop(function()
-	if C()['All Boss'] then
-		pcall(function()
-			if Monster(TableBoss) then
-				KillBoss(Monster(TableBoss), function()
-					return not C()['All Boss']
-				end)
-			else
-				if C()['HOP Boss'] then
-					HopServer()
-				end
+Loop(function()
+	if not C()['All Boss'] then return end
+	pcall(function()
+		if Monster(TableBoss) then
+			KillBoss(Monster(TableBoss), function()
+				return not C()['All Boss']
+			end)
+		else
+			if C()['HOP Boss'] then
+				HOP()
 			end
-		end)
-	end
+		end
+	end)
 end)
 
 SelectBoss = "N/A"
-
-WeAreLoop(function()
-	if C()['Farm Select Boss'] then
-		pcall(function()
-			if Monster(SelectBoss) then
-				KillBoss(Monster(SelectBoss), function()
-					return not C()['Farm Select Boss']
-				end)
-			end
-		end)
-	end
+Loop(function()
+	if not C()['Farm Select Boss'] then return end
+	pcall(function()
+		if Monster(SelectBoss) then
+			KillBoss(Monster(SelectBoss), function()
+				return not C()['Farm Select Boss']
+			end)
+		end
+	end)
 end)
 
-MaterialMob = 'N/A'
-ImageMeterail = '0'
-
-WeAreLoop(function()
-	if C()['Farm Material'] then
-		pcall(function()
-			if w1 then
-				if (C()['SelectMaterial'] == "Magma Ore") then
-					MaterialMob = { "Military Soldier", "Military Spy" };
-				elseif ((C()['SelectMaterial'] == "Leather") or (C()['SelectMaterial'] == "Scrap Metal")) then
-					MaterialMob = { "Brute"};
-				elseif (C()['SelectMaterial'] == "Angel Wings") then
-					MaterialMob = { "God's Guard"};
-				elseif (C()['SelectMaterial'] == "Fish Tail") then
-					MaterialMob = { "Fishman Warrior", "Fishman Commando" };
-				elseif (C()['SelectMaterial'] == "Yeti Fur") then
-					MaterialMob = "Yeti"
-				elseif (C()['SelectMaterial'] == "GunPowder") then
-					MaterialMob = {"Brute", "Pirate"}
-				end
+Loop(function()
+	if not C()['Elite'] then return end
+	pcall(function()
+		local QuestElite = Vector3.new(-5418.892578125, 313.74130249023, -2826.2260742188)
+		local QuestTitle = LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text
+		local Ms = {"Diablo", "Deandre", "Urban"}
+		if not LocalPlayer.PlayerGui.Main.Quest.Visible then
+			if (QuestElite - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 3 then
+				wait(1)
+				ComF("EliteHunter")
+			else
+				tp(CFrame.new(QuestElite))
 			end
-			if w2 then
-				if (C()['SelectMaterial'] == "Magma Ore") then
-					MaterialMob = { "Magma Ninja" };
-				elseif (C()['SelectMaterial'] == "Scrap Metal") then
-					MaterialMob = { "Swan Pirate" };
-				elseif (C()['SelectMaterial'] == "Radioactive Material") then
-					MaterialMob = { "Factory Staff" };
-				elseif (C()['SelectMaterial'] == "Vampire Fang") then
-					MaterialMob = { "Vampire" };
-					ImageMeterail = 119740006429586
-				elseif (C()['SelectMaterial'] == "Mystic Droplet") then
-					MaterialMob = { "Water Fighter", "Sea Soldier" };
-				elseif (C()['SelectMaterial'] == "Meteorite") then
-					MaterialMob = "Fajita"
-				end
-			end
-			if w3 then
-				if (C()['SelectMaterial'] == "Mini Tusk") then
-					MaterialMob = { "Mythological Pirate" };
-				elseif (C()['SelectMaterial'] == "Fish Tail") then
-					MaterialMob = { "Fishman Raider", "Fishman Captain" };
-				elseif (C()['SelectMaterial'] == "Scrap Metal") then
-					MaterialMob = { "Jungle Pirate" };
-				elseif (C()['SelectMaterial'] == "Dragon Scale") then
-					MaterialMob = { "Dragon Crew Archer", "Dragon Crew Warrior" };
-				elseif (C()['SelectMaterial'] == "Conjured Cocoa") then
-					MaterialMob = { "Cocoa Warrior", "Chocolate Bar Battler", "Sweet Thief","Candy Rebel" };
-				elseif (C()['SelectMaterial'] == "Demonic Wisp") then
-					MaterialMob = { "Demonic Soul" };
-				elseif (C()['SelectMaterial'] == "Gunpowder") then
-					MaterialMob = { "Pistol Billionaire" };
-				end
-			end
-
-			if Monster(MaterialMob) then
-				Kill(Monster(MaterialMob), function()
-					return not C()['Farm Material']
+		else
+			if Monster(Ms) then
+				KillBoss(Monster(Ms), function()
+					return not C()['Elite']
 				end)
 			else
-				WaitMonster(MaterialMob, function()
-					return not C()['Farm Material']
-				end)
-			end
-		end)
-	end
-end)
-
-WeAreLoop(function()
-	if C()['Elite'] then
-		pcall(function()
-			local QuestElite = Vector3.new(-5418.892578125, 313.74130249023, -2826.2260742188)
-			local QuestTitle = LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text
-			local Ms = {"Diablo", "Deandre", "Urban"}
-			if not LocalPlayer.PlayerGui.Main.Quest.Visible then
-				if (QuestElite - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 3 then
-					wait(1)
-					ComF("EliteHunter")
-				else
-					tp(CFrame.new(QuestElite))
-				end
-			else
-				if Monster(Ms) then
-					KillBoss(Monster(Ms), function()
-						return not C()['Elite']
-					end)
-				else
-					if C()['HOP Elite'] then
-						HopServer()
-					end
+				if C()['HOP Elite'] then
+					HOP()
 				end
 			end
-		end)
-	end
+		end
+	end)
 end)
 
-WeAreLoop(function()
+Loop(function()
 	if C()['Farm Bone'] then
 		local mon = {"Reborn Skeleton","Living Zombie","Demonic Soul","Posessed Mummy"}
 		pcall(function()
@@ -1168,49 +964,48 @@ WeAreLoop(function()
 	end
 end)
 
-
-WeAreLoop(function()
-	if C()['Cake Prince'] then
-		pcall(function()
-			local mon = {"Cookie Crafter","Cake Guard","Baking Staff","Head Baker"}
-			local boss = {"Cake Prince","Dough King"}
-			if Monster(boss) then
-				KillBoss(Monster(boss), function()
-					return not C()['Cake Prince']
+Loop(function()
+	if not C()['Cake Prince'] then return end
+	pcall(function()
+		local mon = {"Cookie Crafter","Cake Guard","Baking Staff","Head Baker"}
+		local boss = {"Cake Prince","Dough King"}
+		if Monster(boss) then
+			KillBoss(Monster(boss), function()
+				return not C()['Cake Prince']
+			end)
+		else
+			if Monster(mon) then
+				Kill(Monster(mon), function()
+					return not C()['Cake Prince'] or not Monster(boss)
 				end)
 			else
-				if Monster(mon) then
-					Kill(Monster(mon), function()
-						return not C()['Cake Prince'] or not Monster(boss)
-					end)
-				else
-					WaitMonster(mon, function()
-						return not C()['Cake Prince'] or not Monster(boss)
-					end)
-				end
-			end
-		end)
-	end
-end)
-
-WeAreLoop(function()
-	if C()['Farm Ectoplasm'] then
-		pcall(function()
-			local EsMonster = {'Cursed Captain','Ship Steward','Ship Officer','Ship Engineer','Ship Deckhand',}
-			if Monster(EsMonster) then
-				Kill(Monster(EsMonster), function()
-					return not C()['Farm Ectoplasm']
-				end)
-			else
-				WaitMonster(EsMonster, function()
-					return not C()['Farm Ectoplasm']
+				WaitMonster(mon, function()
+					return not C()['Cake Prince'] or not Monster(boss)
 				end)
 			end
-		end)
-	end
+		end
+	end)
 end)
 
-WeAreLoop(function()
+Loop(function()
+	if not C()['Farm Ectoplasm'] then return end
+	pcall(function()
+		local EsMonster = {'Cursed Captain','Ship Steward','Ship Officer','Ship Engineer','Ship Deckhand',}
+		if Monster(EsMonster) then
+			Kill(Monster(EsMonster), function()
+				return not C()['Farm Ectoplasm']
+			end)
+		else
+			WaitMonster(EsMonster, function()
+				return not C()['Farm Ectoplasm']
+			end)
+		end
+	end)
+end)
+
+
+SelectBoat = "N/A"
+Loop(function()
 	if C()['Sea Events'] then
 		local enemyList = {"Shark", "Terrorshark", "Piranha", "Fish Crew Member"}
 		if Monster(enemyList) then
@@ -1223,14 +1018,19 @@ WeAreLoop(function()
 		end
 	end
 	if C()['Sail Boat'] then
-		Service.VirtualInputManager:SendKeyEvent(true, "W", false, game)
+		VirtualInputManager:SendKeyEvent(true, "W", false, game)
+	end
+	if C()['Teleport to Boat'] then
+		pcall(function()
+			tp(workspace.Boats:FindFirstChild(SelectBoat):GetPivot() * CFrame.new(0,15,0))
+		end)
 	end
 end)
 
 function SpeedBoat()
 	pcall(function()
 		local vehicleSeats = {}
-		for i, v in pairs(workspace.Boats:GetDescendants()) do
+		for _, v in pairs(workspace.Boats:GetDescendants()) do
 			if v:IsA("VehicleSeat") then
 				table.insert(vehicleSeats, v)
 			end
@@ -1247,59 +1047,48 @@ function SpeedBoat()
 	end)
 end
 
-WeAreLoop(function()
-	if C()['Noclip Rock'] then
-		pcall(function()
-			if LocalPlayer.Character.Humanoid.Sit == true then
-				for _, v in pairs(workspace.Boats:GetDescendants()) do
-					if v:IsA("BasePart") and v.CanCollide == true then
-						v.CanCollide = false
-					end
-				end
-				for _, v in pairs(LocalPlayer.Character:GetDescendants()) do
-					if v:IsA("BasePart") and v.CanCollide == true then
-						v.CanCollide = false
-					end
-				end
-			elseif LocalPlayer.Character.Humanoid.Sit == false then
-				for _, v in pairs(workspace.Boats:GetDescendants()) do
-					if v:IsA("BasePart") and v.CanCollide == false then
-						v.CanCollide = true
-					end
-				end
-				for _, v in pairs(LocalPlayer.Character:GetDescendants()) do
-					if v:IsA("BasePart") and v.CanCollide == false then
-						v.CanCollide = true
-					end
+Loop(function()
+	if not C()['Noclip Rock'] then return end
+	pcall(function()
+		if Character.Humanoid.Sit == true then
+			for _, v in pairs(workspace.Boats:GetDescendants()) do
+				if v:IsA("BasePart") and v.CanCollide == true then
+					v.CanCollide = false
 				end
 			end
-		end)
-	end
+			for _, v in pairs(Character:GetDescendants()) do
+				if v:IsA("BasePart") and v.CanCollide == true then
+					v.CanCollide = false
+				end
+			end
+		elseif Character.Humanoid.Sit == false then
+			for _, v in pairs(workspace.Boats:GetDescendants()) do
+				if v:IsA("BasePart") and v.CanCollide == false then
+					v.CanCollide = true
+				end
+			end
+			for _, v in pairs(Character:GetDescendants()) do
+				if v:IsA("BasePart") and v.CanCollide == false then
+					v.CanCollide = true
+				end
+			end
+		end
+	end)
 end)
 
-SelectBoat = "N/A"
-
-WeAreLoop(function()
-	if C()['Teleport to Boat'] then
-		pcall(function()
-			tp(workspace.Boats:FindFirstChild(SelectBoat):GetPivot() * CFrame.new(0,15,0))
-		end)
-	end
-end)
-
-WeAreLoop(function()
-	if C()['Farm Chest'] then
-		pcall(function()
-			local nearestChest = nil
-			local shortestDistance = math.huge
-			local root = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-
-			for _, v in pairs(workspace.ChestModels:GetChildren()) do
-				if v:IsA("Model") and v:FindFirstChild("TouchInterest", true) then
-					local dist = (v:GetPivot().Position - root.Position).Magnitude
+Loop(function()
+	if not C()['Farm Chest'] then return end
+	pcall(function()
+		local nearestChest = nil
+		local shortestDistance = math.huge
+		local root = Character:FindFirstChild("HumanoidRootPart")
+		if root then
+			for _, chest in pairs(CollectionService:GetTagged("_ChestTagged")) do
+				if chest:IsA("Model") and chest:FindFirstChild("TouchInterest", true) then
+					local dist = (chest:GetPivot().Position - root.Position).Magnitude
 					if dist < shortestDistance then
 						shortestDistance = dist
-						nearestChest = v
+						nearestChest = chest
 					end
 				end
 			end
@@ -1307,11 +1096,11 @@ WeAreLoop(function()
 			if nearestChest then
 				tp(nearestChest:GetPivot())
 			end
-		end)
-	end
+		end
+	end)
 end)
 
-WeAreLoop(function()
+Loop(function()
 	if C()['Castle Raid'] then
 		pcall(function()
 			if (CFrame.new(-5118.48682, 314.54129, -2958.64404, -0.387232125, 1.81507858e-08, 0.921982229, -7.54388907e-08, 1, -5.13709999e-08, -0.921982229, -8.94458196e-08, -0.387232125).Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 2000 then
@@ -1324,7 +1113,7 @@ WeAreLoop(function()
 				end
 			else
 				if (CFrame.new(-5118.48682, 314.54129, -2958.64404, -0.387232125, 1.81507858e-08, 0.921982229, -7.54388907e-08, 1, -5.13709999e-08, -0.921982229, -8.94458196e-08, -0.387232125).Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 2000 then
-					for _,v in pairs(Service.ReplicatedStorage:GetChildren()) do
+					for _,v in pairs(ReplicatedStorage:GetChildren()) do
 						if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 and (v.HumanoidRootPart.Position-LocalPlayer.Character.HumanoidRootPart.Position).magnitude <= 1000 then
 							Kill(v, function()
 								return not C()['Castle Raid']
@@ -1339,7 +1128,7 @@ WeAreLoop(function()
 	end
 end)
 
-WeAreLoop(function()
+Loop(function()
 	if C()['Fruit Find'] then
 		pcall(function()
 			for _, v in pairs(workspace:GetChildren()) do
@@ -1402,7 +1191,7 @@ WeAreLoop(function()
 				["Blizzard Fruit"] = "Blizzard-Blizzard"
 			}
 			for fruitName, storeName in pairs(fruitsToStore) do
-				local fruit = LocalPlayer.Character:FindFirstChild(fruitName) or Backpack:FindFirstChild(fruitName)
+				local fruit = Character:FindFirstChild(fruitName) or Backpack:FindFirstChild(fruitName)
 				if fruit then
 					ComF("StoreFruit", storeName, fruit)
 				end
@@ -1411,7 +1200,7 @@ WeAreLoop(function()
 	end
 end)
 
-WeAreLoop(function()
+Loop(function()
 	if C()['Teleport to Mirage'] then
 		pcall(function()
 			tp(workspace.Map:FindFirstChild("MysticIsland"):GetPivot() * CFrame.new(0, 70, 0))
@@ -1419,8 +1208,8 @@ WeAreLoop(function()
 	end
 	if C()['Teleport to Advanced Dealer'] then
 		pcall(function()
-			if Service.ReplicatedStorage.NPCs:FindFirstChild("Advanced Fruit Dealer") then
-				tp(Service.ReplicatedStorage.NPCs["Advanced Fruit Dealer"]:GetPivot())
+			if ReplicatedStorage.NPCs:FindFirstChild("Advanced Fruit Dealer") then
+				tp(ReplicatedStorage.NPCs["Advanced Fruit Dealer"]:GetPivot())
 			else
 				tp(workspace.NPCs["Advanced Fruit Dealer"]:GetPivot())
 			end
@@ -1438,9 +1227,6 @@ WeAreLoop(function()
 			end
 		end)
 	end
-end)
-
-WeAreLoop(function()
 	if C()['Teleport to Kitsune'] then
 		pcall(function()
 			tp(workspace.Map:FindFirstChild("KitsuneIsland"):GetPivot() * CFrame.new(0, 70, 0))
@@ -1453,9 +1239,6 @@ WeAreLoop(function()
 			end
 		end)
 	end
-end)
-
-WeAreLoop(function()
 	if C()['Teleport Prehistoric'] then
 		pcall(function()
 			tp(workspace.Map:FindFirstChild("PrehistoricIsland"):GetPivot() * CFrame.new(0, 70, 0))
@@ -1470,7 +1253,7 @@ WeAreLoop(function()
 	end
 end)
 
-WeAreLoop(function()
+Loop(function()
 	if C()['Kill Aura'] then
 		pcall(function()
 			for _, enemy in pairs(workspace.Enemies:GetChildren()) do
@@ -1489,17 +1272,17 @@ WeAreLoop(function()
 	end
 end)
 
-WeAreLoop(function()
+Loop(function()
 	pcall(function()
 		local targetName = C()['Select Player']
-		local targetPlayer = Service.Players:FindFirstChild(targetName)
+		local targetPlayer = Players:FindFirstChild(targetName)
 		if C()['Teleport Player'] and targetPlayer and targetPlayer.Character then
 			tp(targetPlayer.Character:GetPivot())
 		end
 	end)
 end)
 
-WeAreLoop(function()
+Loop(function()
 	pcall(function()
 		if C()['Walk on Water'] then
 			workspace.Map["WaterBase-Plane"].Size = Vector3.new(1000,112,1000)
@@ -1512,9 +1295,30 @@ end)
 
 
 
+local bosses = {
+	["Factory"] = { Boss = "Core"},
+	["Auto Pole 1"] = { Boss = "Thunder God", hop = "HOP Pole 1"},
+	["Auto Trident"] = { Boss = "Fishman Lord", hop = "HOP Trident"},
+	["Auto Bazooka"] = { Boss = "Wysper", hop = "HOP Bazooka"},
+	["Auto CoolShade"] = { Boss = "Cyborg", hop = "HOP CoolShade"},
+	["Auto LongSword"] = { Boss = "Diamond", hop = "HOP LongSword"},
+	["Auto GravityBlade"] = { Boss = "Fajita", hop = "HOP GravityBlade"},
+	["Auto SwanGlasses"] = { Boss = "Don Swan", hop = "HOP SwanGlasses"},
+	["Auto Flail"] = { Boss = "Smoke Admiral", hop = "HOP Flail"},
+	["Auto DragonTrident"] = { Boss = "Tide Keeper", hop = "HOP DragonTrident"},
+	["Auto PilotHelmet"] = { Boss = "Stone", hop = "HOP PilotHelmet"},
+	["Auto VenomBow"] = { Boss = "Hydra Leader", hop = "HOP VenomBow"},
+	["Auto Lei"] = { Boss = "Kilo Admiral", hop = "HOP Lei"},
+	["Auto TwinHooks"] = { Boss = "Captain Elephant", hop = "HOP TwinHooks"},
+	["Auto Canvender"] = { Boss = "Beautiful Pirate", hop = "HOP Canvender"},
+	["Auto BuddySword"] = { Boss = "Cake Queen", hop = "HOP BuddySword"},
+	["Auto Darkbeard"] = { Boss = "Darkbeard", hop = "HOP Darkbeard"},
+	["Auto HallowScythe"] = { Boss = "Soul Reaper", hop = "HOP HallowScythe"},
+	["Indra"] = { Boss = "rip_indra True Form", hop = "HOP Indra"},
+	["Tyrant"] = { Boss = "Tyrant of the Skies", hop = "HOP Tyrant"},
+}
 
-
-WeAreLoop(function()
+Loop(function()
 	for configName, data in pairs(bosses) do 
 		if C()[configName] then
 			pcall(function()
@@ -1524,7 +1328,7 @@ WeAreLoop(function()
 							return not C()[configName] 
 						end)
 					elseif data.hop and C()[data.hop] then
-						pcall(HopServer)
+						HOP()
 					end
 				end
 			end)
@@ -1533,9 +1337,9 @@ WeAreLoop(function()
 end)
 
 
-WeAreLoop(function()
+Loop(function()
 	if C()['Auto Rengoku'] then
-		if w2 then
+		if Env_.w2 then
 			pcall(function()
 				if CheckItem("Hidden Key") and HaveItem("Rengoku") then
 					tp(CFrame.new(6571.1201171875, 299.23028564453, -6967.841796875))
@@ -1556,7 +1360,7 @@ WeAreLoop(function()
 	end
 end)
 
-WeAreLoop(function()
+Loop(function()
 	if C()['Auto Law'] then
 		pcall(function()
 			if not CheckItem("Microchip") then 
@@ -1575,7 +1379,7 @@ WeAreLoop(function()
 	end
 end)
 
-WeAreLoop(function()
+Loop(function()
 	if C()['Holy Torch'] then
 		pcall(function()
 			wait(1)
@@ -1592,9 +1396,9 @@ WeAreLoop(function()
 	end
 end)
 
-WeAreLoop(function()
+Loop(function()
 	if C()['Auto Trial V4'] then
-		if w3 then
+		if Env_.w3 then
 			pcall(function()
 				if LocalPlayer.Data.Race.Value == "Mink" then	
 					if workspace.Map:FindFirstChild("MinkTrial") then
@@ -1644,9 +1448,9 @@ WeAreLoop(function()
 	end
 end)
 
-WeAreLoop(function()
+Loop(function()
 	if C()['Teleport to Door'] then
-		if w3 then
+		if Env_.w3 then
 			pcall(function()
 				if LocalPlayer.Data.Race.Value == "Mink" then
 					tp(workspace.Map["Temple of Time"].MinkCorridor.Door.Entrance.CFrame) 
@@ -1666,7 +1470,7 @@ WeAreLoop(function()
 	end
 end)
 
-WeAreLoop(function()
+Loop(function()
 	if C()['Auto Evo Race V2'] then
 		pcall(function() 
 			if not LocalPlayer.Data.Race:FindFirstChild("Evolved") then
@@ -1704,11 +1508,11 @@ WeAreLoop(function()
 	end
 end)
 
-WeAreLoop(function()
+Loop(function()
 	if C()['Sea 2'] then
 		pcall(function()
-			if w1 and LocalPlayer.Data.Level.Value >= 700 then
-				if Service.ReplicatedStorage.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Dressrosa") ~= 0 then
+			if Env_.w1 and LocalPlayer.Data.Level.Value >= 700 then
+				if ComF("DressrosaQuestProgress", "Dressrosa") ~= 0 then
 					if workspace.Map.Ice.Door.CanCollide then
 						if not CheckItem("Key") then
 							if (CFrame.new(4852.2895507813, 5.651451587677, 718.53070068359).Position - LocalPlayer.Character.HumanoidRootPart.Position).magnitude < 5 then
@@ -1734,16 +1538,15 @@ WeAreLoop(function()
 	end
 end)
 
-WeAreLoop(function()
+Loop(function()
 	if C()['Auto Start Raid'] then
 		pcall(function()
-			local locations = game:GetService("Workspace")["_WorldOrigin"].Locations
-			if not locations:FindFirstChild("Island 1")  then
-				if LocalPlayer.Backpack:FindFirstChild("Special Microchip") then
-					if w2 then
-						fireclickdetector(game:GetService("Workspace").Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
-					elseif w3 then
-						fireclickdetector(game:GetService("Workspace").Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
+			if not WorldOrigin.Locations:FindFirstChild("Island 1") then
+				if PlayerGui.Main.Timer.Visible == false then
+					if Env_.w2 then
+						fireclickdetector(Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
+					elseif Env_.w3 then
+						fireclickdetector(Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
 					end
 				end
 			end
@@ -1751,9 +1554,9 @@ WeAreLoop(function()
 	end
 	if C()['Look Moon'] then
 		pcall(function()
-			local moonDir = Service.Lighting:GetMoonDirection()
-			local lookAtPos = camera.CFrame.p + moonDir * 100
-			camera.CFrame = CFrame.lookAt(camera.CFrame.p, lookAtPos)
+			local moonDir = game.Lighting:GetMoonDirection()
+			local lookAtPos = Camera.CFrame.p + moonDir * 100
+			Camera.CFrame = CFrame.lookAt(Camera.CFrame.p, lookAtPos)
 		end)
 	end
 	if C()['Buy Legendary Sword'] then
@@ -1771,52 +1574,49 @@ WeAreLoop(function()
 			ComF("Awakener","Awaken")
 		end)
 	end
+	task.wait(1)
 end)
 
 local Locations = workspace["_WorldOrigin"].Locations
-WeAreLoop(function()
-	if C()['Next Island'] then
+Loop(function()
+	if C()['Auto Raid'] then
 		pcall(function()
-			if PlayerGui.Main.Timer.Visible == true and Locations:FindFirstChild("Island 5") or Locations:FindFirstChild("Island 4") or Locations:FindFirstChild("Island 3") or Locations:FindFirstChild("Island 2") or Locations:FindFirstChild("Island 1") then
-				if Locations:FindFirstChild("Island 5") then
-					tp(Locations["Island 5"].CFrame * CFrame.new(4, 80, 10))
-				elseif Locations:FindFirstChild("Island 4") then
-					tp(Locations["Island 4"].CFrame *  CFrame.new(4, 80, 10))
-				elseif Locations:FindFirstChild("Island 3") then
-					tp(Locations["Island 3"].CFrame * CFrame.new(4, 80, 10))
-				elseif Locations:FindFirstChild("Island 2") then
-					tp(Locations["Island 2"].CFrame * CFrame.new(4, 80, 10))
-				elseif Locations:FindFirstChild("Island 1") then
-					tp(Locations["Island 1"].CFrame * CFrame.new(4, 80, 10))
+			for _, enemy in pairs(workspace.Enemies:GetChildren()) do
+				if enemy:IsA("Model") and enemy:FindFirstChild("Humanoid") and enemy:FindFirstChild("HumanoidRootPart") and Monster(enemy.Name) then
+					local dist = (LocalPlayer.Character.HumanoidRootPart.Position - enemy.HumanoidRootPart.Position).Magnitude
+					if dist < 500 then
+						KillBoss(enemy, function()
+							return not C()['Nearest']
+						end)
+					end
+				else
+					if C()['Next Island'] then
+						pcall(function()
+							if PlayerGui.Main.Timer.Visible == true and Locations:FindFirstChild("Island 5") or Locations:FindFirstChild("Island 4") or Locations:FindFirstChild("Island 3") or Locations:FindFirstChild("Island 2") or Locations:FindFirstChild("Island 1") then
+								if Locations:FindFirstChild("Island 5") then
+									tp(Locations["Island 5"].CFrame * CFrame.new(4, 80, 10))
+								elseif Locations:FindFirstChild("Island 4") then
+									tp(Locations["Island 4"].CFrame *  CFrame.new(4, 80, 10))
+								elseif Locations:FindFirstChild("Island 3") then
+									tp(Locations["Island 3"].CFrame * CFrame.new(4, 80, 10))
+								elseif Locations:FindFirstChild("Island 2") then
+									tp(Locations["Island 2"].CFrame * CFrame.new(4, 80, 10))
+								elseif Locations:FindFirstChild("Island 1") then
+									tp(Locations["Island 1"].CFrame * CFrame.new(4, 80, 10))
+								end
+							end
+						end)
+					end
 				end
 			end
 		end)
 	end
 end)
 
-WeAreLoop(function()
-	if C()['Kill Aura Raid'] then
-		pcall(function()
-			for _,v in pairs(workspace.Enemies:GetChildren()) do
-				if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
-					pcall(function()
-						repeat task.wait(.1)
-							v.Humanoid.Health = 1
-							v.Humanoid.Health = 0
-							v.HumanoidRootPart.CanCollide = false
-							sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
-						until not C()['Kill Aura Raid']  or not v.Parent or v.Humanoid.Health <= 0
-					end)
-				end
-			end
-		end)
-	end
-end)
-
-WeAreLoop(function()
+Loop(function()
 	if C()['Auto Saber'] then
 		pcall(function()
-			if w1 then
+			if Env_.w1 then
 				pcall(function()
 					if LocalPlayer.Data.Level.Value >= 200 and workspace.Map.Jungle.Final.Part.Transparency == 0 then
 						if workspace.Map.Jungle.Final.Part.Transparency == 0 then
@@ -1864,7 +1664,7 @@ WeAreLoop(function()
 								end)
 							else
 								if C()['HOP Saber'] then
-									HopServer()
+									HOP()
 								end
 							end
 						end
@@ -1926,7 +1726,7 @@ function Checkdevilfruit()
 	return name
 end
 
-WeAreLoop(function()
+Loop(function()
 	if C()['Auto Unstored Fruit'] then
 		if not Checkdevilfruit() and Getfruitstore() then
 			ComF("LoadFruit", Getfruitstore())
@@ -1935,7 +1735,7 @@ WeAreLoop(function()
 	wait(5)
 end)
 
-WeAreLoop(function()
+Loop(function()
 	local MobT = {
 		"Reborn Skeleton",
 		"Living Zombie",
@@ -1967,7 +1767,7 @@ WeAreLoop(function()
 	end
 end)
 
-WeAreLoop(function()
+Loop(function()
 	pcall(function()
 		if C()['Rainbow Haki'] then
 			if PlayerGui.Main.Quest.Visible == false then
@@ -1980,7 +1780,7 @@ WeAreLoop(function()
 				else
 					if C()['HOP Rainbow Haki'] then
 						task.wait(3)
-						HopServer()
+						HOP()
 					end
 				end
 			elseif PlayerGui.Main.Quest.Visible == true and string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Island Empress") then
@@ -1991,7 +1791,7 @@ WeAreLoop(function()
 				else
 					if C()['HOP Rainbow Haki'] then
 						task.wait(3)
-						HopServer()
+						HOP()
 					end
 				end
 			elseif string.find(PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Kilo Admiral") then
@@ -2002,7 +1802,7 @@ WeAreLoop(function()
 				else
 					if C()['HOP Rainbow Haki'] then
 						task.wait(3)
-						HopServer()
+						HOP()
 					end
 				end
 			elseif string.find(PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Captain Elephant") then
@@ -2013,7 +1813,7 @@ WeAreLoop(function()
 				else
 					if C()['HOP Rainbow Haki'] then
 						task.wait(3)
-						HopServer()
+						HOP()
 					end
 				end
 			elseif string.find(LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Beautiful Pirate") then
@@ -2024,7 +1824,7 @@ WeAreLoop(function()
 				else
 					if C()['HOP Rainbow Haki'] then
 						task.wait(3)
-						HopServer()
+						HOP()
 					end
 				end
 			else
@@ -2034,20 +1834,14 @@ WeAreLoop(function()
 	end)
 end)
 
-function UseCode(Text)
-	Service.ReplicatedStorage.Remotes.Redeem:InvokeServer(Text)
-end
-
-WeAreLoop(function()
+Loop(function()
 	if C()['ESP Fruit'] then
 		pcall(function()
 			for _, v in pairs(workspace:GetChildren()) do
-				if v:IsA("Tool") then
+				if v:IsA("Tool") or v:IsA("Model") then
 					if string.find(v.Name, "Fruit") then
 						ESP({Instance = v,Color = Color3.fromRGB(0, 170, 255),Drop = Color3.fromRGB(85, 85, 255)})
 					end
-				elseif v:IsA("Model") and v.Name == "Fruit" then
-					ESP({Instance = v,Color = Color3.fromRGB(0, 255, 127),Drop = Color3.fromRGB(0, 170, 127), Name = translate("Spawned Fruits", "ผลปีศาจเกิด")})
 				end
 			end
 		end)
@@ -2064,7 +1858,7 @@ WeAreLoop(function()
 	end
 	if C()['ESP Players'] then
 		pcall(function()
-			for _, v in pairs(Service.Players:GetPlayers()) do
+			for _, v in pairs(Players:GetPlayers()) do
 				if v.Character and v ~= LocalPlayer then
 					if v.Team and v.Team.Name == "Pirates" then
 						ESP({Instance = v.Character, Color = Color3.fromRGB(255, 55, 55), Drop = Color3.fromRGB(136, 0, 0)})
@@ -2078,7 +1872,7 @@ WeAreLoop(function()
 		end)
 	else
 		pcall(function()
-			for _, v in pairs(Service.Players:GetPlayers()) do
+			for _, v in pairs(Players:GetPlayers()) do
 				if v.Character and v ~= LocalPlayer then
 					UnEsp(v.Character)
 				end
@@ -2172,8 +1966,8 @@ WeAreLoop(function()
 	end
 end)
 
-if w3 then
-	WeAreLoop(function()
+if Env_.w3 then
+	Loop(function()
 		for _, v in pairs(workspace.Map:GetChildren()) do
 			pcall(function()
 				if C()['ESP Mirage'] then
@@ -2217,7 +2011,7 @@ if w3 then
 	end)
 end
 
-WeAreLoop(function()
+Loop(function()
 	pcall(function()
 		if C()['Tyrant'] then
 			local model = workspace.Map.TikiOutpost.IslandModel
@@ -2240,14 +2034,14 @@ WeAreLoop(function()
 							for _, v in pairs(Tree:GetChildren()) do
 								if v.Name == "Tree" then
 									if (v:GetPivot().Position - LocalPlayer.Character.HumanoidRootPart.Position).Magnitude < 15 then
-										Service.VirtualInputManager:SendKeyEvent(true, 'Z', false, game)
-										Service.VirtualInputManager:SendKeyEvent(false, 'Z', false, game)
-										task.wait(1)
-										Service.VirtualInputManager:SendKeyEvent(true, 'X', false, game)
-										Service.VirtualInputManager:SendKeyEvent(false, 'X', false, game)
-										task.wait(1)
-										Service.VirtualInputManager:SendKeyEvent(true, 'C', false, game)
-										Service.VirtualInputManager:SendKeyEvent(false, 'C', false, game)
+										VirtualInputManager:SendKeyEvent(true, 'Z', false, game)
+										VirtualInputManager:SendKeyEvent(false, 'Z', false, game)
+										task.wait()
+										VirtualInputManager:SendKeyEvent(true, 'X', false, game)
+										VirtualInputManager:SendKeyEvent(false, 'X', false, game)
+										task.wait()
+										VirtualInputManager:SendKeyEvent(true, 'C', false, game)
+										VirtualInputManager:SendKeyEvent(false, 'C', false, game)
 									else
 										tp(v:GetPivot())
 										task.wait(1)
@@ -2272,24 +2066,120 @@ WeAreLoop(function()
 	end)
 end)
 
-Icons = {
-	general = 81707063924327,jigsaw = 112798812841371,
-	eye = 127654928705257,special = 89895957638788,
-	sofia = 100618692787198,document = 94464892425343,
-	executor = 82489653632066,cube = 86971175780354,
-	document_folder = 83641493809685,marker = 137560977237224,
-	remote = 100436514092367,aim = 101516660165690,
-	thunder = 97459673019824,robot = 139021543288287,
-	setting = 93882575056497,chatbot = 90529487269002,
-	people = 106898999468334,star = 71053300533420,
-	focus = 108988520366437,cutesofia = 138127867432976,
-	misc = 126463033320653,upload = 117415852023142,
-	download = 94548929927000,display = 116121048695649,
-	night = 105855852945791,day = 83758878478130,
-	cloud = 107927309418429,bookmark = 96315518803478,
-	location = 98398560997612, generalcolor = 17233391579,
-	automatic = 17113787043, shop = 71444644802667
-};
+local Icons = {
+	twinhook = 109471529993745,
+	buddySword = 97968424830570,
+	cavender = 124205814177907,
+	yama = 92675612011103,
+	tushita = 135696720033651,
+	darkdagger = 116235335214720,
+	hallowScyte = 113334661706407,
+	bisento = 93823310792913,
+	rengoku = 86367440540065,
+	koko = 85906865034458,
+	midnightblade = 133322593600715,
+	saber = 104181335804105,
+	spikeytriden = 78642257318765,
+	ttk = 120376601375365,
+	wardensword = 104461315405173,
+	trident = 119058078106507,
+	soulcane = 131965793072868,
+	pipe = 112982576639836,
+	longsword = 97989026259278,
+	gravityblade = 105594712741814,
+	flait = 133634961314201,
+	dualheadblade = 115117670114672,
+	dragontriden = 120705978764032,
+	katana = 77894518439639,
+	sharksaw = 105836238868559,
+	tk = 125442714848341,
+	ironmace = 72923170673851,
+	cutlass = 87565233186470,
+	dualkatana = 88599675228212,
+	bazooka = 104847116909140,
+	venombow = 107854938166653,
+	kabucha = 120221929314388,
+	finlock = 130114214280607,
+	musket = 133991886907694,
+	acidrifle = 123306480417105,
+	dimensionblizzard = 107802107629984,
+	canon = 135155457592181,
+	dualfinlock = 134453146087890,
+	mafmablazer = 117640863674437,
+	slingshot = 140341415903805,
+	slingshotnoob = 113741638116752,
+	mirrorfrace = 79278735897569,
+	darkfragment = 87426492611423,
+	meteor = 109783379199285,
+	dragonscale = 83542436733855,
+	mysticaldrop = 124569380866626,
+	greenstone = 140185024031149,
+	gunpowder = 93282744705223,
+	minitusk = 98730401483944,
+	fish = 92506132719320,
+	scrap = 113794893009585,
+	yetifool = 88392924650042,
+	mafmaore = 85891726183835,
+	lether = 83152010926090,
+	wing = 132385762861921,
+	eliteacc = 117434417020992,
+	darkcoat = 94197155793163,
+	pretyhelmet = 100312031757051,
+	ghoulmask = 135462620610344,
+	coolshade = 72745293372242,
+	spikeycoat_3 = 125673208082572,
+	holycrown = 76548753026960,
+	zybracrab = 77877774329182,
+	cavenderhat = 94848999644231,
+	pinkcoat = 116543359776670,
+	swordhat = 110894406479343,
+	coat = 92158256948996,
+	pilothelm = 85458326750872,
+	lei = 101076104323433,
+	boneacc = 121066192253008,
+	darkstep = 121160800139995,
+	erectric = 95338045306167,
+	waterkungfu = 95988848570506,
+	dragonbreat = 108111820838442,
+	supperhuman = 74706581586634,
+	deadstrp = 89097162139985,
+	fischman = 70893790172008,
+	electrickclaw = 130192608654759,
+	talon = 140132700981267,
+	sanguintart = 121077653999026,
+	godhuman = 138224447014084,
+	general = 81707063924327,
+	jigsaw = 112798812841371,
+	eye = 127654928705257,
+	special = 89895957638788,
+	sofia = 100618692787198,
+	document = 94464892425343,
+	executor = 82489653632066,
+	cube = 86971175780354,
+	document_folder = 83641493809685,
+	marker = 137560977237224,
+	remote = 100436514092367,
+	aim = 101516660165690,
+	thunder = 97459673019824,
+	robot = 139021543288287,
+	setting = 93882575056497,
+	chatbot = 90529487269002,
+	people = 106898999468334,
+	star = 71053300533420,
+	focus = 108988520366437,
+	cutesofia = 138127867432976,
+	misc = 126463033320653,
+	upload = 117415852023142,
+	download = 94548929927000,
+	display = 116121048695649,
+	night = 105855852945791,
+	day = 83758878478130,
+	cloud = 107927309418429,
+	bookmark = 96315518803478,
+	location = 98398560997612,
+	automatic = 17113787043,
+	shop = 71444644802667
+}
 
 Fetching = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/Softwork/refs/heads/main/Fetching/Framework/Mains", true))()
 
@@ -2298,7 +2188,7 @@ Window = Fetching:Window({
 	Size = UDim2.new(0, 500,0, 375),
 	MainColor = Color3.fromRGB(0, 170, 255),
 	DropColor = Color3.fromRGB(105, 94, 255),
-	Keybind = Enum.KeyCode.F2
+	Keybind = Enum.KeyCode.B
 })
 
 _General = Window:CreateTab({Title = translate("General", "ทั่วไป"),Icon = Icons.thunder});
@@ -2393,7 +2283,13 @@ function Selection(s, t, l, v)
 end
 
 local Advertisement = Section(_General, translate("Advertisement", "โฆษนา"), "l")
-Advertisement:Image({Image = Icons.cutesofia})
+local Nongkhaw = Advertisement:Image({Image = 111362591084511})
+Loop(function()
+	task.wait(10)
+	Nongkhaw:SetImage(138127867432976)
+	task.wait(10)
+	Nongkhaw:SetImage(111362591084511)
+end)
 Advertisement:Line()
 Button(Advertisement, translate("Discord", "ดิสคอร์ด"), function()
 	copy("https://discord.gg/uy6TP4ew7d")
@@ -2426,7 +2322,6 @@ Toggle(Option, translate("Walk On Water", "เดินบนน้ำ"), "Walk 
 Toggle(Option, translate("Automatic Set Spawn", "ออโต้เซฟจุดเกิด"), "Set Spawn")
 Toggle(Option, translate("Automatic Enable V4", "ออโต้เปิดเผ่าวี 4"), "V4")
 Toggle(Option, translate("Automatic Enable V3", "ออโต้เปิดเผ่าวี 3"), "V3")
-Toggle(Option, translate("Use Skill Farm", "ใช้สกิลตอนฟาร์ม"), "Use Skill")
 
 
 local Stats = Section(_General, translate("Stats", "ค่าพลัง"), 'l')
@@ -2452,7 +2347,7 @@ for _, v in pairs(workspace.Enemies:GetChildren()) do
 		end
 	end
 end
-for _, v in pairs(Service.ReplicatedStorage:GetChildren()) do
+for _, v in pairs(ReplicatedStorage:GetChildren()) do
 	if v:FindFirstChild("HumanoidRootPart") and v:GetAttribute("IsBoss") then
 		if not CheckList[v.Name] then
 			table.insert(tableboss, v.Name)
@@ -2481,7 +2376,7 @@ Button(Boss, translate("Refresh", "รีเฟรช"), function()
 			end
 		end
 	end
-	for _, v in pairs(Service.ReplicatedStorage:GetChildren()) do
+	for _, v in pairs(ReplicatedStorage:GetChildren()) do
 		if v:FindFirstChild("HumanoidRootPart") and v:GetAttribute("IsBoss") then
 			if not CheckList[v.Name] then
 				DropdownBoss:AddList(v.name)
@@ -2493,15 +2388,14 @@ end)
 Boss:Line()
 Toggle(Boss, translate("Farm All Boss", "ฟาร์มบอสทั้งหมด"), "All Boss")
 Toggle(Boss, translate("HOP Boss", "ย้ายเซิฟหาบอส"), "HOP Boss")
-
-
+ImageMeterail = 0
 local Materails = Section(_Items, translate("Materails", "วัตถุดิบ"), 'r')
 Materail_ = Materails:CreateImage({
 	Title = translate("Select : ", "เลือก : ") .. html(tostring(C()['SelectMaterial']), Color3.fromRGB(0, 170, 255)),
 	Desc = html(translate("Materials", "วัตถุดิบ"), Color3.fromRGB(255, 255, 127)),
 	Icon = NumtoRbx(ImageMeterail)
 })
-WeAreLoop(function()
+Loop(function()
 	Materail_:SetTitle(translate("Select : ", "เลือก : ") .. html(tostring(C()['SelectMaterial']), Color3.fromRGB(0, 170, 255)))
 	Materail_:SetImage(NumtoRbx(ImageMeterail))
 end)
@@ -2509,53 +2403,53 @@ Default("SelectMaterial", AllMaterial[1])
 Materails:CreateDropdown({Title = translate("Select Material", "เลือกวัตถุดิบ"),List = AllMaterial,Value = C()['SelectMaterial'],Multi = false,Callback = function(v)
 	C()['SelectMaterial'] = v
 	if v then
-		if w1 then
+		if Env_.w1 then
 			if (v == "Magma Ore") then
-				ImageMeterail = ServiceIcon.mafmaore
+				ImageMeterail = Icons.mafmaore
 			elseif v == "Leather" then
-				ImageMeterail = ServiceIcon.lether
+				ImageMeterail = Icons.lether
 			elseif v == "Scrap Metal" then
-				ImageMeterail = ServiceIcon.scrap
+				ImageMeterail = Icons.scrap
 			elseif (v == "Angel Wings") then
-				ImageMeterail = ServiceIcon.wing
+				ImageMeterail = Icons.wing
 			elseif (v == "Fish Tail") then
-				ImageMeterail = ServiceIcon.fish
+				ImageMeterail = Icons.fish
 			elseif (v == "Yeti Fur") then
-				ImageMeterail = ServiceIcon.yetifool
+				ImageMeterail = Icons.yetifool
 			elseif (v == "GunPowder") then
-				ImageMeterail = ServiceIcon.gunpowder
+				ImageMeterail = Icons.gunpowder
 			end
 		end
-		if w2 then
+		if Env_.w2 then
 			if (v == "Magma Ore") then
-				ImageMeterail = ServiceIcon.mafmaore
+				ImageMeterail = Icons.mafmaore
 			elseif (v == "Scrap Metal") then
-				ImageMeterail = ServiceIcon.scrap
+				ImageMeterail = Icons.scrap
 			elseif (v == "Radioactive Material") then
-				ImageMeterail = ServiceIcon.greenstone
+				ImageMeterail = Icons.greenstone
 			elseif (v == "Vampire Fang") then
 				ImageMeterail = 119740006429586
 			elseif (v == "Mystic Droplet") then
-				ImageMeterail = ServiceIcon.mysticaldrop
+				ImageMeterail = Icons.mysticaldrop
 			elseif (v == "Meteorite") then
-				ImageMeterail = ServiceIcon.meteor
+				ImageMeterail = Icons.meteor
 			end
 		end
-		if w3 then
+		if Env_.w3 then
 			if (v == "Mini Tusk") then
-				ImageMeterail = ServiceIcon.minitusk
+				ImageMeterail = Icons.minitusk
 			elseif (v == "Fish Tail") then
-				ImageMeterail = ServiceIcon.fish
+				ImageMeterail = Icons.fish
 			elseif (v == "Scrap Metal") then
-				ImageMeterail = ServiceIcon.scrap
+				ImageMeterail = Icons.scrap
 			elseif (v == "Dragon Scale") then
-				ImageMeterail = ServiceIcon.dragonscale
+				ImageMeterail = Icons.dragonscale
 			elseif (v == "Conjured Cocoa") then
 				ImageMeterail = 115826812289109
 			elseif (v == "Demonic Wisp") then
 				ImageMeterail = 92950011320841
 			elseif (v == "Gunpowder") then
-				ImageMeterail = ServiceIcon.gunpowder
+				ImageMeterail = Icons.gunpowder
 			end
 		end
 	end
@@ -2581,7 +2475,7 @@ Button(SeaEvents, translate("Refresh", "รีเฟรช"), function()
 end)
 Toggle(SeaEvents, translate("Teleport to Boat", "บินไปที่เรือ"), "Teleport to Boat")
 SeaEvents:Line()
-if w3 then
+if Env_.w3 then
 	Toggle(SeaEvents, translate("Automatic Sea Events", "ออโต้ตีอีเว้นท์ทะเล"), "Sea Events")
 end
 Toggle(SeaEvents, translate("Boost Speed Boat", "เพิ่มความเร็วเรือ"), 'Speed Boat', function()
@@ -2612,7 +2506,7 @@ end)
 
 
 GetSidew1 = function()
-	if w1 then
+	if Env_.w1 then
 		return 'l'
 	else
 		return 'r'
@@ -2622,7 +2516,7 @@ end
 local Automatic = Section(_Auto, translate("Automatic", "อัตโนมัติ"), GetSidew1())
 Toggle(Automatic, translate("Automatic Collect Near Chest", "ออโต้ฟาร์มกล่องสมบัติรอบๆ"), "Farm Chest")
 Automatic:Line()
-if w2 then
+if Env_.w2 then
 	Toggle(Automatic, translate("Automatic Factory", "ออโต้ตีโรงงาน"), "Factory")
 	Automatic:Line()
 	ToggleImage(Automatic, translate("Automatic Dark beard", "ออโต้ตีหนวดดำ"),'94911502105059', "Auto Darkbeard")
@@ -2637,20 +2531,20 @@ if w2 then
 			Icon = "http://www.roblox.com/asset/?id=111965933541112"
 		})
 		Toggle(EctoplasmSection, translate("Farm Ectoplasm", "ออโต้ฟาร์มเอคโทพลาสซึม"), 'Farm Ectoplasm')
-		WeAreLoop(function()
+		Loop(function()
 			pcall(function()
 				Ectoplasm:SetDesc(translate("Value : ", "จำนวน : ") .. html(tostring(ComF("Ectoplasm","Check")), Color3.fromRGB(0, 255, 0)))
 			end)
 		end)
 	end
-elseif w1 then
+elseif Env_.w1 then
 	Toggle(Automatic, translate("Automatic Second Sea", "ออโต้ไปโลก 2"), "Sea 2")
 end
 
-if w2 or w3 then
+if Env_.w2 or Env_.w3 then
 	Allraid = {"Dark","Sand","Magma","Rumble","Flame","Ice","Light","Quake","Human: Buddha","Flame","Bird: Phoenix","Dough"}
 	Default('Select Raid', Allraid[1])
-	WeAreLoop(function()
+	Loop(function()
 		if C()['Buy Chip'] then
 			ComF("RaidsNpc","Select",C()['Select Raid'])
 			wait(3)
@@ -2666,27 +2560,27 @@ if w2 or w3 then
 	Toggle(Raid, translate("Automatic Start Raid", "ออโต้เริ่มดันเจี้ยน"),'Auto Start Raid')
 	Raid:Line()
 	Toggle(Raid, translate("Next Island", "ออโต้ไปที่เกาะถัดไป"),'Next Island')
-	Toggle(Raid, translate("Kill Aura", "ออร่าแห่งความตาย"),'Kill Aura Raid')
+	Toggle(Raid, translate("Automatic Clear Raid", "ออโต้เคลียร์กันเจี้ยน"),'Auto Raid')
 	Toggle(Raid, translate("Automatic Buy Awakening", "ออโต้ซื้อสกิล"),'Auto Buy Awaken')
 	Raid:Line()
 	Toggle(Raid, translate("Automatic Unstore Fruit", "ออโต้เอาผลออกจากกล่อง"),'Auto Unstored Fruit')
 	Raid:Line()
 	Toggle(Raid, translate("Teleport to Lab", "เทเลพอร์ตไปที่ลงดัน"),'Teleport to Lab')
-	WeAreLoop(function()
+	Loop(function()
 		if C()['Teleport to Lab'] then
 			tp(CFrame.new(-6462, 250, -4518))
 		end
 	end)
 end
 
-if w3 then
+if Env_.w3 then
 	local Tyran = Section(_Auto, translate("Tiki", "ทิคกิ"), 'r')
 	Tyrant_ = Tyran:CreateImage({
 		Title = translate("Eyes : ", " ตาแดงแล้ว : ") .. Isnil,
 		Desc = translate("Spawn Tyrant", "เสกบอสนกอินทรีย์"),
 		Icon = "http://www.roblox.com/asset/?id=139073550150476"
 	})
-	WeAreLoop(function()
+	Loop(function()
 		pcall(function()
 			local model = workspace.Map.TikiOutpost.IslandModel
 			if model:FindFirstChild("Eye1") and
@@ -2724,7 +2618,7 @@ if w3 then
 	Indra:Line()
 	Button(Indra, translate("Check God's Chalice", "เช็คว่ามีคนได้ถ้วยมั้ย"), function()
 		pcall(function()
-			for _, player in ipairs(Service.Players:GetPlayers()) do
+			for _, player in ipairs(Players:GetPlayers()) do
 				local backpack = player:FindFirstChildOfClass("Backpack")
 				local character = player.Character
 				if backpack and backpack:FindFirstChild("God's Chalice") or (character and character:FindFirstChild("God's Chalice")) then
@@ -2742,7 +2636,7 @@ if w3 then
 	Toggle(Indra, translate("HOP Rip Indra", "ย้ายเซิฟหาแอดมินแอดมิน"),'HOP Indra')
 	Indra:Line()
 	Toggle(Indra, translate("Holy Torch Tushita Quest", "ออโต้จุดไฟเควสทุชิตะ"),'Holy Torch')
-	WeAreLoop(function()
+	Loop(function()
 		if Monster("rip_indra True Form") then
 			Indra_:SetTitle(translate("Rip Indra : ", "บอสแอดมิน : ") .. IsSpawn)
 		else
@@ -2786,7 +2680,7 @@ if w3 then
 	Button(Race, translate("Teleport to Temple of Time", "เทเลพอร์ตไปที่วัดแห่งการเวลา"), function()
 		ComF("requestEntrance", Vector3.new(28282.5703125, 14896.8505859375, 105.1042709350586))
 	end)
-	WeAreLoop(function()
+	Loop(function()
 		Race_:SetDesc(translate("Status : ", "สถานะ : ") .. CheckAcientOneStatus())
 		task.wait(5)
 	end)
@@ -2794,7 +2688,7 @@ if w3 then
 
 	local BoneSection = Section(_Auto, translate("Haunted Castle", "ประสาทผีสิง"), 'l')
 	Bone = BoneSection:CreateImage({Title = translate("Bones", "กระดูก"),Desc = translate("Value : ", "จำนวน : ") .. Isnil,Icon = "http://www.roblox.com/asset/?id=107550685864886"})
-	WeAreLoop(function()
+	Loop(function()
 		pcall(function()
 			Bone:SetDesc(translate("Value : ", "จำนวน : ") .. html(tostring(ComF("Bones","Check")), Color3.fromRGB(255, 170, 0)))
 		end)
@@ -2815,7 +2709,7 @@ if w3 then
 	Toggle(CakeSection, translate("Automatic Cake Prince", "ออโต้ฟาร์มคาตาคุริ"), "Cake Prince")
 	CakeSection:Line()
 	Toggle(CakeSection, translate("Spawn Cake Prince", "ออโต้เสกคาตาคุริ"), 'Spawn Katakuri')
-	WeAreLoop(function()
+	Loop(function()
 		pcall(function()
 			if tonumber(string.match(tostring(ComF("CakePrinceSpawner")), "%d+")) ~= nil then
 				local killsLeft = string.match(tostring(ComF("CakePrinceSpawner")), "%d+")
@@ -2842,7 +2736,7 @@ if w3 then
 	Toggle(EliteSection, translate("Automatic Elite", "ออโต้ล่าอีลีท"), "Elite")
 	Toggle(EliteSection, translate("HOP Elite", "ย้ายเซิฟหาอีลีท"), 'HOP Elite')
 	local Elitemob = {"Diablo", "Deandre", "Urban"}
-	WeAreLoop(function()
+	Loop(function()
 		pcall(function()
 			Elite:SetDesc(translate("Progress : ", "ฆ่าไปแล้ว : ") .. html(tostring(ComF("EliteHunter","Progress")), Color3.fromRGB(0, 170, 255)) .. translate(" Elite", " ตัว"))
 			if Monster(Elitemob) then
@@ -2879,10 +2773,10 @@ if w3 then
 	MirageSection:Line()
 	Button(MirageSection, translate("Remove Fog", "ลบหมอก"), function()
 		pcall(function()
-			Service.Lighting.LightingLayers.MirageFog:Destroy()
+			game.Lighting.LightingLayers.MirageFog:Destroy()
 		end)
 	end)
-	WeAreLoop(function()
+	Loop(function()
 		if workspace.Map:FindFirstChild("MysticIsland") then
 			Mirage:SetTitle(translate("Mirage Island : ", "เกาะลับ : ") .. IsSpawn)
 		else
@@ -2900,7 +2794,7 @@ if w3 then
 	KitsuneSection:Line()
 	Toggle(KitsuneSection, translate("Teleport to Kitsune Island", "เทเลพอร์ตไปหาศาลเจ้าคิสึเนะ"), 'Teleport to Kitsune')
 	ToggleImage(KitsuneSection, translate("Collect Azure Embers", "ออโต้เก็บลูกไฟ"), '76534728556409', 'Azure Embers')
-	WeAreLoop(function()
+	Loop(function()
 		if workspace.Map:FindFirstChild("KitsuneIsland") then
 			Kitsune:SetTitle(translate("Kitsune Shrine : ", "ศาลเจ้าคิสึเนะ : ") .. IsSpawn)
 		else
@@ -2921,7 +2815,7 @@ if w3 then
 	Toggle(PrehistoricSection, translate("Enable Kill Aura", "เปิดใช้งานออร่าแห่งความหาย"), 'Kill Aura')
 	PrehistoricSection:Line()
 	Toggle(PrehistoricSection, translate("Collect Dino Bone", "เก็บกระดูกไดโนเสาร์"), 'Dino Bone')
-	WeAreLoop(function()
+	Loop(function()
 		if workspace.Map:FindFirstChild("PrehistoricIsland") then
 			Prehistoric:SetTitle(translate("Prehistoric Island : ", "เกาะภูเขาไฟ : ") .. IsSpawn)
 		else
@@ -2939,7 +2833,7 @@ if w3 then
 	})
 	FrozenSection:Line()
 	Toggle(FrozenSection, translate("Teleport to Leviathan Gate", "เทเลพอร์ตไปหาประตูลิเวียธาร"), 'Teleport to Leviathan')
-	WeAreLoop(function()
+	Loop(function()
 		if C()['Teleport to Leviathan'] then
 			if workspace.Map:FindFirstChild("FrozenDimension") then
 				tp(workspace.Map:FindFirstChild("FrozenDimension"))
@@ -2966,93 +2860,93 @@ function PurpleValue(a)
 end
 
 local SwordShop = Section(_Shop, translate("Sword", "ดาบ"), 'l')
-ButtonImage(SwordShop, translate("Bisento", "ง้าวหนวดขาว"), Value("1,000,000"), ServiceIcon.bisento, function()
+ButtonImage(SwordShop, translate("Bisento", "ง้าวหนวดขาว"), Value("1,000,000"), Icons.bisento, function()
 	ComF("BuyItem", "Bisento")
 end)
-ButtonImage(SwordShop, translate("Soul Cane", "ไม้เท้าวิญญาณ"), Value("750,000"), ServiceIcon.soulcane, function()
+ButtonImage(SwordShop, translate("Soul Cane", "ไม้เท้าวิญญาณ"), Value("750,000"), Icons.soulcane, function()
 	ComF("BuyItem", "Soul Cane")
 end)
-ButtonImage(SwordShop, translate("Dual Headed Blade", "ดาบสองปลาย"), Value("400,000"), ServiceIcon.dualheadblade, function()
+ButtonImage(SwordShop, translate("Dual Headed Blade", "ดาบสองปลาย"), Value("400,000"), Icons.dualheadblade, function()
 	ComF("BuyItem", "Dual-Headed Blade")
 end)
-ButtonImage(SwordShop, translate("Pipe", "ท่อแห่งไฟ"), Value("100,000"), ServiceIcon.pipe, function()
+ButtonImage(SwordShop, translate("Pipe", "ท่อแห่งไฟ"), Value("100,000"), Icons.pipe, function()
 	ComF("BuyItem", "Pipe")
 end)
-ButtonImage(SwordShop, translate("Tripple Katana", "คาตานะสามดาบ"), Value("60,000"), ServiceIcon.tk, function()
+ButtonImage(SwordShop, translate("Tripple Katana", "คาตานะสามดาบ"), Value("60,000"), Icons.tk, function()
 	ComF("BuyItem", "Triple Katana")
 end)
-ButtonImage(SwordShop, translate("Iron Mace", "กระบองเหล็ก"), Value("25,000"), ServiceIcon.ironmace, function()
+ButtonImage(SwordShop, translate("Iron Mace", "กระบองเหล็ก"), Value("25,000"), Icons.ironmace, function()
 	ComF("BuyItem", "Iron Mace")
 end)
-ButtonImage(SwordShop, translate("Duel Katana", "ดาบคาตานะคู่"), Value("12,000"), ServiceIcon.dualkatana, function()
+ButtonImage(SwordShop, translate("Duel Katana", "ดาบคาตานะคู่"), Value("12,000"), Icons.dualkatana, function()
 	ComF("BuyItem", "Duel Katana")
 end)
-ButtonImage(SwordShop, translate("Katana", "คาตานะ"), Value("1,000"), ServiceIcon.katana, function()
+ButtonImage(SwordShop, translate("Katana", "คาตานะ"), Value("1,000"), Icons.katana, function()
 	ComF("BuyItem", "Katana")
 end)
-ButtonImage(SwordShop, translate("Cutlass", "ดาบโจรสลัด"), Value("1,000"), ServiceIcon.cutlass, function()
+ButtonImage(SwordShop, translate("Cutlass", "ดาบโจรสลัด"), Value("1,000"), Icons.cutlass, function()
 	ComF("BuyItem", "Cutlass")
 end)
 
 
 local MeleeShop = Section(_Shop, translate("Fighting Style", "สไตล์การต่อสู้"), 'r')
-ButtonImage(MeleeShop, translate("Black Leg", "ขาดำ"), Value("150,000"), ServiceIcon.darkstep, function()
+ButtonImage(MeleeShop, translate("Black Leg", "ขาดำ"), Value("150,000"), Icons.darkstep, function()
 	ComF("BuyBlackLeg")
 end)
-ButtonImage(MeleeShop, translate("Electro", "หมัดสายฟ้า"), Value("500,000"), ServiceIcon.erectric, function()
+ButtonImage(MeleeShop, translate("Electro", "หมัดสายฟ้า"), Value("500,000"), Icons.erectric, function()
 	ComF("BuyElectro")
 end)
-ButtonImage(MeleeShop, translate("Fishman Karate", "หมัดมนุษย์ปลา"), Value("750,000"), ServiceIcon.waterkungfu, function()
+ButtonImage(MeleeShop, translate("Fishman Karate", "หมัดมนุษย์ปลา"), Value("750,000"), Icons.waterkungfu, function()
 	ComF("BuyFishmanKarate")
 end)
-ButtonImage(MeleeShop, translate("Dragon Breath", "ลมหายใจมังกร"), PurpleValue("1,500"), ServiceIcon.dragonbreat, function()
+ButtonImage(MeleeShop, translate("Dragon Breath", "ลมหายใจมังกร"), PurpleValue("1,500"), Icons.dragonbreat, function()
 	ComF("BlackbeardReward", "DragonClaw", "1")
 	ComF("BlackbeardReward", "DragonClaw", "2")
 end)
-ButtonImage(MeleeShop, translate("Superhuman", "หมัดยอดมนุษย์"), Value("3,000,000"), ServiceIcon.supperhuman, function()
+ButtonImage(MeleeShop, translate("Superhuman", "หมัดยอดมนุษย์"), Value("3,000,000"), Icons.supperhuman, function()
 	ComF("BuySuperhuman")
 end)
-ButtonImage(MeleeShop,translate("Death Step", "ขาติดไฟ"),Value("3,000,000") .. ", " ..html("5,000", Color3.fromRGB(119, 21, 255)), ServiceIcon.deadstrp, function()
+ButtonImage(MeleeShop,translate("Death Step", "ขาติดไฟ"),Value("3,000,000") .. ", " ..html("5,000", Color3.fromRGB(119, 21, 255)), Icons.deadstrp, function()
 	ComF("BuyDeathStep")
 end)
-ButtonImage(MeleeShop,translate("Sharkman Karate", "หมัดมนุษย์เงือก"),Value("2,500,000") .. ", " ..html("5,000", Color3.fromRGB(119, 21, 255)), ServiceIcon.fischman, function()
+ButtonImage(MeleeShop,translate("Sharkman Karate", "หมัดมนุษย์เงือก"),Value("2,500,000") .. ", " ..html("5,000", Color3.fromRGB(119, 21, 255)), Icons.fischman, function()
 	ComF("BuySharkmanKarate", true)
 	ComF("BuySharkmanKarate")
 end)
-ButtonImage(MeleeShop,translate("Electric Claw", "กงเล็บสายฟ้า"),Value("3,000,000") .. ", " ..html("5,000", Color3.fromRGB(119, 21, 255)), ServiceIcon.electrickclaw, function()
+ButtonImage(MeleeShop,translate("Electric Claw", "กงเล็บสายฟ้า"),Value("3,000,000") .. ", " ..html("5,000", Color3.fromRGB(119, 21, 255)), Icons.electrickclaw, function()
 	ComF("BuyElectricClaw")
 end)
-ButtonImage(MeleeShop,translate("Dragon Talon", "คมเคี้ยวมังกรเพลิง"),Value("3,000,000") .. ", " ..html("5,000", Color3.fromRGB(119, 21, 255)), ServiceIcon.talon, function()
+ButtonImage(MeleeShop,translate("Dragon Talon", "คมเคี้ยวมังกรเพลิง"),Value("3,000,000") .. ", " ..html("5,000", Color3.fromRGB(119, 21, 255)), Icons.talon, function()
 	ComF("BuyDragonTalon")
 end)
-ButtonImage(MeleeShop,translate("Godhuman", "หมัดเทพเจ้า"),Value("5,000,000") .. ", " ..html("5,000", Color3.fromRGB(119, 21, 255)), ServiceIcon.godhuman, function()
+ButtonImage(MeleeShop,translate("Godhuman", "หมัดเทพเจ้า"),Value("5,000,000") .. ", " ..html("5,000", Color3.fromRGB(119, 21, 255)), Icons.godhuman, function()
 	ComF("BuyGodhuman")
 end)
-ButtonImage(MeleeShop,translate("Sanguine Art", "ศิลปะแห่งเลือด"),Value("5,000,000") .. ", " ..html("5,000", Color3.fromRGB(119, 21, 255)), ServiceIcon.sanguintart, function()
+ButtonImage(MeleeShop,translate("Sanguine Art", "ศิลปะแห่งเลือด"),Value("5,000,000") .. ", " ..html("5,000", Color3.fromRGB(119, 21, 255)), Icons.sanguintart, function()
 	ComF("BuySanguineArt")
 end)
 
 
 local GunShop = Section(_Shop, translate("Gun", "ปืน"), 'l')
-ButtonImage(GunShop,translate("Slingshot", "ยางกระสุน"),Value("5,000"), ServiceIcon.slingshotnoob, function()
+ButtonImage(GunShop,translate("Slingshot", "ยางกระสุน"),Value("5,000"), Icons.slingshotnoob, function()
 	ComF("BuyItem","Slingshot")
 end)
-ButtonImage(GunShop,translate("Flintlock", "ปืนฟลินต์ล็อก"),Value("10,500"), ServiceIcon.finlock, function()
+ButtonImage(GunShop,translate("Flintlock", "ปืนฟลินต์ล็อก"),Value("10,500"), Icons.finlock, function()
 	ComF("BuyItem","Flintlock")
 end)
-ButtonImage(GunShop,translate("Musket", "ปืนยาว"),Value("8,000"), ServiceIcon.musket, function()
+ButtonImage(GunShop,translate("Musket", "ปืนยาว"),Value("8,000"), Icons.musket, function()
 	ComF("BuyItem","Musket")
 end)
-ButtonImage(GunShop,translate("Refined Slingshot", "ยางกระสุนพิเศษ"),Value("30,000"), ServiceIcon.slingshot, function()
+ButtonImage(GunShop,translate("Refined Slingshot", "ยางกระสุนพิเศษ"),Value("30,000"), Icons.slingshot, function()
 	ComF("BuyItem","Refined Slingshot")
 end)
-ButtonImage(GunShop,translate("Dual Flintlock", "ปืนคู่ฟลินต์ล็อก"),Value("65,000"), ServiceIcon.dualfinlock, function()
+ButtonImage(GunShop,translate("Dual Flintlock", "ปืนคู่ฟลินต์ล็อก"),Value("65,000"), Icons.dualfinlock, function()
 	ComF("BuyItem","Dual Flintlock")
 end)
-ButtonImage(GunShop,translate("Canon", "ปืนใหญ่"),Value("100,000"), ServiceIcon.canon, function()
+ButtonImage(GunShop,translate("Canon", "ปืนใหญ่"),Value("100,000"), Icons.canon, function()
 	ComF("BuyItem","Canon")
 end)
-ButtonImage(GunShop,translate("Kabucha", "คาบูชะ"),PurpleValue("1,500"), ServiceIcon.kabucha, function()
+ButtonImage(GunShop,translate("Kabucha", "คาบูชะ"),PurpleValue("1,500"), Icons.kabucha, function()
 	ComF("BlackbeardReward","Slingshot","1")
 	ComF("BlackbeardReward","Slingshot","2")
 end)
@@ -3100,44 +2994,44 @@ end)
 
 
 
-if w1 then
+if Env_.w1 then
 
 
-	ToggleImage(Sword, translate("Automatic Saber", "ออโต้หาดาบเซเบอร์"), tostring(ServiceIcon.saber), 'Auto Saber')
+	ToggleImage(Sword, translate("Automatic Saber", "ออโต้หาดาบเซเบอร์"), tostring(Icons.saber), 'Auto Saber')
 	Toggle(Sword, translate("HOP Saber", "ย้ายเซิฟหาดาบเซเบอร์"),'HOP Saber')
 	Sword:Line()
-	ToggleImage(Sword, translate("Automatic Trident", "ออโต้หอกไทเดนท์"), tostring(ServiceIcon.trident), 'Auto Trident')
+	ToggleImage(Sword, translate("Automatic Trident", "ออโต้หอกไทเดนท์"), tostring(Icons.trident), 'Auto Trident')
 	Toggle(Sword, translate("HOP Saber", "ย้ายเซิฟหาหอกไทเดนท์"),'HOP Trident')
 	Sword:Line()
 	ToggleImage(Sword, translate("Automatic Pole 1st", "ออโต้หาโพล์"), '138386917387221', 'Auto Pole 1')
 	Toggle(Sword, translate("HOP Saber", "ย้ายเซิฟหาโพล์"),'HOP Pole 1')
 
 
-	ToggleImage(Gun, translate("Automatic Bazooka", "ออโต้หาปืนใหญ่บาซูก้า"), tostring(ServiceIcon.bazooka), 'Auto Bazooka')
+	ToggleImage(Gun, translate("Automatic Bazooka", "ออโต้หาปืนใหญ่บาซูก้า"), tostring(Icons.bazooka), 'Auto Bazooka')
 	Toggle(Gun, translate("HOP Bazooka", "ย้ายเซิฟหาปืนใหญ่บาซูก้า"),'HOP Bazooka')
 
 
-	ToggleImage(Accessory, translate("Automatic Cool Shade", "ออโต้หาแว่นตาสุดเท่"), tostring(ServiceIcon.coolshade), 'Auto CoolShade')
+	ToggleImage(Accessory, translate("Automatic Cool Shade", "ออโต้หาแว่นตาสุดเท่"), tostring(Icons.coolshade), 'Auto CoolShade')
 	Toggle(Accessory, translate("HOP Cool Shade", "ย้ายเซิฟหาแว่นตาสุดเท่"),'HOP CoolShade')
 
-elseif w2 then
+elseif Env_.w2 then
 
 
-	ToggleImage(Sword, translate("Buy Legendary Sword", "ออโต้ซื้อดาบโซโล"), tostring(ServiceIcon.ttk), 'Buy Legendary Sword')
+	ToggleImage(Sword, translate("Buy Legendary Sword", "ออโต้ซื้อดาบโซโล"), tostring(Icons.ttk), 'Buy Legendary Sword')
 	Sword:Line()
-	ToggleImage(Sword, translate("Automatic Long Sword", "ออโต้หาดาบยาว"), tostring(ServiceIcon.longsword), 'Auto LongSword')
+	ToggleImage(Sword, translate("Automatic Long Sword", "ออโต้หาดาบยาว"), tostring(Icons.longsword), 'Auto LongSword')
 	Toggle(Sword, translate("HOP Long Sword", "ย้ายเซิฟหาดาบยาว"),'HOP LongSword')
 	Sword:Line()
-	ToggleImage(Sword, translate("Automatic Gravity Blade", "ออโต้หาดาบกาวิตตี้"), tostring(ServiceIcon.longsword), 'Auto GravityBlade')
+	ToggleImage(Sword, translate("Automatic Gravity Blade", "ออโต้หาดาบกาวิตตี้"), tostring(Icons.longsword), 'Auto GravityBlade')
 	Toggle(Sword, translate("HOP Gravity Blade", "ย้ายเซิฟหาดาบกาวิตตี้"),'HOP GravityBlade')
 	Sword:Line()
-	ToggleImage(Sword, translate("Automatic Flail", "ออโต้หาลูกตุ้ม"), tostring(ServiceIcon.flait), 'Auto Flail')
+	ToggleImage(Sword, translate("Automatic Flail", "ออโต้หาลูกตุ้ม"), tostring(Icons.flait), 'Auto Flail')
 	Toggle(Sword, translate("HOP Flail", "ย้ายเซิฟหาลูกตุ้ม"),'HOP Flail')
 	Sword:Line()
-	ToggleImage(Sword, translate("Automatic Rengoku", "ออโต้หาดาบเรนโงคุ"), tostring(ServiceIcon.rengoku), 'Auto Rengoku')
+	ToggleImage(Sword, translate("Automatic Rengoku", "ออโต้หาดาบเรนโงคุ"), tostring(Icons.rengoku), 'Auto Rengoku')
 	Toggle(Sword, translate("HOP Rengoku", "ย้ายเซิฟหาดาบเรนโงคุ"),'HOP Rengoku')
 	Sword:Line()
-	ToggleImage(Sword, translate("Automatic Dragon Trident", "ออโต้หาหอกมังกรวารี"), tostring(ServiceIcon.dragontriden), 'Auto DragonTrident')
+	ToggleImage(Sword, translate("Automatic Dragon Trident", "ออโต้หาหอกมังกรวารี"), tostring(Icons.dragontriden), 'Auto DragonTrident')
 	Toggle(Sword, translate("HOP Dragon Trident", "ย้ายเซิฟหาหอกมังกรวารี"),'HOP DragonTrident')
 	Sword:Line()
 
@@ -3147,30 +3041,30 @@ elseif w2 then
 
 	ToggleImage(Accessory, translate("Automatic Swan Glasses", "ออโต้หาแว่นตาโดฟามิงโก้"), '116543359776670', 'Auto SwanGlasses')
 	Toggle(Accessory, translate("HOP SwanGlasses", "ย้ายเซิฟหาแว่นตาโดฟามิงโก้"),'HOP SwanGlasses')
-elseif w3 then
+elseif Env_.w3 then
 
 
 	ToggleImage(Sword, translate("Automatic Hallow Scythe", "ออโต้หาเคียว"), '114522983600169', 'Auto HallowScythe')
 	Toggle(Sword, translate("HOP Hallow Scythe", "ย้ายเซิฟหาเคียว"),'HOP HallowScythe')
 	Sword:Line()
-	ToggleImage(Sword, translate("Automatic Twin Hooks", "ออโต้หาเคียวคู่"), tostring(ServiceIcon.twinhook), 'Auto TwinHooks')
+	ToggleImage(Sword, translate("Automatic Twin Hooks", "ออโต้หาเคียวคู่"), tostring(Icons.twinhook), 'Auto TwinHooks')
 	Toggle(Sword, translate("HOP Twin Hooks", "ย้ายเซิฟหาเคียวคู่"),'HOP TwinHooks')
 	Sword:Line()
-	ToggleImage(Sword, translate("Automatic Canvander", "ออโต้หาดาบคาเวนเดอร์"), tostring(ServiceIcon.cavender), 'Auto Canvender')
+	ToggleImage(Sword, translate("Automatic Canvander", "ออโต้หาดาบคาเวนเดอร์"), tostring(Icons.cavender), 'Auto Canvender')
 	Toggle(Sword, translate("HOP Canvander", "ย้ายเซิฟหาดาบคาเวนเดอร์"),'HOP Canvender')
 	Sword:Line()
-	ToggleImage(Sword, translate("Automatic Buddy Sword", "ออโต้หาดาบบิ๊กมัม"), tostring(ServiceIcon.buddySword), 'Auto BuddySword')
+	ToggleImage(Sword, translate("Automatic Buddy Sword", "ออโต้หาดาบบิ๊กมัม"), tostring(Icons.buddySword), 'Auto BuddySword')
 	Toggle(Sword, translate("HOP Buddy Sword", "ย้ายเซิฟหาดาบบิ๊กมัม"),'HOP BuddySword')
 
 
-	ToggleImage(Gun, translate("Automatic Venom Bow", "ออโต้หาธนูพิษ"), tostring(ServiceIcon.venombow), 'Auto VenomBow')
+	ToggleImage(Gun, translate("Automatic Venom Bow", "ออโต้หาธนูพิษ"), tostring(Icons.venombow), 'Auto VenomBow')
 	Toggle(Gun, translate("HOP Venom Bow", "ย้ายเซิฟหาธนูพิษ"),'HOP VenomBow')
 
 	Accessory:Line()
-	ToggleImage(Accessory, translate("Automatic Pilot Helmet", "ออโต้หาหมวกนักบิน"), tostring(ServiceIcon.pilothelm), 'Auto PilotHelmet')
+	ToggleImage(Accessory, translate("Automatic Pilot Helmet", "ออโต้หาหมวกนักบิน"), tostring(Icons.pilothelm), 'Auto PilotHelmet')
 	Toggle(Accessory, translate("HOP Pilot Helmet", "ย้ายเซิฟหาหมวกนักบิน"),'HOP PilotHelmet')
 	Accessory:Line()
-	ToggleImage(Accessory, translate("Automatic Lei", "ออโต้หาสร้อยคอ"), tostring(ServiceIcon.lei), 'Auto Lei')
+	ToggleImage(Accessory, translate("Automatic Lei", "ออโต้หาสร้อยคอ"), tostring(Icons.lei), 'Auto Lei')
 	Toggle(Accessory, translate("HOP Lei", "ย้ายเซิฟหาสร้อยคอ"),'HOP Lei')
 end
 
@@ -3204,7 +3098,7 @@ Toggle(IslandSec, translate("Teleport to Island", "เทเลพอร์ต�
 
 local PlayersSec = Section(_Teleport, translate("Players", "ผู้เล่น"), 'r')
 PlayerList = {}
-for _, v in pairs(Service.Players:GetChildren()) do
+for _, v in pairs(Players:GetChildren()) do
 	table.insert(PlayerList, v.Name)
 end
 Default('Select Player', PlayerList[1])
@@ -3214,7 +3108,7 @@ local PlayerDropdown = PlayersSec:CreateDropdown({Title = translate("Select Isla
 end})
 Button(PlayersSec, translate("Refresh", "รีเฟรช"), function()
 	PlayerDropdown:Clear()
-	for _, v in pairs(Service.Players:GetChildren()) do
+	for _, v in pairs(Players:GetChildren()) do
 		PlayerDropdown:AddList(v.Name)
 	end
 end)
@@ -3225,9 +3119,9 @@ Toggle(PlayersSec, translate("Teleport to Players", "เทเลพอร์ต
 local PerformantSec = Section(_Misc, translate("Performant", "เพิ่มประสิทธิภาพ"), 'l')
 Toggle(PerformantSec, translate("White Screen", "เปิดจอขาว"), 'White Screen', function(v)
 	if v then
-		Service.RunService:Set3dRenderingEnabled(false)
+		RunService:Set3dRenderingEnabled(false)
 	else
-		Service.RunService:Set3dRenderingEnabled(true)
+		RunService:Set3dRenderingEnabled(true)
 	end
 end)
 Toggle(PerformantSec, translate("Automatic Rejoin", "ออโต้รีจอยน์"), 'Rejoin')
@@ -3238,8 +3132,8 @@ Button(PerformantSec, translate("Low Graphics Quality", "โหมดกรา�
 	Terrain.WaterWaveSpeed = 0
 	Terrain.WaterReflectance = 0
 	Terrain.WaterTransparency = 0
-	Service.Lighting.GlobalShadows = false
-	Service.Lighting.FogEnd = 9e9
+	game.Lighting.GlobalShadows = false
+	game.Lighting.FogEnd = 9e9
 	settings().Rendering.QualityLevel = 1
 	for i,v in pairs(game:GetDescendants()) do
 		if v:IsA("Part") or v:IsA("UnionOperation") or v:IsA("MeshPart") or v:IsA("CornerWedgePart") or v:IsA("TrussPart") then
@@ -3254,7 +3148,7 @@ Button(PerformantSec, translate("Low Graphics Quality", "โหมดกรา�
 			v.BlastRadius = 1
 		end
 	end
-	for i,v in pairs(Service.Lighting:GetDescendants()) do
+	for i,v in pairs(game.Lighting:GetDescendants()) do
 		if v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") then
 			v.Enabled = false
 		end
@@ -3263,7 +3157,7 @@ end)
 
 
 local ServerSec = Section(_Misc, translate("Server", "เซิร์ฟเวอร์"), 'r')
-Default('JobId', tostring(jobid))
+Default('JobId', tostring(JobId))
 ServerSec:CreateTextbox({
 	Title = translate("JobId", "ใส่เลขไอดีเซิร์ฟ"),
 	ClearTextOnFocus = true,
@@ -3275,23 +3169,23 @@ ServerSec:CreateTextbox({
 })
 ServerSec:Line()
 Button(ServerSec, translate("Join", "เข้าร่วม"), function()
-	jobtp(C()['JobId'])
+	TeleportService:TeleportToPlaceInstance(PlaceId,C()['JobId'],LocalPlayer)
 end)
 Button(ServerSec, translate("Clipboard JobId", "คัดลอกไอดีเซิร์ฟเวอร์"), function()
-	copy(jobid)
+	copy(JobId)
 end)
 ServerSec:Line()
 Button(ServerSec, translate("Rejoin Server", "รีจอยน์เซิร์ฟเวอร์"), function()
-	if #Service.Players:GetPlayers() <= 1 then
+	if #Players:GetPlayers() <= 1 then
 		LocalPlayer:Kick("\nRejoining...")
 		wait()
-		Service.TeleportService:Teleport(id, LocalPlayer)
+		TeleportService:Teleport(PlaceId, LocalPlayer)
 	else
-		Service.TeleportService:TeleportToPlaceInstance(id, jobid, LocalPlayer)
+		TeleportService:TeleportToPlaceInstance(PlaceId, JobId, LocalPlayer)
 	end
 end)
 Button(ServerSec, translate("HOP Server", "ย้ายเซิร์ฟเวอร์"), function()
-	pcall(HopServer)
+	HOP()
 end)
 
 
@@ -3331,7 +3225,7 @@ Button(MiscSec, translate("Redeem All Code", "ใส่โค้ดทั้ง�
 		"TantaiGaming", "Fudd10", "TheGreatAce", "Sub2OfficialNoobie"
 	}
 	for _, code in ipairs(codes) do
-		UseCode(code)
+		ReplicatedStorage.Remotes.Redeem:InvokeServer(code)
 		task.wait()
 	end
 end)
@@ -3345,19 +3239,6 @@ Configs:Line()
 Button(Configs, translate("Delete Configs","ลบคอนฟิก"), function()
 	pcall(DeleteSettings)
 end)
-
-Service.GuiService.ErrorMessageChanged:Connect(function()
-	if C()['Rejoin'] then
-		if #Service.Players:GetPlayers() <= 1 then
-			LocalPlayer:Kick("\nRejoining...")
-			wait()
-			Service.TeleportService:Teleport(id, LocalPlayer)
-		else
-			Service.TeleportService:TeleportToPlaceInstance(id, jobid, LocalPlayer)
-		end
-	end
-end)
-
 local ItemsESP = Section(_Visual, translate("ESP", "การมองเห็น"), 'r')
 local IslandESP = Section(_Visual, translate("Island", "เกาะ"), 'l')
 
@@ -3380,4 +3261,4 @@ IslandESP:Line()
 Toggle(IslandESP, translate("Leviathan Gate", "ประตูลิเวียธาน"), 'ESP Frozen Dim')
 
 
-return warn("Authorization Success : " .. string.format("%.9f", tostring(getgenv().Start) ) .. " to Load Data " .. "User : " .. tostring(LocalPlayer.Name) .. " unpack(" .. _Folder .. ")")
+return warn("Authorization Success : " .. string.format("%.9f", tostring(Tick) ) .. " to Load Data " .. "User : " .. tostring(Name) .. " unpack(" .. _Folder .. ")")
