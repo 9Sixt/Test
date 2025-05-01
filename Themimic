@@ -1,0 +1,322 @@
+--IGNORE THIS
+getgenv, identifyexecutor, setclipboard, makefolder, isfolder = getgenv, identifyexecutor, setclipboard, makefolder, isfolder
+writefile, isfile, readfile, delfile, sethiddenproperty, getnilinstances = writefile, isfile, readfile, delfile, sethiddenproperty, getnilinstances
+----------------------------------------------------
+
+local Env_ = getgenv()
+
+Env_.Configs = {
+	['Lock'] = false
+}
+
+repeat 
+	task.wait()
+until game:IsLoaded() and game:GetService("Players") and game:GetService("Players").LocalPlayer and game:GetService("Players").LocalPlayer.Character and game:GetService("Players").LocalPlayer.PlayerGui and game:GetService("Players").LocalPlayer.Backpack and game:GetService("Players").LocalPlayer.PlayerScripts
+
+local Players = game:GetService("Players")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local TweenService =game:GetService("TweenService")
+local HttpService = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TeleportService = game:GetService("TeleportService")
+local RunService = game:GetService("RunService")
+local VirtualUser = game:GetService("VirtualUser")
+local PlaceId = game.PlaceId
+local LocalPlayer = Players.LocalPlayer
+local Backpack = LocalPlayer.Backpack
+local PlayerGui = LocalPlayer.PlayerGui
+local Name = LocalPlayer.Name
+local Character = LocalPlayer.Character
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+local Humanoid = Character:WaitForChild("Humanoid")
+local RenderStepped = RunService.RenderStepped
+local Heartbeat = RunService.Heartbeat
+local Stepped = RunService.Stepped
+local Loop = loadstring(game:HttpGet("https://raw.githubusercontent.com/MerrySubs4t/fetching/refs/heads/main/Utils/Loop.lua", true))()
+
+--Check
+if PlaceId == 6485056556 then
+	Env_['B1C2'] = true
+elseif PlaceId == 6688734395 then
+	Env_['B1C3'] = true
+elseif PlaceId == 7265397848 then
+	Env_['B1C4'] = true
+elseif PlaceId == 7618863566 then
+	Env_['Jigoku'] = true
+elseif PlaceId == 7069191531 then
+	Env_['The Witch'] = true
+elseif PlaceId == 6243699076 then
+	Env_['Lobby'] = true
+end
+
+task.spawn(function()
+	local oldKick = hookfunction(LocalPlayer.Kick, function(...)
+		return nil or (...)
+	end)
+end)
+
+LocalPlayer.CharacterAdded:Connect(function(new)
+	Character = new
+	HumanoidRootPart = new:WaitForChild("HumanoidRootPart")
+	Humanoid = new:WaitForChild("Humanoid")
+end)
+
+Equip = function(Tool)
+	if Character then
+		if Backpack:FindFirstChild(Tool) and not Character:FindFirstChild(Tool) then
+			Humanoid:EquipTool(Backpack:FindFirstChild(Tool))
+		else
+			return
+		end
+	end
+end;
+
+tp = function(Position)
+	pcall(function()
+		if Character and Humanoid.Health >= 0 then
+			HumanoidRootPart.CFrame = Position
+		end
+	end)
+end
+
+tween = function(Position)
+	if not Character then return end
+	local Distance = (Position.Position - Character.HumanoidRootPart.Position).Magnitude
+	local tw = TweenService:Create(
+		Character.HumanoidRootPart,
+		TweenInfo.new(Distance / 299, Enum.EasingStyle.Linear),
+		{CFrame = CFrame.new(Position.X, Position.Y, Position.Z)}
+	)
+	function StopTween()
+		if tw then
+			tw:Cancel()
+		end
+	end
+	tw:Play()
+	tw.Completed:Wait()
+end
+
+tablecheck = function(config, _table)
+	for _,v in pairs(_table) do
+		if config[v] == true then
+			return true 
+		end 
+	end 
+	return false 
+end;
+
+Lantern = function(str)
+	for _, v in pairs(PlayerGui.Inventory.Inventory.Skins.ScrollingFrame:GetDescendants()) do
+		if v.Name == "ItemName" and v:IsA("TextLabel") then
+			if (type(str) == "string" and v.Text == str) or (type(str) == "table" and table.find(str, v.Text)) then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+
+local Players = game:GetService("Players")
+
+Badge = function(badgeId)
+	local userId = Players.LocalPlayer.UserId
+	local url = string.format("https://badges.roblox.com/v1/users/%d/badges/awarded-dates?badgeIds=%d", userId, badgeId)
+	local res = request({
+		Url = url,
+		Method = "GET",
+		Headers = {
+			["Content-Type"] = "application/json"
+		}
+	})
+	if not res or not res.Body then
+		warn("⚠️ ไม่สามารถดึงข้อมูล badge ได้")
+		return false
+	end
+	local data = HttpService:JSONDecode(res.Body)
+	if data and data.data and #data.data > 0 then
+		return true
+	else
+		return false
+	end
+end
+
+
+gametp = function(v)
+	TeleportService:Teleport(v, LocalPlayer)
+end
+
+index = {
+	'Lock'
+}
+
+Loop(function()
+	if tablecheck(Env_.Configs, index) then
+		pcall(function()
+			if not Character then return end
+			if Character:WaitForChild("Humanoid").Sit then
+				Character:WaitForChild("Humanoid").Sit = false
+			end
+			if not HumanoidRootPart:FindFirstChild("BodyVelocity1") then
+				local BodyVelocity = Instance.new("BodyVelocity")
+				BodyVelocity.Name = "BodyVelocity1"
+				BodyVelocity.Parent = HumanoidRootPart
+				BodyVelocity.MaxForce = Vector3.new(10000, 10000, 10000)
+				BodyVelocity.Velocity = Vector3.new(0, 0, 0)
+			end
+			for _, v in pairs(Character:GetChildren()) do
+				if v:IsA("BasePart") then
+					v.CanCollide = false
+				end
+			end
+		end)
+	else
+		pcall(StopTween)
+		if HumanoidRootPart:FindFirstChild("BodyVelocity1") and Character:FindFirstChild("IsHighlight") then
+			HumanoidRootPart:FindFirstChild("BodyVelocity1"):Destroy()
+			Character:FindFirstChild("IsHighlight"):Destroy()
+		end
+		for _, v in pairs(Character:GetChildren()) do
+			if v:IsA("BasePart") and v.Name ~= 'HumanoidRootPart' then
+				v.CanCollide = true
+			end
+		end
+	end
+end)
+
+task.spawn(function()
+	if Env_['Lobby'] then
+		if not Lantern("SpiritLantern") then
+			return gametp(6485056556)
+		elseif not Lantern('CorruptedLantern') then
+			return gametp(6688734395)
+		elseif not Lantern('Saigomo') or not Lantern('CH4Lantern') then
+			return gametp(7265397848)
+		elseif not Lantern('Shinigami') then
+			return gametp(7618863566)
+		elseif not Lantern('TWTLantern') then
+			return gametp(7069191531)
+		end
+	end
+end)
+
+task.spawn(function()
+	if Env_['B1C2'] then
+		if not Badge(2124698178) then
+			firetouchinterest(workspace.Teleporters.Touch, HumanoidRootPart, 0)
+			firetouchinterest(workspace.Teleporters.Touch, HumanoidRootPart, 1)
+			Env_.Configs.Lock = true
+			task.wait(5)
+			tween(CFrame.new(1110, 84, -355))
+		end
+	elseif Env_['B1C3'] then
+		if not Badge(2124712032) then
+			tp(workspace.FinalCutscene.Door.CFrame)
+		end
+	elseif Env_['B1C4'] then
+		if not Badge(2124797160) or not Badge(2126739583) then
+			Env_.Configs.Lock = true
+			task.wait(5)
+
+			local IsSaigomo = false
+			local IsFirst = false
+
+			Loop(function()
+				Equip("Katana")
+				VirtualUser:CaptureController()
+				VirtualUser:ClickButton1(Vector2.new(0, 0))
+				local Saigomo = workspace.BossBattle:FindFirstChild("Saigomo")
+				if not Saigomo then
+					for _, v in pairs(workspace.GameHearts:GetChildren()) do
+						if v.Name == "Heart" and v:IsA("Model") then
+							if v:FindFirstChildOfClass("BoolValue") then
+								v:Destroy()
+							else
+								tp(v:GetPivot() + Vector3.new(0, 20, 3))
+							end
+						else
+							IsSaigomo = true
+						end
+					end
+				elseif Saigomo and not IsFirst then
+					IsFirst = true
+					local speed = 1.6
+					local radius = 30
+					local angle = 0
+
+					local function MoveAroundTarget(targetPart)
+						angle = angle + speed * RunService.Heartbeat:Wait()
+						local xOffset = math.cos(angle) * radius
+						local zOffset = math.sin(angle) * radius
+						local newPosition = Vector3.new(targetPart.Position.X + xOffset, HumanoidRootPart.Position.Y, targetPart.Position.Z + zOffset)
+						HumanoidRootPart.CFrame = CFrame.new(newPosition, targetPart.Position)
+					end
+
+					for _, v in pairs(Saigomo:GetChildren()) do
+						if v.Name == "SpiderHitbox" and v:IsA("BasePart") then
+							
+							MoveAroundTarget(v.HumanoidRootPart)
+						end
+					end
+				end
+			end)
+		end
+	elseif Env_['Jigoku'] then
+		if not Badge(2124833837) then
+			Env_.Configs.Lock = true
+			firetouchinterest(workspace:FindFirstChild("[ID]Touch1"), HumanoidRootPart, 0)
+			firetouchinterest(workspace:FindFirstChild("[ID]Touch1"), HumanoidRootPart, 1)
+			Loop(function()
+				pcall(function()
+					if workspace:FindFirstChild("GameAI") and workspace.GameAI:FindFirstChild("Souls") then
+						for _, v in pairs(workspace.GameAI.Souls:GetChildren()) do
+							if v.Name == "Orb" then
+								tp(v.CFrame + Vector3.new(0, -15, 0))
+								pcall(function()
+									if v:FindFirstChildOfClass("ProximityPrompt") then
+										fireproximityprompt(v:FindFirstChildOfClass("ProximityPrompt"))
+									end
+								end)
+							else
+								tp(CFrame.new(636, 12, 910))
+							end
+						end
+					end
+				end)
+			end)
+		end
+	end
+end)
+
+Loop(function()
+	if Env_['B1C2'] then
+		if Badge(2124698178) then
+			return gametp(6688734395)
+		end
+	elseif Env_['B1C3'] then
+		if Badge(2124712032) then
+			return gametp(7265397848)
+		end
+	elseif Env_['B1C4'] then
+		if Badge(2124797160) and Badge(2126739583) then
+			return gametp(6243699076)
+		end
+	elseif Env_['Jigoku'] then
+		if Badge(2124833837) then
+			return gametp(6243699076)
+		end
+	elseif Env_['The Witch'] then
+		if Badge(2124780082) then
+			return gametp(6243699076)
+		end
+	end
+	task.wait(5)
+end)
+
+Loop(function()
+	
+end)
+
+
+
+return warn("Authorization Success")
